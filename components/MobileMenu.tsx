@@ -77,7 +77,7 @@ export default function MobileMenu({ categories, name }: { categories: Category[
   }, [open]);
 
   const tabClass = (active: boolean) =>
-    'rounded-xl py-3 text-sm font-bold transition-colors ' + (active ? 'bg-brand/15 text-brand' : 'bg-surface text-ink/80');
+    'rounded-xl py-3 text-sm font-bold transition-colors ' + (active ? 'border border-brand/40 bg-brand/15 text-brand' : 'border border-ink/15 bg-transparent text-ink/70');
 
   const drawer = (
     <div className={'fixed inset-0 z-[80] md:hidden ' + (open ? '' : 'pointer-events-none')} aria-hidden={!open}>
