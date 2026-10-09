@@ -4,6 +4,7 @@ import AddToCart from '@/components/AddToCart';
 import ProductCard from '@/components/ProductCard';
 import ProductGallery from '@/components/ProductGallery';
 import SectionHeading from '@/components/SectionHeading';
+import WishlistButton from '@/components/WishlistButton';
 import { products } from '@/data/products';
 import { formatPrice } from '@/lib/format';
 
@@ -38,6 +39,7 @@ export default async function ProductPage({ params }: Props) {
           <p className='mt-4 leading-8 text-ink/70'>{product.description}</p>
 
           <AddToCart slug={product.slug} sizes={product.sizes} colors={product.colors} />
+          <WishlistButton slug={product.slug} variant='inline' className='mt-3' />
         </div>
       </div>
 
