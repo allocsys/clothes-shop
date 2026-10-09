@@ -7,6 +7,7 @@ export type Product = {
   sizes: string[];
   colors: string[];
   description: string;
+  images?: string[]; // photo URLs (first one is the main photo)
 };
 
 // Placeholder products. Replace with real data or a database later.
