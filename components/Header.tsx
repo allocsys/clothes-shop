@@ -4,7 +4,8 @@ import { site } from '@/lib/site';
 import Logo from '@/components/Logo';
 import MobileMenu from '@/components/MobileMenu';
 import CartCount from '@/components/CartCount';
-import { IconBag, IconSearch, IconUser } from '@/components/Icons';
+import WishlistCount from '@/components/WishlistCount';
+import { IconBag, IconHeart, IconSearch, IconUser } from '@/components/Icons';
 
 function SearchBar() {
   return (
@@ -64,6 +65,10 @@ export default function Header() {
           <Link href='/' aria-label={site.name}><Logo uid='hd' /></Link>
           <div className='flex-1'><SearchBar /></div>
           <Link href='/account' className='glass-btn flex items-center gap-2 rounded-full px-4 py-2 text-sm'><IconUser width={22} height={22} />ورود / ثبت‌نام</Link>
+          <Link href='/wishlist' aria-label='علاقه‌مندی‌ها' className='glass-btn !overflow-visible relative grid h-10 w-10 place-items-center rounded-full'>
+            <IconHeart />
+            <WishlistCount />
+          </Link>
           <CartLink />
         </div>
         <nav className='hidden border-t border-ink/10 md:block'>
