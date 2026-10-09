@@ -36,7 +36,7 @@ Legend: `[x]` done, `[ ]` to do, `[?]` needs a decision from the owner first.
 - [x] Product page: image gallery (swipe on mobile, arrows + thumbnails on desktop; shows placeholder art until real photos exist via `images` in product data)
 - [x] Product page: related products
 - [x] Wishlist (heart on cards + product page, /wishlist page, header/tab count)
-- [x] Add-to-cart animation (2026-10-10): a circle flies from the button to the header cart icon, the icon bounces and a short "+۱" pops; replaces the permanent count dot on the cart icon (`lib/cartAnimation.ts`, `components/CartFeedback.tsx`). Tested in headless Chromium on mobile and desktop; waiting for a phone check
+- [x] Add-to-cart animation (2026-10-10): a circle flies from the button to the header cart icon, the icon bounces and a short "+۱" pops; replaces the permanent count dot on the cart icon (`lib/cartAnimation.ts`, `components/CartFeedback.tsx`). Tested in headless Chromium on mobile and desktop; ignores the phone's reduced-motion setting on purpose (first phone test showed only the "+۱" because of it); waiting for a phone check
 
 ## Phase 3 — Real data
 - [x] Decided (2026-10-09): women's clothing only for now; men's/kids can be added later as a new top-level category
