@@ -18,6 +18,59 @@ html {
   .no-scrollbar::-webkit-scrollbar {
     display: none;
   }
+
+  /* Frosted-glass bar (header, tab bar, dropdown panels) */
+  .glass-bar {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.45));
+    -webkit-backdrop-filter: blur(18px) saturate(170%);
+    backdrop-filter: blur(18px) saturate(170%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.6);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 6px 24px rgba(36, 26, 71, 0.08);
+  }
+  .glass-panel {
+    background: rgba(255, 255, 255, 0.8);
+    -webkit-backdrop-filter: blur(20px) saturate(170%);
+    backdrop-filter: blur(20px) saturate(170%);
+    border-top: 1px solid rgba(255, 255, 255, 0.7);
+    box-shadow: 0 12px 32px rgba(36, 26, 71, 0.14);
+  }
+
+  /* Transparent glossy button / pill */
+  .glass-btn {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0.16) 100%);
+    -webkit-backdrop-filter: blur(12px) saturate(160%);
+    backdrop-filter: blur(12px) saturate(160%);
+    border: 1px solid rgba(255, 255, 255, 0.65);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.95),
+      inset 0 -1px 0 rgba(36, 26, 71, 0.06),
+      0 4px 14px rgba(36, 26, 71, 0.12);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+  }
+  /* gloss highlight across the top half */
+  .glass-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 50% 0;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0));
+    border-radius: inherit;
+    pointer-events: none;
+  }
+  .glass-btn:hover {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.75) 0%, rgba(255, 255, 255, 0.3) 100%);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 1),
+      inset 0 -1px 0 rgba(36, 26, 71, 0.08),
+      0 6px 18px rgba(180, 69, 107, 0.22);
+  }
+  .glass-btn:active {
+    transform: scale(0.96);
+  }
+  .glass-btn > * {
+    position: relative;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
