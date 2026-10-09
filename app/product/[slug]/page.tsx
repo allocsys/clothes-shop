@@ -5,19 +5,18 @@ import ProductCard from '@/components/ProductCard';
 import ProductGallery from '@/components/ProductGallery';
 import SectionHeading from '@/components/SectionHeading';
 import WishlistButton from '@/components/WishlistButton';
-import { products } from '@/data/products';
 import { formatPrice } from '@/lib/format';
+import { getProduct, getProducts } from '@/lib/products';
 
-export function generateStaticParams() {
-  return products.map((p) => ({ slug: p.slug }));
-}
+export const dynamic = 'force-dynamic';
 
 type Props = { params: Promise<{ slug: string }> };
 
 export default async function ProductPage({ params }: Props) {
   const { slug } = await params;
-  const product = products.find((p) => p.slug === slug);
+  const product = await getProduct(slug);
   if (!product) notFound();
+  const products = await getProducts();
 
   // Related: same category first, then fill up with other products
   const others = products.filter((p) => p.slug !== product.slug);
