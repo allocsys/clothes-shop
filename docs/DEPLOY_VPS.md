@@ -37,7 +37,7 @@ ufw allow 22 && ufw allow 80 && ufw allow 443 && ufw --force enable
 git clone https://github.com/allocsys/clothes-shop.git
 cd clothes-shop
 cp .env.example .env
-nano .env        # DOMAIN را با دامنه خودتان عوض کنید
+nano .env        # DOMAIN را با دامنه خودتان و POSTGRES_PASSWORD را با یک رمز قوی عوض کنید
 docker compose up -d --build
 ```
 
@@ -73,7 +73,40 @@ docker compose logs -f web     # لاگ سایت (سفارش‌ها با NEW_ORD
 docker compose restart web     # راه‌اندازی دوباره
 ```
 
+## دیتابیس و بکاپ
+
+رمز دیتابیس را فقط با حرف و عدد بسازید. این دستور یکی می‌سازد: `openssl rand -hex 24`
+
+جدول‌ها با هر `docker compose up` خودکار ساخته یا به‌روز می‌شوند. فقط بار اول، اگر محصولات نمونه را می‌خواهید:
+
+```bash
+docker compose run --rm migrate node scripts/seed.mjs
+```
+
+**بکاپ:**
+
+```bash
+sh scripts/backup.sh     # فایل فشرده در پوشه backups/ می‌سازد (۱۴ تای آخر را نگه می‌دارد)
+```
+
+برای بکاپ روزانه خودکار، `crontab -e` را باز کنید و این خط را بگذارید (مسیر را با مسیر پروژه‌تان عوض کنید):
+
+```
+0 3 * * * cd /root/clothes-shop && sh scripts/backup.sh >> backups/backup.log 2>&1
+```
+
+مهم: فایل‌های `backups/` را حتماً به جای دیگری هم کپی کنید (کامپیوتر خودتان یا سرور دیگر)، چون اگر خود سرور از بین برود بکاپ روی همان سرور هم از بین می‌رود.
+
+**برگرداندن بکاپ:**
+
+```bash
+docker compose stop web
+docker compose exec -T db sh -c 'dropdb -U "$POSTGRES_USER" "$POSTGRES_DB" && createdb -U "$POSTGRES_USER" "$POSTGRES_DB"'
+gunzip -c backups/FILE.sql.gz | docker compose exec -T db sh -c 'psql -U "$POSTGRES_USER" "$POSTGRES_DB"'
+docker compose start web
+```
+
 ## یادداشت‌ها
 
-- فعلاً سفارش‌ها فقط در لاگ ثبت می‌شوند. بعد از اضافه شدن دیتابیس (فاز ۳)، یک سرویس Postgres با volume به همین فایل اضافه می‌شود و از آن بکاپ منظم می‌گیریم.
+- فعلاً سایت هنوز محصولات و سفارش‌ها را از دیتابیس نمی‌خواند و نمی‌نویسد. دیتابیس و جدول‌ها آماده‌اند و در قدم‌های بعدی سایت به آن وصل می‌شود. تا آن موقع سفارش‌ها فقط در لاگ ثبت می‌شوند.
 - هیچ رمز یا کلیدی داخل Git نگذارید. همه چیز در فایل `.env` روی سرور می‌ماند.
