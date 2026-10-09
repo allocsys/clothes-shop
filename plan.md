@@ -42,7 +42,8 @@ Legend: `[x]` done, `[ ]` to do, `[?]` needs a decision from the owner first.
 - [x] Hosting decision (2026-10-09): Iranian VPS + Docker as the main target (Railway stays as test/staging)
 - [x] Self-hosted fonts (no Google Fonts at build), Dockerfile, docker-compose + Caddy HTTPS, docs/DEPLOY_VPS.md
 - [ ] Buy domain (.ir) + Iranian VPS (Ubuntu, 2 vCPU / 2-4 GB, Iran DC) and do first deploy using docs/DEPLOY_VPS.md
-- [ ] Database: standard Postgres (container in docker-compose, named volume; same on Railway for testing) + scheduled backups. Tables: products, variants, stock, orders
+- [x] Database foundation: Postgres schema (products, variants with stock, orders, order_items), `lib/db.ts`, migrate + seed scripts, compose db service, backup script (tested on Postgres 16)
+- [ ] Database on Railway for testing: add Postgres service, set `DATABASE_URL`, run migrate + seed
 - [ ] Replace placeholder products in `data/products.ts` with DB queries
 - [ ] Real product photos with `next/image` (upload + storage)
 - [ ] Stock tracking per size/color; "out of stock" state
