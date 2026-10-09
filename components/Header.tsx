@@ -3,6 +3,7 @@ import { categories } from '@/data/categories';
 import { site } from '@/lib/site';
 import Logo from '@/components/Logo';
 import MobileMenu from '@/components/MobileMenu';
+import CartCount from '@/components/CartCount';
 import { IconBag, IconSearch, IconUser } from '@/components/Icons';
 
 function SearchBar() {
@@ -25,7 +26,7 @@ function CartLink() {
   return (
     <Link href='/cart' aria-label='سبد خرید' className='glass-btn !overflow-visible relative grid h-10 w-10 place-items-center rounded-full'>
       <IconBag />
-      <span className='absolute -right-0.5 -top-0.5 grid h-4 min-w-4 place-items-center rounded-full bg-brand px-1 text-[10px] text-white'>۰</span>
+      <CartCount />
     </Link>
   );
 }
