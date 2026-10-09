@@ -44,7 +44,7 @@ Legend: `[x]` done, `[ ]` to do, `[?]` needs a decision from the owner first.
 - [ ] Buy domain (.ir) + Iranian VPS (Ubuntu, 2 vCPU / 2-4 GB, Iran DC) and do first deploy using docs/DEPLOY_VPS.md
 - [x] Database foundation: Postgres schema (products, variants with stock, orders, order_items), `lib/db.ts`, migrate + seed scripts, compose db service, backup script (tested on Postgres 16)
 - [ ] Database on Railway for testing: add Postgres service, set `DATABASE_URL`, run migrate + seed
-- [ ] Replace placeholder products in `data/products.ts` with DB queries
+- [x] Replace placeholder products with DB queries: `lib/products.ts` reads Postgres when `DATABASE_URL` is set, else falls back to `data/products.ts`; home, shop, product page, cart, wishlist, orders API all use it (tested on real Postgres, 2026-10-09)
 - [ ] Real product photos with `next/image` (upload + storage)
 - [ ] Stock tracking per size/color; "out of stock" state
 
