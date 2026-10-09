@@ -42,12 +42,15 @@ services:
       args:
         NODE_IMAGE: ${NODE_IMAGE:-node:22-alpine}
         NPM_REGISTRY: ${NPM_REGISTRY:-https://registry.npmjs.org/}
+        NEXT_PUBLIC_MEDIA_BASE_URL: ${NEXT_PUBLIC_MEDIA_BASE_URL:-}
     restart: unless-stopped
     env_file: .env
     environment:
       DATABASE_URL: *database_url
     expose:
       - '3000'
+    volumes:
+      - uploads:/uploads
     depends_on:
       migrate:
         condition: service_completed_successfully
@@ -69,5 +72,6 @@ services:
 
 volumes:
   pgdata:
+  uploads:
   caddy_data:
   caddy_config:
