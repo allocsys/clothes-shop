@@ -40,7 +40,6 @@ export default function Footer() {
               <li key={label}><a href={href} className='text-white/70 hover:text-white'>{label}</a></li>
             ))}
           </ul>
-          <p className='mt-4 text-xs text-white/50'>شماره تماس و آدرس را اینجا اضافه کنید.</p>
         </div>
       </div>
       <div className='border-t border-white/10 px-4 py-4 pb-24 text-center text-xs text-white/50 md:pb-4'>
