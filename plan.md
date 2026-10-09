@@ -20,9 +20,14 @@ Legend: `[x]` done, `[ ]` to do, `[?]` needs a decision from the owner first.
 - [x] Deployed on Railway, auto-deploy on push to `main`
 
 ## Phase 1 — Verify what we built
-- [ ] Check the drawer menu, dark mode and cart on a real phone after deploy
+- [ ] Check the drawer menu, dark mode and cart on a real phone after deploy (see the five checks below)
+- [x] Confirm the Railway build is green after the cart commits (live site serves cart, product and filter pages, 2026-10-09)
+- [ ] Phone check 1: drawer menu (opens from right, tabs, accordion, login button, closes on X / outside tap)
+- [ ] Phone check 2: dark mode (header, cards, chips, footer readable)
+- [ ] Phone check 3: product page, pick size + color, add to cart, header badge updates
+- [ ] Phone check 4: cart page and checkout form, place a test order, see confirmation
+- [ ] Phone check 5: shop filter panel (size, color, price, sort, remove pills)
 - [ ] Fix anything that looks wrong (send screenshots)
-- [ ] Confirm the Railway build is green after the cart commits
 
 ## Phase 2 — Shop experience
 - [x] Filters on `/shop`: size, color, price range
