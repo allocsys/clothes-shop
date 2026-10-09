@@ -44,7 +44,7 @@ Legend: `[x]` done, `[ ]` to do, `[?]` needs a decision from the owner first.
 - [ ] Buy domain (.ir) + Iranian VPS (Ubuntu, 2 vCPU / 2-4 GB, Iran DC) and do first deploy using docs/DEPLOY_VPS.md
 - [x] Database foundation: Postgres schema (products, variants with stock, orders, order_items), `lib/db.ts`, migrate + seed scripts, compose db service, backup script (tested on Postgres 16)
 - [x] Railway: Postgres service added to `diligent-enthusiasm` / production (2026-10-09) and `DATABASE_URL` on `clothes-shop` set to `${{Postgres.DATABASE_URL}}`; it takes effect on the next deploy (this push)
-- [ ] Railway: create tables and sample products (`node scripts/migrate.mjs` then `node scripts/seed.mjs`, run once). Until then the site would read an empty database. Options: pre-deploy command on the service (run seed only once, then drop it) or run by hand
+- [x] Railway: tables and 8 sample products created; site reads them from Postgres (confirmed on phone, 2026-10-10). Pre-deploy command now runs migrate only (`node scripts/migrate.mjs`); `node scripts/setup.mjs` = migrate + seed, run by hand or temporarily on a fresh database
 - [x] Replace placeholder products with DB queries: `lib/products.ts` reads Postgres when `DATABASE_URL` is set, else falls back to `data/products.ts`; home, shop, product page, cart, wishlist, orders API all use it (tested on real Postgres, 2026-10-09)
 - [ ] Real product photos with `next/image` (upload + storage)
 - [ ] Stock tracking per size/color; "out of stock" state
