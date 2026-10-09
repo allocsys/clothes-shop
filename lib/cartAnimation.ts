@@ -19,8 +19,9 @@ function visibleCartTarget(): HTMLElement | null {
 export function flyToCart(from: HTMLElement): void {
   const land = () => window.dispatchEvent(new Event(CART_LANDED));
   const target = visibleCartTarget();
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (!target || reduceMotion || typeof Element.prototype.animate !== 'function') {
+  // Not gated on prefers-reduced-motion on purpose: it is a short (under 1 s) one-off cue,
+  // and many phones have "remove animations" / battery saver on by default.
+  if (!target || typeof Element.prototype.animate !== 'function') {
     land();
     return;
   }
