@@ -2,6 +2,7 @@
 
 import { useRef, useState } from 'react';
 import GarmentArt from '@/components/GarmentArt';
+import ProductImage from '@/components/ProductImage';
 
 type Props = { title: string; category: string; slug: string; images?: string[] };
 
@@ -24,11 +25,18 @@ export default function ProductGallery({ title, category, slug, images }: Props)
     go(dx < 0 ? active + 1 : active - 1);
   }
 
-  const render = (s: string, i: number) =>
+  const MAIN_SIZES = '(min-width: 768px) 50vw, 100vw';
+  const THUMB_SIZES = '72px';
+  const render = (s: string, i: number, main: boolean) =>
     hasPhotos ? (
-      // TODO: switch to next/image once real photos and image domains are configured
-      // eslint-disable-next-line @next/next/no-img-element
-      <img src={s} alt={title + ' - تصویر ' + (i + 1)} className='h-full w-full object-cover' loading={i === 0 ? 'eager' : 'lazy'} />
+      <ProductImage
+        image={s}
+        category={category}
+        seed={slug}
+        alt={title + ' - تصویر ' + (i + 1)}
+        sizes={main ? MAIN_SIZES : THUMB_SIZES}
+        priority={main && i === 0}
+      />
     ) : (
       <GarmentArt category={category} seed={s} />
     );
@@ -51,7 +59,7 @@ export default function ProductGallery({ title, category, slug, images }: Props)
             className={'absolute inset-0 transition-opacity duration-300 ' + (i === active ? 'opacity-100' : 'pointer-events-none opacity-0')}
             aria-hidden={i !== active}
           >
-            {render(s, i)}
+            {render(s, i, true)}
           </div>
         ))}
 
@@ -81,9 +89,9 @@ export default function ProductGallery({ title, category, slug, images }: Props)
               aria-label={'نمایش تصویر ' + (i + 1)}
               aria-current={i === active}
               onClick={() => setActive(i)}
-              className={'h-24 w-[72px] overflow-hidden rounded-xl border-2 transition-colors ' + (i === active ? 'border-brand' : 'border-transparent opacity-70')}
+              className={'relative h-24 w-[72px] overflow-hidden rounded-xl border-2 transition-colors ' + (i === active ? 'border-brand' : 'border-transparent opacity-70')}
             >
-              {render(s, i)}
+              {render(s, i, false)}
             </button>
           ))}
         </div>
