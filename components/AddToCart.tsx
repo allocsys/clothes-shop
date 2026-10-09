@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useCart } from '@/components/CartProvider';
+import { flyToCart } from '@/lib/cartAnimation';
 import { isSoldOut, stockOf, type StockMap } from '@/lib/stock';
 
 type Props = { slug: string; sizes: string[]; colors: string[]; stock?: StockMap };
@@ -30,7 +31,7 @@ export default function AddToCart({ slug, sizes, colors, stock }: Props) {
         ? 'border-brand bg-brand text-white'
         : 'border-ink/20 bg-surface text-ink');
 
-  function onAdd() {
+  function onAdd(button: HTMLElement) {
     if (!size || !color) {
       setStatus('error');
       return;
@@ -38,6 +39,7 @@ export default function AddToCart({ slug, sizes, colors, stock }: Props) {
     if (!has(size, color)) return;
     add({ slug, size, color });
     setStatus('added');
+    flyToCart(button);
   }
 
   return (
@@ -91,7 +93,7 @@ export default function AddToCart({ slug, sizes, colors, stock }: Props) {
           ناموجود
         </button>
       ) : (
-        <button type='button' onClick={onAdd} className='mt-8 w-full rounded-full bg-brand py-3.5 font-bold text-white active:scale-[0.98] md:w-auto md:px-14'>
+        <button type='button' onClick={(e) => onAdd(e.currentTarget)} className='mt-8 w-full rounded-full bg-brand py-3.5 font-bold text-white active:scale-[0.98] md:w-auto md:px-14'>
           افزودن به سبد خرید
         </button>
       )}
