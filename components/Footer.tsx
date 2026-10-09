@@ -54,11 +54,11 @@ export default function Footer() {
   const socials = site.socials.filter((s) => s.href && s.href !== '#');
 
   return (
-    <footer className='mt-8 bg-night text-white'>
+    <footer className='mt-10 rounded-t-[2rem] border-t border-white/15 bg-night text-white shadow-[0_-8px_30px_rgba(0,0,0,0.25)] dark:bg-[#2d2748]'>
       <div className='mx-auto max-w-7xl px-4 pt-10'>
         <div className='grid grid-cols-2 gap-3 md:grid-cols-4'>
           {trust.map(({ Icon, title, text }) => (
-            <div key={title} className='flex items-center gap-3 rounded-2xl bg-white/5 p-3'>
+            <div key={title} className='flex items-center gap-3 rounded-2xl bg-white/[0.07] p-3'>
               <span className='grid h-10 w-10 shrink-0 place-items-center rounded-full bg-white/10 text-white'>
                 <Icon width={22} height={22} />
               </span>
@@ -72,7 +72,7 @@ export default function Footer() {
       </div>
 
       <div className='mx-auto grid max-w-7xl gap-8 px-4 py-10 md:grid-cols-4'>
-        <div className='rounded-3xl bg-white/5 p-5 md:col-span-2'>
+        <div className='rounded-3xl bg-white/[0.07] p-5 md:col-span-2'>
           <Logo light uid='ft' />
           <h3 className='mb-3 mt-5 flex items-center gap-2 text-lg font-bold'>
             <span className='h-5 w-1.5 rounded-full bg-gold' />
