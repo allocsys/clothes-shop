@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import AddToCart from '@/components/AddToCart';
 import GarmentArt from '@/components/GarmentArt';
 import { products } from '@/data/products';
 import { formatPrice } from '@/lib/format';
@@ -32,22 +33,7 @@ export default async function ProductPage({ params }: Props) {
           </p>
           <p className='mt-4 leading-8 text-ink/70'>{product.description}</p>
 
-          <h2 className='mb-2 mt-6 text-sm font-bold'>سایز</h2>
-          <div className='flex flex-wrap gap-2'>
-            {product.sizes.map((s) => (
-              <span key={s} className='min-w-10 rounded-full border border-ink/20 bg-surface px-4 py-1.5 text-center text-sm'>{s}</span>
-            ))}
-          </div>
-
-          <h2 className='mb-2 mt-6 text-sm font-bold'>رنگ</h2>
-          <div className='flex flex-wrap gap-2'>
-            {product.colors.map((c) => (
-              <span key={c} className='rounded-full border border-ink/20 bg-surface px-4 py-1.5 text-sm'>{c}</span>
-            ))}
-          </div>
-
-          {/* TODO: wire up cart state (context or server actions) */}
-          <button className='mt-8 w-full rounded-full bg-brand py-3.5 font-bold text-white md:w-auto md:px-14'>افزودن به سبد خرید</button>
+          <AddToCart slug={product.slug} sizes={product.sizes} colors={product.colors} />
         </div>
       </div>
     </article>
