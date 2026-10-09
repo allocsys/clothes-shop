@@ -32,6 +32,23 @@ html {
   scroll-behavior: smooth;
 }
 
+/* "+۱" that pops above the cart icon after an item lands in the cart (components/CartFeedback.tsx) */
+@keyframes cart-pop {
+  0% { transform: translateY(6px) scale(0.4); opacity: 0; }
+  25% { transform: translateY(-4px) scale(1.2); opacity: 1; }
+  45% { transform: translateY(0) scale(1); opacity: 1; }
+  75% { transform: translateY(0) scale(1); opacity: 1; }
+  100% { transform: translateY(-10px) scale(0.9); opacity: 0; }
+}
+.cart-pop {
+  animation: cart-pop 1.2s ease-out forwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  .cart-pop {
+    animation: none;
+  }
+}
+
 @layer utilities {
   .no-scrollbar {
     scrollbar-width: none;
