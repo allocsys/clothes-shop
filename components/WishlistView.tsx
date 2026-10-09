@@ -3,11 +3,12 @@
 import Link from 'next/link';
 import ProductCard from '@/components/ProductCard';
 import { useWishlist } from '@/components/WishlistProvider';
-import { products } from '@/data/products';
+import { useProducts } from '@/components/useProducts';
 
 export default function WishlistView() {
   const { slugs, ready } = useWishlist();
-  if (!ready) return <p className='py-20 text-center text-ink/50'>در حال بارگذاری...</p>;
+  const { products, loading } = useProducts(slugs);
+  if (!ready || loading) return <p className='py-20 text-center text-ink/50'>در حال بارگذاری...</p>;
 
   const list = slugs.flatMap((s) => {
     const p = products.find((x) => x.slug === s);
