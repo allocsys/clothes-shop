@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import { isValidIranMobile, normalizePhone, priceOrder, type OrderItem } from '@/lib/checkout';
+import { hasDb } from '@/lib/db';
+import { createOrder } from '@/lib/orders';
 import { getProductsBySlugs } from '@/lib/products';
 
 export const dynamic = 'force-dynamic';
@@ -46,10 +48,27 @@ export async function POST(req: Request) {
   }
 
   const totals = priceOrder(items, products);
-  const code = 'MP-' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).slice(2, 5).toUpperCase();
+  // With a database: save the order and reduce stock in one transaction.
+  if (hasDb()) {
+    let result;
+    try {
+      result = await createOrder(customer, items, products, totals);
+    } catch (e) {
+      console.error('ORDER_FAILED', e);
+      return NextResponse.json({ ok: false, error: 'ثبت سفارش انجام نشد. لطفاً دوباره تلاش کنید.' }, { status: 500 });
+    }
+    if (!result.ok) {
+      const msg =
+        result.available > 0
+          ? `از «${result.title}» (سایز ${result.size}، رنگ ${result.color}) فقط ${result.available} عدد موجود است.`
+          : `«${result.title}» (سایز ${result.size}، رنگ ${result.color}) ناموجود شد.`;
+      return NextResponse.json({ ok: false, error: msg, outOfStock: true }, { status: 409 });
+    }
+    return NextResponse.json({ ok: true, code: result.code, ...totals });
+  }
 
-  // TODO: persist to a database and redirect to a payment gateway (e.g. Zarinpal).
-  // For now the order is only written to the server log (visible in Railway logs).
+  // No database (static fallback): the order is only written to the server log.
+  const code = 'MP-' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).slice(2, 5).toUpperCase();
   console.log('NEW_ORDER ' + JSON.stringify({ code, createdAt: new Date().toISOString(), customer, items, ...totals }));
 
   return NextResponse.json({ ok: true, code, ...totals });
