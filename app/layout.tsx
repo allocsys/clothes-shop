@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from 'next';
 import type { ReactNode } from 'react';
-import { Vazirmatn, Aref_Ruqaa } from 'next/font/google';
+import '@fontsource-variable/vazirmatn';
+import '@fontsource/aref-ruqaa/400.css';
+import '@fontsource/aref-ruqaa/700.css';
 import './globals.css';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -8,9 +10,6 @@ import MobileTabBar from '@/components/MobileTabBar';
 import { CartProvider } from '@/components/CartProvider';
 import { WishlistProvider } from '@/components/WishlistProvider';
 import { site } from '@/lib/site';
-
-const body = Vazirmatn({ subsets: ['arabic', 'latin'], display: 'swap', variable: '--font-body' });
-const display = Aref_Ruqaa({ subsets: ['arabic', 'latin'], weight: ['400', '700'], display: 'swap', variable: '--font-display' });
 
 export const metadata: Metadata = {
   title: { default: site.name + ' | ' + site.tagline, template: '%s | ' + site.name },
@@ -29,7 +28,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang='fa' dir='rtl' className={body.variable + ' ' + display.variable}>
+    <html lang='fa' dir='rtl'>
       <body className='bg-sand font-sans text-ink antialiased'>
         <CartProvider>
         <WishlistProvider>
