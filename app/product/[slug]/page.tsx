@@ -35,14 +35,14 @@ export default async function ProductPage({ params }: Props) {
           <h2 className='mb-2 mt-6 text-sm font-bold'>سایز</h2>
           <div className='flex flex-wrap gap-2'>
             {product.sizes.map((s) => (
-              <span key={s} className='min-w-10 rounded-full border border-ink/20 bg-white px-4 py-1.5 text-center text-sm'>{s}</span>
+              <span key={s} className='min-w-10 rounded-full border border-ink/20 bg-surface px-4 py-1.5 text-center text-sm'>{s}</span>
             ))}
           </div>
 
           <h2 className='mb-2 mt-6 text-sm font-bold'>رنگ</h2>
           <div className='flex flex-wrap gap-2'>
             {product.colors.map((c) => (
-              <span key={c} className='rounded-full border border-ink/20 bg-white px-4 py-1.5 text-sm'>{c}</span>
+              <span key={c} className='rounded-full border border-ink/20 bg-surface px-4 py-1.5 text-sm'>{c}</span>
             ))}
           </div>
 
