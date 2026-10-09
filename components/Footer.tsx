@@ -19,7 +19,7 @@ const socials = [
 
 export default function Footer() {
   return (
-    <footer className='mt-14 bg-night text-white'>
+    <footer className='mt-8 bg-night text-white'>
       <div className='mx-auto grid max-w-7xl gap-10 px-4 py-12 md:grid-cols-4'>
         <div className='md:col-span-2'>
           <Logo light uid='ft' />
