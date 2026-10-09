@@ -4,10 +4,13 @@ import GarmentArt from '@/components/GarmentArt';
 import ProductCard from '@/components/ProductCard';
 import SectionHeading from '@/components/SectionHeading';
 import { categories } from '@/data/categories';
-import { products } from '@/data/products';
+import { getProducts } from '@/lib/products';
 import { site } from '@/lib/site';
 
-export default function HomePage() {
+export const dynamic = 'force-dynamic';
+
+export default async function HomePage() {
+  const products = await getProducts();
   const discounted = products.filter((p) => p.oldPrice);
   return (
     <>
