@@ -38,7 +38,7 @@ export default function HomePage() {
 
       <section className='mt-8 grid grid-cols-2 gap-3 md:grid-cols-4'>
         {trust.map(({ Icon, title, text }) => (
-          <div key={title} className='flex items-center gap-3 rounded-2xl bg-white p-3'>
+          <div key={title} className='flex items-center gap-3 rounded-2xl bg-surface p-3'>
             <span className='grid h-10 w-10 shrink-0 place-items-center rounded-full bg-brand/10 text-brand'>
               <Icon width={22} height={22} />
             </span>
