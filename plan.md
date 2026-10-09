@@ -25,9 +25,9 @@ Legend: `[x]` done, `[ ]` to do, `[?]` needs a decision from the owner first.
 - [ ] Confirm the Railway build is green after the cart commits
 
 ## Phase 2 — Shop experience
-- [ ] Filters on `/shop`: size, color, price range
-- [ ] Sorting: newest, cheapest, most expensive, biggest discount
-- [ ] Search results page that actually uses `?q=`
+- [x] Filters on `/shop`: size, color, price range
+- [x] Sorting: newest, cheapest, most expensive, biggest discount
+- [x] Search results page that actually uses `?q=` (title match, removable pill)
 - [ ] Product page: image gallery, "related products"
 - [ ] Wishlist (heart button currently does nothing)
 
@@ -93,4 +93,4 @@ Legend: `[x]` done, `[ ]` to do, `[?]` needs a decision from the owner first.
 - Fixed drawers must be portaled to `document.body` (the header's backdrop blur traps fixed children).
 
 ## Next step
-Phase 1, then Phase 2 (filters and sorting).
+Phase 1 (waiting on phone screenshots), then finish Phase 2 (gallery, related products, wishlist), then Phase 3 (database).
