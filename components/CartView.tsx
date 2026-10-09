@@ -4,7 +4,7 @@ import { useState, type FormEvent } from 'react';
 import Link from 'next/link';
 import GarmentArt from '@/components/GarmentArt';
 import { MAX_QTY, useCart } from '@/components/CartProvider';
-import { products } from '@/data/products';
+import { useProducts } from '@/components/useProducts';
 import { FREE_SHIPPING_FROM, isValidIranMobile, priceOrder } from '@/lib/checkout';
 import { formatPrice } from '@/lib/format';
 
@@ -17,6 +17,7 @@ type Done = { code: string; total: number };
 
 export default function CartView() {
   const { lines, ready, setQty, remove, clear } = useCart();
+  const { products, loading } = useProducts(lines.map((l) => l.slug));
   const [form, setForm] = useState({ name: '', phone: '', city: '', address: '', postalCode: '', notes: '' });
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
@@ -41,7 +42,7 @@ export default function CartView() {
     );
   }
 
-  if (!ready) return <p className='py-20 text-center text-ink/50'>در حال بارگذاری...</p>;
+  if (!ready || loading) return <p className='py-20 text-center text-ink/50'>در حال بارگذاری...</p>;
 
   const detailed = lines.flatMap((l) => {
     const p = products.find((x) => x.slug === l.slug);
@@ -57,7 +58,7 @@ export default function CartView() {
     );
   }
 
-  const { subtotal, shipping, total } = priceOrder(detailed.map((d) => d.line));
+  const { subtotal, shipping, total } = priceOrder(detailed.map((d) => d.line), products);
   const missing = FREE_SHIPPING_FROM - subtotal;
 
   async function submit(e: FormEvent) {
