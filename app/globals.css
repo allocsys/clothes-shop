@@ -5,6 +5,8 @@
 /* Theme tokens: space-separated RGB channels so Tailwind opacity works */
 :root {
   color-scheme: light dark;
+  --font-body: 'Vazirmatn Variable';
+  --font-display: 'Aref Ruqaa';
   --c-brand: 107 79 160;
   --c-ink: 28 27 46;
   --c-sand: 246 243 251;
