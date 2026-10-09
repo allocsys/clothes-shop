@@ -54,3 +54,15 @@ export const IconChat = (p: P) => (
 export const IconReturn = (p: P) => (
   <Svg {...p}><path d='M4 12a8 8 0 1 0 3-6.2M4 4v4h4' /></Svg>
 );
+export const IconPin = (p: P) => (
+  <Svg {...p}><path d='M12 21s-6.5-6-6.5-11a6.5 6.5 0 0 1 13 0C18.5 15 12 21 12 21z' /><circle cx='12' cy='10' r='2.4' /></Svg>
+);
+export const IconPhone = (p: P) => (
+  <Svg {...p}><path d='M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A15 15 0 0 1 3 6a2 2 0 0 1 2-2z' /></Svg>
+);
+export const IconChevronLeft = (p: P) => (
+  <Svg {...p}><path d='M15 6l-6 6 6 6' /></Svg>
+);
+export const IconArrowUp = (p: P) => (
+  <Svg {...p}><path d='M6 14l6-6 6 6' /></Svg>
+);
