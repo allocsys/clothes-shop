@@ -6,11 +6,11 @@ import { useCart } from '@/components/CartProvider';
 import { flyToCart } from '@/lib/cartAnimation';
 import { isSoldOut, stockOf, type StockMap } from '@/lib/stock';
 
-type Props = { slug: string; sizes: string[]; colors: string[]; stock?: StockMap };
+type Props = { slug: string; category: string; sizes: string[]; colors: string[]; stock?: StockMap };
 
 const LOW_STOCK = 3; // show "only N left" at or below this
 
-export default function AddToCart({ slug, sizes, colors, stock }: Props) {
+export default function AddToCart({ slug, category, sizes, colors, stock }: Props) {
   const { add } = useCart();
   const [size, setSize] = useState(sizes.length === 1 ? sizes[0] : '');
   const [color, setColor] = useState(colors.length === 1 ? colors[0] : '');
@@ -39,7 +39,7 @@ export default function AddToCart({ slug, sizes, colors, stock }: Props) {
     if (!has(size, color)) return;
     add({ slug, size, color });
     setStatus('added');
-    flyToCart(button);
+    flyToCart(button, { category, seed: slug });
   }
 
   return (
