@@ -36,6 +36,7 @@ Legend: `[x]` done, `[ ]` to do, `[?]` needs a decision from the owner first.
 - [x] Product page: image gallery (swipe on mobile, arrows + thumbnails on desktop; shows placeholder art until real photos exist via `images` in product data)
 - [x] Product page: related products
 - [x] Wishlist (heart on cards + product page, /wishlist page, header/tab count)
+- [x] Add-to-cart animation (2026-10-10): a circle flies from the button to the header cart icon, the icon bounces and a short "+۱" pops; replaces the permanent count dot on the cart icon (`lib/cartAnimation.ts`, `components/CartFeedback.tsx`). Tested in headless Chromium on mobile and desktop; waiting for a phone check
 
 ## Phase 3 — Real data
 - [x] Decided (2026-10-09): women's clothing only for now; men's/kids can be added later as a new top-level category
@@ -47,7 +48,7 @@ Legend: `[x]` done, `[ ]` to do, `[?]` needs a decision from the owner first.
 - [x] Railway: tables and 8 sample products created; site reads them from Postgres (confirmed on phone, 2026-10-10). Pre-deploy command now runs migrate only (`node scripts/migrate.mjs`); `node scripts/setup.mjs` = migrate + seed, run by hand or temporarily on a fresh database
 - [x] Replace placeholder products with DB queries: `lib/products.ts` reads Postgres when `DATABASE_URL` is set, else falls back to `data/products.ts`; home, shop, product page, cart, wishlist, orders API all use it (tested on real Postgres, 2026-10-09)
 - [ ] Real product photos with `next/image` (upload + storage)
-- [ ] Stock tracking per size/color: orders check and decrement stock safely (done and confirmed on phone, 2026-10-10); still to do: show stock / "out of stock" state on product page and cards
+- [x] Stock tracking per size/color: orders check and decrement stock safely; product page greys out sold-out sizes/colors, shows "only N left" (3 or fewer) and a disabled "ناموجود" button; cards show a "ناموجود" strip (confirmed on phone, 2026-10-10)
 
 ## Phase 4 — Orders and payment
 - [x] Save orders in the database: `lib/orders.ts` writes orders + order_items and decrements stock in one transaction; out-of-stock returns a clear message (tested on Postgres 16 incl. parallel orders for the last piece; confirmed on phone, 2026-10-10). Without `DATABASE_URL` it still logs `NEW_ORDER`
