@@ -1,6 +1,7 @@
 import { products as staticProducts } from '@/data/products';
 import type { Product } from '@/data/products';
 import { db, hasDb } from './db';
+import { stockKey } from './stock';
 
 export type { Product };
 
@@ -18,13 +19,13 @@ type Row = {
   price: number;
   old_price: number | null;
   images: string[];
-  variants: { size: string; color: string }[];
+  variants: { size: string; color: string; stock: number }[];
 };
 
 const SELECT = `
   SELECT p.slug, p.title, p.description, p.category, p.price, p.old_price, p.images,
          COALESCE(
-           json_agg(json_build_object('size', v.size, 'color', v.color) ORDER BY v.id)
+           json_agg(json_build_object('size', v.size, 'color', v.color, 'stock', v.stock) ORDER BY v.id)
              FILTER (WHERE v.id IS NOT NULL),
            '[]'
          ) AS variants
@@ -47,6 +48,7 @@ function toProduct(r: Row): Product {
     sizes: unique(r.variants.map((v) => v.size)),
     colors: unique(r.variants.map((v) => v.color)),
     ...(r.images.length ? { images: r.images } : {}),
+    stock: Object.fromEntries(r.variants.map((v) => [stockKey(v.size, v.color), v.stock])),
   };
 }
 

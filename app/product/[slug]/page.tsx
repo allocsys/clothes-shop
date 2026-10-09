@@ -37,7 +37,7 @@ export default async function ProductPage({ params }: Props) {
           </p>
           <p className='mt-4 leading-8 text-ink/70'>{product.description}</p>
 
-          <AddToCart slug={product.slug} sizes={product.sizes} colors={product.colors} />
+          <AddToCart slug={product.slug} sizes={product.sizes} colors={product.colors} stock={product.stock} />
           <WishlistButton slug={product.slug} variant='inline' className='mt-3' />
         </div>
       </div>

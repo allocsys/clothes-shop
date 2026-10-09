@@ -3,15 +3,20 @@ import type { Product } from '@/data/products';
 import GarmentArt from '@/components/GarmentArt';
 import WishlistButton from '@/components/WishlistButton';
 import { formatPrice } from '@/lib/format';
+import { isSoldOut } from '@/lib/stock';
 
 export default function ProductCard({ product }: { product: Product }) {
+  const soldOut = isSoldOut(product.stock);
   const off = product.oldPrice ? Math.round((1 - product.price / product.oldPrice) * 100) : 0;
   return (
     <div className='group relative'>
       <Link href={'/product/' + product.slug} className='block'>
         <div className='relative aspect-[3/4] overflow-hidden rounded-2xl'>
           <GarmentArt category={product.category} seed={product.slug} />
-          {off > 0 && (
+          {soldOut && (
+            <span className='absolute inset-x-0 bottom-0 bg-ink/70 py-1.5 text-center text-xs font-bold text-white'>ناموجود</span>
+          )}
+          {off > 0 && !soldOut && (
             <span className='absolute right-2 top-2 rounded-full bg-rose px-2 py-0.5 text-xs font-bold text-white'>
               {new Intl.NumberFormat('fa-IR').format(off)}٪
             </span>
