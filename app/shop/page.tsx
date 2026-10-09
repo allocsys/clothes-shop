@@ -29,7 +29,7 @@ export default async function ShopPage({ searchParams }: Props) {
             <Link
               key={c.slug || 'all'}
               href={c.slug ? '/shop?category=' + c.slug : '/shop'}
-              className={'shrink-0 rounded-full border px-4 py-1.5 text-sm ' + (active ? 'border-brand bg-brand text-white' : 'border-ink/15 bg-white')}
+              className={'shrink-0 rounded-full border px-4 py-1.5 text-sm ' + (active ? 'border-brand bg-brand text-white' : 'border-ink/15 bg-surface')}
             >
               {c.title}
             </Link>
