@@ -5,6 +5,7 @@ import './globals.css';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import MobileTabBar from '@/components/MobileTabBar';
+import { CartProvider } from '@/components/CartProvider';
 import { site } from '@/lib/site';
 
 const body = Vazirmatn({ subsets: ['arabic', 'latin'], display: 'swap', variable: '--font-body' });
@@ -29,10 +30,12 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang='fa' dir='rtl' className={body.variable + ' ' + display.variable}>
       <body className='bg-sand font-sans text-ink antialiased'>
-        <Header />
+        <CartProvider>
+          <Header />
         <main className='mx-auto min-h-[60vh] max-w-7xl px-4 pb-6 md:pb-10'>{children}</main>
         <Footer />
         <MobileTabBar />
+        </CartProvider>
       </body>
     </html>
   );
