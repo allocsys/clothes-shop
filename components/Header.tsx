@@ -42,15 +42,16 @@ export default function Header() {
             <summary aria-label='منو' className='glass-btn grid h-10 w-10 cursor-pointer list-none place-items-center rounded-full [&::-webkit-details-marker]:hidden'>
               <IconMenu />
             </summary>
-            <nav className='glass-panel absolute inset-x-0 top-full max-h-[70vh] overflow-y-auto px-4 py-3'>
-              <ul className='divide-y divide-ink/10'>
+            <nav className='glass-panel absolute inset-x-0 top-full max-h-[75vh] overflow-y-auto px-4 py-4'>
+              <Link href='/shop' className='mb-3 block rounded-full bg-brand py-2.5 text-center text-sm font-bold text-white shadow-lg'>همه محصولات</Link>
+              <ul className='space-y-2.5'>
                 {categories.map((c) => (
-                  <li key={c.slug} className='py-2.5'>
-                    <Link href={'/shop?category=' + c.slug} className='font-medium'>{c.title}</Link>
+                  <li key={c.slug} className='glass-btn !overflow-visible rounded-2xl px-4 py-3'>
+                    <Link href={'/shop?category=' + c.slug} className='block text-base font-bold text-ink'>{c.title}</Link>
                     {c.children && (
-                      <ul className='mt-1 flex flex-wrap gap-3 pr-3 text-sm text-ink/60'>
+                      <ul className='mt-2.5 flex flex-wrap gap-2 text-sm'>
                         {c.children.map((x) => (
-                          <li key={x.slug}><Link href={'/shop?category=' + x.slug}>{x.title}</Link></li>
+                          <li key={x.slug}><Link href={'/shop?category=' + x.slug} className='inline-block rounded-full border border-white/70 bg-white/60 px-3 py-1 text-ink/70 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]'>{x.title}</Link></li>
                         ))}
                       </ul>
                     )}
