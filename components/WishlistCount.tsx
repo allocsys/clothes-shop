@@ -7,7 +7,7 @@ export default function WishlistCount() {
   const { count } = useWishlist();
   if (count === 0) return null;
   return (
-    <span className='absolute -right-0.5 -top-0.5 grid h-4 min-w-4 place-items-center rounded-full bg-rose px-1 text-[10px] text-white'>
+    <span className='absolute -right-1 -top-1 grid h-5 min-w-5 place-items-center rounded-full bg-rose px-1 text-[11px] font-bold leading-none text-white'>
       {new Intl.NumberFormat('fa-IR').format(count)}
     </span>
   );
