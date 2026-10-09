@@ -38,7 +38,7 @@ Legend: `[x]` done, `[ ]` to do, `[?]` needs a decision from the owner first.
 - [x] Wishlist (heart on cards + product page, /wishlist page, header/tab count)
 
 ## Phase 3 — Real data
-- [?] Decide: women's only, or also men's / kids?
+- [x] Decided (2026-10-09): women's clothing only for now; men's/kids can be added later as a new top-level category
 - [ ] Database (Postgres on Railway, or Neon): products, variants, stock, orders
 - [ ] Replace placeholder products in `data/products.ts` with DB queries
 - [ ] Real product photos with `next/image` (upload + storage)
