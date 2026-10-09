@@ -43,11 +43,6 @@ html {
 .cart-pop {
   animation: cart-pop 1.2s ease-out forwards;
 }
-@media (prefers-reduced-motion: reduce) {
-  .cart-pop {
-    animation: none;
-  }
-}
 
 @layer utilities {
   .no-scrollbar {
