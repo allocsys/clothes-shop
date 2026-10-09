@@ -16,8 +16,11 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  colorScheme: 'light',
-  themeColor: '#241a47',
+  colorScheme: 'light dark',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#241a47' },
+    { media: '(prefers-color-scheme: dark)', color: '#0f0b22' },
+  ],
   width: 'device-width',
   initialScale: 1,
 };
@@ -27,7 +30,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html lang='fa' dir='rtl' className={body.variable + ' ' + display.variable}>
       <body className='bg-sand font-sans text-ink antialiased'>
         <Header />
-        <main className='mx-auto min-h-[60vh] max-w-7xl px-4 pb-24 md:pb-10'>{children}</main>
+        <main className='mx-auto min-h-[60vh] max-w-7xl px-4 pb-6 md:pb-10'>{children}</main>
         <Footer />
         <MobileTabBar />
       </body>
