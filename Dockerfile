@@ -22,6 +22,9 @@ CMD ["node", "scripts/migrate.mjs"]
 FROM ${NODE_IMAGE} AS build
 WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1 NEXT_OUTPUT=standalone
+# Set only when photos are served from ArvanCloud / a CDN instead of the server disk (see lib/media.ts)
+ARG NEXT_PUBLIC_MEDIA_BASE_URL=
+ENV NEXT_PUBLIC_MEDIA_BASE_URL=$NEXT_PUBLIC_MEDIA_BASE_URL
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN npm run build
@@ -35,6 +38,9 @@ COPY --from=build --chown=app:app /app/.next/static ./.next/static
 # Migrations and seed, so a platform pre-deploy step can run `node scripts/migrate.mjs` (pg is already in standalone node_modules)
 COPY --from=build --chown=app:app /app/db ./db
 COPY --from=build --chown=app:app /app/scripts ./scripts
+# Product photos live in a volume (see docker-compose.yml) that the app user can write to
+ENV UPLOAD_DIR=/uploads
+RUN mkdir -p /uploads && chown app:app /uploads
 USER app
 EXPOSE 3000
 CMD ["node", "server.js"]
