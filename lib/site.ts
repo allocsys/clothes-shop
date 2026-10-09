@@ -1,6 +1,7 @@
-// Placeholder brand values. Replace with your own shop name, tagline and promo text.
+// Brand values. Edit tagline and promo text as needed.
 export const site = {
-  name: 'فروشگاه من',
+  name: 'ماه‌پری',
+  nameEn: 'MahPari',
   tagline: 'پوشاک زنانه با کیفیت و قیمت مناسب',
   promo: 'ارسال رایگان برای خریدهای بالای ۲ میلیون تومان',
   currency: 'تومان',
