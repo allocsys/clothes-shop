@@ -8,6 +8,7 @@ export type Product = {
   colors: string[];
   description: string;
   images?: string[]; // photo URLs (first one is the main photo)
+  stock?: Record<string, number>; // "size|color" -> pieces left (missing = unlimited), see lib/stock.ts
 };
 
 // Placeholder products. Replace with real data or a database later.
