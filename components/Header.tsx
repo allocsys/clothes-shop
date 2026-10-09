@@ -11,7 +11,7 @@ function SearchBar() {
         name='q'
         type='search'
         placeholder='جستجوی محصول...'
-        className='w-full rounded-full border border-white/70 bg-white/50 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)] backdrop-blur-md py-2.5 pl-4 pr-11 text-sm outline-none focus:border-brand focus:bg-white'
+        className='w-full rounded-full glass-field py-2.5 pl-4 pr-11 text-sm outline-none focus:border-brand'
       />
       <button type='submit' aria-label='جستجو' className='absolute right-3 top-1/2 -translate-y-1/2 text-ink/50'>
         <IconSearch width={20} height={20} />
@@ -51,7 +51,7 @@ export default function Header() {
                     {c.children && (
                       <ul className='mt-2.5 flex flex-wrap gap-2 text-sm'>
                         {c.children.map((x) => (
-                          <li key={x.slug}><Link href={'/shop?category=' + x.slug} className='inline-block rounded-full border border-white/70 bg-white/60 px-3 py-1 text-ink/70 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]'>{x.title}</Link></li>
+                          <li key={x.slug}><Link href={'/shop?category=' + x.slug} className='glass-chip inline-block rounded-full px-3 py-1'>{x.title}</Link></li>
                         ))}
                       </ul>
                     )}
@@ -83,7 +83,7 @@ export default function Header() {
           <Link href='/account' className='glass-btn flex items-center gap-2 rounded-full px-4 py-2 text-sm'><IconUser width={22} height={22} />ورود / ثبت‌نام</Link>
           <CartLink />
         </div>
-        <nav className='hidden border-t border-white/50 md:block'>
+        <nav className='hidden border-t border-ink/10 md:block'>
           <ul className='mx-auto flex max-w-7xl gap-2 px-4 py-2 text-sm'>
             {categories.map((c) => (
               <li key={c.slug}><Link href={'/shop?category=' + c.slug} className='glass-btn inline-block rounded-full px-4 py-1.5 hover:text-brand'>{c.title}</Link></li>
