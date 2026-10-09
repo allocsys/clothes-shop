@@ -48,7 +48,13 @@ Legend: `[x]` done, `[ ]` to do, `[?]` needs a decision from the owner first.
 - [x] Railway: Postgres service added to `diligent-enthusiasm` / production (2026-10-09) and `DATABASE_URL` on `clothes-shop` set to `${{Postgres.DATABASE_URL}}`; it takes effect on the next deploy (this push)
 - [x] Railway: tables and 8 sample products created; site reads them from Postgres (confirmed on phone, 2026-10-10). Pre-deploy command now runs migrate only (`node scripts/migrate.mjs`); `node scripts/setup.mjs` = migrate + seed, run by hand or temporarily on a fresh database
 - [x] Replace placeholder products with DB queries: `lib/products.ts` reads Postgres when `DATABASE_URL` is set, else falls back to `data/products.ts`; home, shop, product page, cart, wishlist, orders API all use it (tested on real Postgres, 2026-10-09)
-- [ ] Real product photos with `next/image` (upload + storage)
+- [ ] Real product photos with `next/image` (upload + storage). Decided 2026-10-10: server disk now, code ready for ArvanCloud:
+  - [x] Photos shown through `next/image` in the product page, cards and cart, drawing as fallback (`components/ProductImage.tsx`, `lib/media.ts`); DB stores keys like `products/abc.jpg`
+  - [x] Storage layer `lib/storage.ts` (disk driver, safe keys) + `/media/<key>` route; tested incl. bad paths and the image optimizer in the standalone build
+  - [x] Docker: `uploads` volume, writable `/uploads`, photo backup in `scripts/backup.sh`, notes in `docs/DEPLOY_VPS.md`
+  - [ ] Upload from the admin panel (comes with Phase 6). Until then: copy files into the uploads folder and put the keys in `products.images`
+  - [ ] Phone check with a real photo; check the Docker image on the VPS (Alpine `sharp`)
+  - [ ] Later, when moving: S3 driver for ArvanCloud in `lib/storage.ts` + `NEXT_PUBLIC_MEDIA_BASE_URL`
 - [x] Stock tracking per size/color: orders check and decrement stock safely; product page greys out sold-out sizes/colors, shows "only N left" (3 or fewer) and a disabled "ناموجود" button; cards show a "ناموجود" strip (confirmed on phone, 2026-10-10)
 
 ## Phase 4 — Orders and payment
