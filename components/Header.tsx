@@ -11,7 +11,7 @@ function SearchBar() {
         name='q'
         type='search'
         placeholder='جستجوی محصول...'
-        className='w-full rounded-full border border-ink/15 bg-sand py-2.5 pl-4 pr-11 text-sm outline-none focus:border-brand focus:bg-white'
+        className='w-full rounded-full border border-white/70 bg-white/50 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)] backdrop-blur-md py-2.5 pl-4 pr-11 text-sm outline-none focus:border-brand focus:bg-white'
       />
       <button type='submit' aria-label='جستجو' className='absolute right-3 top-1/2 -translate-y-1/2 text-ink/50'>
         <IconSearch width={20} height={20} />
@@ -22,7 +22,7 @@ function SearchBar() {
 
 function CartLink() {
   return (
-    <Link href='/cart' aria-label='سبد خرید' className='relative p-2'>
+    <Link href='/cart' aria-label='سبد خرید' className='glass-btn !overflow-visible relative grid h-10 w-10 place-items-center rounded-full'>
       <IconBag />
       <span className='absolute -right-0.5 -top-0.5 grid h-4 min-w-4 place-items-center rounded-full bg-brand px-1 text-[10px] text-white'>۰</span>
     </Link>
@@ -35,14 +35,14 @@ export default function Header() {
       {/* Promo bar scrolls away; only the main header stays pinned */}
       <div className='bg-night px-4 py-1.5 text-center text-xs text-white md:py-2 md:text-sm'>{site.promo}</div>
 
-      <header className='sticky top-0 z-40 bg-white shadow-sm'>
+      <header className='glass-bar sticky top-0 z-40'>
         {/* Mobile: one compact row */}
         <div className='grid grid-cols-[1fr_auto_1fr] items-center px-2 py-1.5 md:hidden'>
           <details className='justify-self-start'>
-            <summary aria-label='منو' className='cursor-pointer list-none p-2 [&::-webkit-details-marker]:hidden'>
+            <summary aria-label='منو' className='glass-btn grid h-10 w-10 cursor-pointer list-none place-items-center rounded-full [&::-webkit-details-marker]:hidden'>
               <IconMenu />
             </summary>
-            <nav className='absolute inset-x-0 top-full max-h-[70vh] overflow-y-auto border-t border-ink/10 bg-white px-4 py-3 shadow-lg'>
+            <nav className='glass-panel absolute inset-x-0 top-full max-h-[70vh] overflow-y-auto px-4 py-3'>
               <ul className='divide-y divide-ink/10'>
                 {categories.map((c) => (
                   <li key={c.slug} className='py-2.5'>
@@ -64,10 +64,10 @@ export default function Header() {
 
           <div className='flex items-center justify-self-end'>
             <details>
-              <summary aria-label='جستجو' className='cursor-pointer list-none p-2 [&::-webkit-details-marker]:hidden'>
+              <summary aria-label='جستجو' className='glass-btn mx-1 grid h-10 w-10 cursor-pointer list-none place-items-center rounded-full [&::-webkit-details-marker]:hidden'>
                 <IconSearch />
               </summary>
-              <div className='absolute inset-x-0 top-full border-t border-ink/10 bg-white p-3 shadow-lg'>
+              <div className='glass-panel absolute inset-x-0 top-full p-3'>
                 <SearchBar />
               </div>
             </details>
@@ -79,13 +79,13 @@ export default function Header() {
         <div className='mx-auto hidden max-w-7xl items-center gap-6 px-4 py-3 md:flex'>
           <Link href='/' aria-label={site.name}><Logo uid='hd' /></Link>
           <div className='flex-1'><SearchBar /></div>
-          <Link href='/account' className='flex items-center gap-2 text-sm'><IconUser width={22} height={22} />ورود / ثبت‌نام</Link>
+          <Link href='/account' className='glass-btn flex items-center gap-2 rounded-full px-4 py-2 text-sm'><IconUser width={22} height={22} />ورود / ثبت‌نام</Link>
           <CartLink />
         </div>
-        <nav className='hidden border-t border-ink/10 md:block'>
-          <ul className='mx-auto flex max-w-7xl gap-7 px-4 py-2.5 text-sm'>
+        <nav className='hidden border-t border-white/50 md:block'>
+          <ul className='mx-auto flex max-w-7xl gap-2 px-4 py-2 text-sm'>
             {categories.map((c) => (
-              <li key={c.slug}><Link href={'/shop?category=' + c.slug} className='hover:text-brand'>{c.title}</Link></li>
+              <li key={c.slug}><Link href={'/shop?category=' + c.slug} className='glass-btn inline-block rounded-full px-4 py-1.5 hover:text-brand'>{c.title}</Link></li>
             ))}
           </ul>
         </nav>
