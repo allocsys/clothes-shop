@@ -32,6 +32,9 @@ ENV NODE_ENV=production NEXT_TELEMETRY_DISABLED=1 PORT=3000 HOSTNAME=0.0.0.0
 RUN addgroup -S app && adduser -S app -G app
 COPY --from=build --chown=app:app /app/.next/standalone ./
 COPY --from=build --chown=app:app /app/.next/static ./.next/static
+# Migrations and seed, so a platform pre-deploy step can run `node scripts/migrate.mjs` (pg is already in standalone node_modules)
+COPY --from=build --chown=app:app /app/db ./db
+COPY --from=build --chown=app:app /app/scripts ./scripts
 USER app
 EXPOSE 3000
 CMD ["node", "server.js"]
