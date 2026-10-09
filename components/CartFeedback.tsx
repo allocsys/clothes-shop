@@ -14,7 +14,7 @@ export default function CartFeedback() {
     const onLanded = () => {
       setPop((n) => n + 1);
       const icon = ref.current?.parentElement;
-      if (icon && typeof icon.animate === 'function' && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      if (icon && typeof icon.animate === 'function') {
         icon.animate(
           [
             { transform: 'scale(1) rotate(0deg)' },
