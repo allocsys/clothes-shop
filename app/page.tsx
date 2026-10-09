@@ -3,18 +3,9 @@ import Hero from '@/components/Hero';
 import GarmentArt from '@/components/GarmentArt';
 import ProductCard from '@/components/ProductCard';
 import SectionHeading from '@/components/SectionHeading';
-import { IconChat, IconReturn, IconShield, IconTruck } from '@/components/Icons';
 import { categories } from '@/data/categories';
 import { products } from '@/data/products';
 import { site } from '@/lib/site';
-
-// TODO: edit these to match your real policies
-const trust = [
-  { Icon: IconTruck, title: 'ارسال سریع', text: 'به همه شهرها' },
-  { Icon: IconShield, title: 'پرداخت امن', text: 'درگاه معتبر بانکی' },
-  { Icon: IconChat, title: 'پشتیبانی', text: 'پاسخ در همان روز' },
-  { Icon: IconReturn, title: 'بازگشت کالا', text: 'طبق قوانین فروشگاه' },
-];
 
 export default function HomePage() {
   const discounted = products.filter((p) => p.oldPrice);
@@ -34,20 +25,6 @@ export default function HomePage() {
             </Link>
           ))}
         </div>
-      </section>
-
-      <section className='mt-8 grid grid-cols-2 gap-3 md:grid-cols-4'>
-        {trust.map(({ Icon, title, text }) => (
-          <div key={title} className='flex items-center gap-3 rounded-2xl bg-surface p-3'>
-            <span className='grid h-10 w-10 shrink-0 place-items-center rounded-full bg-brand/10 text-brand'>
-              <Icon width={22} height={22} />
-            </span>
-            <div>
-              <p className='text-sm font-bold'>{title}</p>
-              <p className='text-xs text-ink/60'>{text}</p>
-            </div>
-          </div>
-        ))}
       </section>
 
       <section className='mt-10'>
