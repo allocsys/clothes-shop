@@ -15,7 +15,7 @@ export default function ProductCard({ product }: { product: Product }) {
             {new Intl.NumberFormat('fa-IR').format(off)}٪
           </span>
         )}
-        <span className='absolute left-2 top-2 grid h-8 w-8 place-items-center rounded-full bg-white/90 text-ink/60'>
+        <span className='absolute left-2 top-2 grid h-8 w-8 place-items-center rounded-full bg-surface/90 text-ink/60'>
           <IconHeart width={18} height={18} />
         </span>
       </div>
