@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import type { Product } from '@/data/products';
-import GarmentArt from '@/components/GarmentArt';
+import ProductImage from '@/components/ProductImage';
 import WishlistButton from '@/components/WishlistButton';
 import { formatPrice } from '@/lib/format';
 import { isSoldOut } from '@/lib/stock';
@@ -12,7 +12,13 @@ export default function ProductCard({ product }: { product: Product }) {
     <div className='group relative'>
       <Link href={'/product/' + product.slug} className='block'>
         <div className='relative aspect-[3/4] overflow-hidden rounded-2xl'>
-          <GarmentArt category={product.category} seed={product.slug} />
+          <ProductImage
+            image={product.images?.[0]}
+            category={product.category}
+            seed={product.slug}
+            alt={product.title}
+            sizes='(min-width: 768px) 25vw, 50vw'
+          />
           {soldOut && (
             <span className='absolute inset-x-0 bottom-0 bg-ink/70 py-1.5 text-center text-xs font-bold text-white'>ناموجود</span>
           )}
