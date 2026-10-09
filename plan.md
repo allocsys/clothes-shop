@@ -35,7 +35,7 @@ Legend: `[x]` done, `[ ]` to do, `[?]` needs a decision from the owner first.
 - [x] Search results page that actually uses `?q=` (title match, removable pill)
 - [x] Product page: image gallery (swipe on mobile, arrows + thumbnails on desktop; shows placeholder art until real photos exist via `images` in product data)
 - [x] Product page: related products
-- [ ] Wishlist (heart button currently does nothing)
+- [x] Wishlist (heart on cards + product page, /wishlist page, header/tab count)
 
 ## Phase 3 — Real data
 - [?] Decide: women's only, or also men's / kids?
@@ -99,4 +99,4 @@ Legend: `[x]` done, `[ ]` to do, `[?]` needs a decision from the owner first.
 - Fixed drawers must be portaled to `document.body` (the header's backdrop blur traps fixed children).
 
 ## Next step
-Phase 1 phone checks (still waiting on screenshots), then the last Phase 2 item: wishlist.
+Phase 1 phone checks (still waiting on screenshots), then Phase 3 (database, real photos).
