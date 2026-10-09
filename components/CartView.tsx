@@ -2,7 +2,7 @@
 
 import { useState, type FormEvent } from 'react';
 import Link from 'next/link';
-import GarmentArt from '@/components/GarmentArt';
+import ProductImage from '@/components/ProductImage';
 import { MAX_QTY, useCart } from '@/components/CartProvider';
 import { useProducts } from '@/components/useProducts';
 import { FREE_SHIPPING_FROM, isValidIranMobile, priceOrder } from '@/lib/checkout';
@@ -100,8 +100,8 @@ export default function CartView() {
         <ul className='space-y-3'>
           {detailed.map(({ line, product }) => (
             <li key={line.slug + line.size + line.color} className='flex gap-3 rounded-2xl bg-surface p-3'>
-              <Link href={'/product/' + product.slug} className='h-28 w-24 shrink-0 overflow-hidden rounded-xl'>
-                <GarmentArt category={product.category} seed={product.slug} />
+              <Link href={'/product/' + product.slug} className='relative h-28 w-24 shrink-0 overflow-hidden rounded-xl'>
+                <ProductImage image={product.images?.[0]} category={product.category} seed={product.slug} alt={product.title} sizes='96px' />
               </Link>
               <div className='flex min-w-0 flex-1 flex-col'>
                 <Link href={'/product/' + product.slug} className='font-bold'>{product.title}</Link>
