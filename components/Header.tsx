@@ -2,7 +2,8 @@ import Link from 'next/link';
 import { categories } from '@/data/categories';
 import { site } from '@/lib/site';
 import Logo from '@/components/Logo';
-import { IconBag, IconMenu, IconSearch, IconUser } from '@/components/Icons';
+import MobileMenu from '@/components/MobileMenu';
+import { IconBag, IconSearch, IconUser } from '@/components/Icons';
 
 function SearchBar() {
   return (
@@ -36,30 +37,11 @@ export default function Header() {
       <div className='bg-night px-4 py-1.5 text-center text-xs text-white md:py-2 md:text-sm'>{site.promo}</div>
 
       <header className='glass-bar sticky top-0 z-40'>
-        {/* Mobile: one compact row */}
+        {/* Mobile: one compact row. The menu is a slide-in drawer (see MobileMenu) */}
         <div className='grid grid-cols-[1fr_auto_1fr] items-center px-2 py-1.5 md:hidden'>
-          <details className='justify-self-start'>
-            <summary aria-label='منو' className='glass-btn grid h-10 w-10 cursor-pointer list-none place-items-center rounded-full [&::-webkit-details-marker]:hidden'>
-              <IconMenu />
-            </summary>
-            <nav className='absolute inset-x-0 top-full max-h-[75vh] overflow-y-auto border-t border-ink/10 bg-sand px-4 py-4 shadow-2xl'>
-              <Link href='/shop' className='mb-3 block rounded-full bg-brand py-2.5 text-center text-sm font-bold text-white shadow-lg'>همه محصولات</Link>
-              <ul className='space-y-2'>
-                {categories.map((c) => (
-                  <li key={c.slug} className='rounded-2xl border border-ink/10 bg-surface px-4 py-3'>
-                    <Link href={'/shop?category=' + c.slug} className='block text-base font-bold text-ink'>{c.title}</Link>
-                    {c.children && (
-                      <ul className='mt-2.5 flex flex-wrap gap-2 text-sm'>
-                        {c.children.map((x) => (
-                          <li key={x.slug}><Link href={'/shop?category=' + x.slug} className='inline-block rounded-full border border-ink/15 bg-sand px-3 py-1 text-ink/70'>{x.title}</Link></li>
-                        ))}
-                      </ul>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            </nav>
-          </details>
+          <div className='justify-self-start'>
+            <MobileMenu categories={categories} name={site.name} />
+          </div>
 
           <Link href='/' aria-label={site.name}><Logo uid='hm' /></Link>
 
