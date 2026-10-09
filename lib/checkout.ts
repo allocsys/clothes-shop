@@ -1,4 +1,4 @@
-import { products } from '@/data/products';
+import { products as staticProducts } from '@/data/products';
 
 // TODO: set your real shipping rules. Promo bar says free shipping above 2,000,000 Toman.
 export const FREE_SHIPPING_FROM = 2_000_000;
@@ -22,7 +22,7 @@ export function isValidIranMobile(input: string): boolean {
 export type OrderItem = { slug: string; size: string; color: string; qty: number };
 
 // Totals are always computed from our own product data, never from client-sent prices
-export function priceOrder(items: OrderItem[]) {
+export function priceOrder(items: OrderItem[], products: { slug: string; price: number }[] = staticProducts) {
   let subtotal = 0;
   for (const it of items) {
     const p = products.find((x) => x.slug === it.slug);
