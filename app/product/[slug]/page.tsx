@@ -1,7 +1,9 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import AddToCart from '@/components/AddToCart';
-import GarmentArt from '@/components/GarmentArt';
+import ProductCard from '@/components/ProductCard';
+import ProductGallery from '@/components/ProductGallery';
+import SectionHeading from '@/components/SectionHeading';
 import { products } from '@/data/products';
 import { formatPrice } from '@/lib/format';
 
@@ -16,15 +18,17 @@ export default async function ProductPage({ params }: Props) {
   const product = products.find((p) => p.slug === slug);
   if (!product) notFound();
 
+  // Related: same category first, then fill up with other products
+  const others = products.filter((p) => p.slug !== product.slug);
+  const related = [...others.filter((p) => p.category === product.category), ...others.filter((p) => p.category !== product.category)].slice(0, 4);
+
   return (
     <article className='mt-6'>
       <nav className='mb-4 text-xs text-ink/50'>
         <Link href='/'>خانه</Link> / <Link href='/shop'>فروشگاه</Link> / {product.title}
       </nav>
       <div className='grid gap-8 md:grid-cols-2'>
-        <div className='aspect-[3/4] overflow-hidden rounded-3xl'>
-          <GarmentArt category={product.category} seed={product.slug} />
-        </div>
+        <ProductGallery title={product.title} category={product.category} slug={product.slug} images={product.images} />
         <div>
           <h1 className='text-2xl font-bold'>{product.title}</h1>
           <p className='mt-3 text-xl font-bold text-brand'>
@@ -36,6 +40,17 @@ export default async function ProductPage({ params }: Props) {
           <AddToCart slug={product.slug} sizes={product.sizes} colors={product.colors} />
         </div>
       </div>
+
+      {related.length > 0 && (
+        <section className='mt-14'>
+          <SectionHeading title='محصولات مشابه' href={'/shop?category=' + product.category} />
+          <div className='grid grid-cols-2 gap-4 md:grid-cols-4'>
+            {related.map((p) => (
+              <ProductCard key={p.slug} product={p} />
+            ))}
+          </div>
+        </section>
+      )}
     </article>
   );
 }
