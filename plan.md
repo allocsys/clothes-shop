@@ -33,7 +33,8 @@ Legend: `[x]` done, `[ ]` to do, `[?]` needs a decision from the owner first.
 - [x] Filters on `/shop`: size, color, price range
 - [x] Sorting: newest, cheapest, most expensive, biggest discount
 - [x] Search results page that actually uses `?q=` (title match, removable pill)
-- [ ] Product page: image gallery, "related products"
+- [x] Product page: image gallery (swipe on mobile, arrows + thumbnails on desktop; shows placeholder art until real photos exist via `images` in product data)
+- [x] Product page: related products
 - [ ] Wishlist (heart button currently does nothing)
 
 ## Phase 3 — Real data
@@ -98,4 +99,4 @@ Legend: `[x]` done, `[ ]` to do, `[?]` needs a decision from the owner first.
 - Fixed drawers must be portaled to `document.body` (the header's backdrop blur traps fixed children).
 
 ## Next step
-Phase 1 (waiting on phone screenshots), then finish Phase 2 (gallery, related products, wishlist), then Phase 3 (database).
+Phase 1 phone checks (still waiting on screenshots), then the last Phase 2 item: wishlist.
