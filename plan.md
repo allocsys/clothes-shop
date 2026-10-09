@@ -24,8 +24,8 @@ Legend: `[x]` done, `[ ]` to do, `[?]` needs a decision from the owner first.
 - [x] Confirm the Railway build is green after the cart commits (live site serves cart, product and filter pages, 2026-10-09)
 - [ ] Phone check 1: drawer menu (opens from right, tabs, accordion, login button, closes on X / outside tap)
 - [ ] Phone check 2: dark mode (header, cards, chips, footer readable)
-- [ ] Phone check 3: product page, pick size + color, add to cart, header badge updates
-- [ ] Phone check 4: cart page and checkout form, place a test order, see confirmation
+- [x] Phone check 3: product page, pick size + color, add to cart, header badge updates (confirmed 2026-10-10)
+- [x] Phone check 4: cart page and checkout form, place a test order, see confirmation (confirmed 2026-10-10)
 - [ ] Phone check 5: shop filter panel (size, color, price, sort, remove pills)
 - [ ] Fix anything that looks wrong (send screenshots)
 
@@ -47,10 +47,10 @@ Legend: `[x]` done, `[ ]` to do, `[?]` needs a decision from the owner first.
 - [x] Railway: tables and 8 sample products created; site reads them from Postgres (confirmed on phone, 2026-10-10). Pre-deploy command now runs migrate only (`node scripts/migrate.mjs`); `node scripts/setup.mjs` = migrate + seed, run by hand or temporarily on a fresh database
 - [x] Replace placeholder products with DB queries: `lib/products.ts` reads Postgres when `DATABASE_URL` is set, else falls back to `data/products.ts`; home, shop, product page, cart, wishlist, orders API all use it (tested on real Postgres, 2026-10-09)
 - [ ] Real product photos with `next/image` (upload + storage)
-- [ ] Stock tracking per size/color; "out of stock" state
+- [ ] Stock tracking per size/color: orders check and decrement stock safely (done and confirmed on phone, 2026-10-10); still to do: show stock / "out of stock" state on product page and cards
 
 ## Phase 4 — Orders and payment
-- [ ] Save orders in the database (replace the `NEW_ORDER` log line)
+- [x] Save orders in the database: `lib/orders.ts` writes orders + order_items and decrements stock in one transaction; out-of-stock returns a clear message (tested on Postgres 16 incl. parallel orders for the last piece; confirmed on phone, 2026-10-10). Without `DATABASE_URL` it still logs `NEW_ORDER`
 - [?] Decide: payment provider (Zarinpal or other)
 - [ ] Payment gateway: start payment, callback, verify, mark order paid
 - [?] Decide: shipping model (flat fee, by city, free above X). Currently placeholder in `lib/checkout.ts`
