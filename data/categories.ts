@@ -21,3 +21,14 @@ export const categories: Category[] = [
   { slug: 'set', title: 'ست' },
   { slug: 'accessories', title: 'اکسسوری' },
 ];
+
+// A category plus all of its sub-categories (used for filtering products).
+export function categorySlugs(slug: string): string[] {
+  const walk = (list: Category[]): string[] =>
+    list.flatMap((c) => {
+      if (c.slug === slug) return [c.slug, ...(c.children ?? []).flatMap((x) => [x.slug])];
+      return walk(c.children ?? []);
+    });
+  const found = walk(categories);
+  return found.length ? found : [slug];
+}

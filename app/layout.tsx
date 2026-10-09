@@ -1,23 +1,31 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import type { ReactNode } from 'react';
-import { Vazirmatn } from 'next/font/google';
+import { Vazirmatn, Aref_Ruqaa } from 'next/font/google';
 import './globals.css';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import MobileTabBar from '@/components/MobileTabBar';
 import { site } from '@/lib/site';
 
-const font = Vazirmatn({ subsets: ['arabic', 'latin'], display: 'swap' });
+const body = Vazirmatn({ subsets: ['arabic', 'latin'], display: 'swap', variable: '--font-body' });
+const display = Aref_Ruqaa({ subsets: ['arabic', 'latin'], weight: ['400', '700'], display: 'swap', variable: '--font-display' });
 
 export const metadata: Metadata = {
-  title: { default: site.name, template: '%s | ' + site.name },
+  title: { default: site.name + ' | ' + site.tagline, template: '%s | ' + site.name },
   description: site.tagline,
+};
+
+export const viewport: Viewport = {
+  colorScheme: 'light',
+  themeColor: '#241a47',
+  width: 'device-width',
+  initialScale: 1,
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang='fa' dir='rtl'>
-      <body className={font.className + ' bg-sand text-ink antialiased'}>
+    <html lang='fa' dir='rtl' className={body.variable + ' ' + display.variable}>
+      <body className='bg-sand font-sans text-ink antialiased'>
         <Header />
         <main className='mx-auto min-h-[60vh] max-w-7xl px-4 pb-24 md:pb-10'>{children}</main>
         <Footer />

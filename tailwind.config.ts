@@ -1,7 +1,6 @@
 import type { Config } from 'tailwindcss';
 
 // MahPari moonlit palette
-// brand: soft violet, ink: midnight, sand: moon mist, gold: accent for highlights
 const config: Config = {
   content: ['./app/**/*.{ts,tsx}', './components/**/*.{ts,tsx}'],
   theme: {
@@ -11,6 +10,12 @@ const config: Config = {
         ink: '#1c1b2e',
         sand: '#f6f3fb',
         gold: '#d9b36c',
+        night: '#241a47',
+        rose: '#b4566e',
+      },
+      fontFamily: {
+        sans: ['var(--font-body)', 'system-ui', 'sans-serif'],
+        display: ['var(--font-display)', 'serif'],
       },
     },
   },
