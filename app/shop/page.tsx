@@ -1,11 +1,12 @@
 import Link from 'next/link';
 import ProductCard from '@/components/ProductCard';
 import { categories, categorySlugs } from '@/data/categories';
-import { products } from '@/data/products';
 import { toEnglishDigits } from '@/lib/checkout';
 import { formatPrice } from '@/lib/format';
+import { getProducts } from '@/lib/products';
 
 export const metadata = { title: 'فروشگاه' };
+export const dynamic = 'force-dynamic';
 
 type Raw = string | string[] | undefined;
 type Props = {
@@ -22,12 +23,14 @@ const num = (v: Raw) => {
 };
 
 const SIZE_ORDER = ['Free', 'XS', 'S', 'M', 'L', 'XL', 'XXL'];
-const allSizes = Array.from(new Set(products.flatMap((p) => p.sizes))).sort((a, b) => {
-  const ia = SIZE_ORDER.indexOf(a);
-  const ib = SIZE_ORDER.indexOf(b);
-  return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
-});
-const allColors = Array.from(new Set(products.flatMap((p) => p.colors))).sort((a, b) => a.localeCompare(b, 'fa'));
+const sizesOf = (products: { sizes: string[] }[]) =>
+  Array.from(new Set(products.flatMap((p) => p.sizes))).sort((a, b) => {
+    const ia = SIZE_ORDER.indexOf(a);
+    const ib = SIZE_ORDER.indexOf(b);
+    return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
+  });
+const colorsOf = (products: { colors: string[] }[]) =>
+  Array.from(new Set(products.flatMap((p) => p.colors))).sort((a, b) => a.localeCompare(b, 'fa'));
 
 const SORTS: [string, string][] = [
   ['', 'جدیدترین'],
@@ -59,6 +62,9 @@ const discountOf = (p: { price: number; oldPrice?: number }) => (p.oldPrice ? (p
 
 export default async function ShopPage({ searchParams }: Props) {
   const sp = await searchParams;
+  const products = await getProducts();
+  const allSizes = sizesOf(products);
+  const allColors = colorsOf(products);
   const s: State = {
     category: one(sp.category),
     q: one(sp.q),
