@@ -1,7 +1,41 @@
-# MahPari shop on a single VPS: the app plus Caddy (automatic HTTPS).
-# Usage: cp .env.example .env  ->  edit DOMAIN  ->  docker compose up -d --build
+# MahPari shop on a single VPS: app + Postgres + Caddy (automatic HTTPS).
+# Usage: cp .env.example .env  ->  edit DOMAIN and POSTGRES_PASSWORD  ->  docker compose up -d --build
 # Full guide: docs/DEPLOY_VPS.md
+
+x-database-url: &database_url postgres://${POSTGRES_USER:-shop}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-shop}
+
 services:
+  db:
+    image: ${POSTGRES_IMAGE:-postgres:16-alpine}
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-shop}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: ${POSTGRES_DB:-shop}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}']
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  # One-shot job: creates/updates the tables on every deploy, then exits.
+  # Sample products (optional, first time only):  docker compose run --rm migrate node scripts/seed.mjs
+  migrate:
+    build:
+      context: .
+      target: tools
+      args:
+        NODE_IMAGE: ${NODE_IMAGE:-node:22-alpine}
+        NPM_REGISTRY: ${NPM_REGISTRY:-https://registry.npmjs.org/}
+    restart: 'no'
+    environment:
+      DATABASE_URL: *database_url
+    depends_on:
+      db:
+        condition: service_healthy
+
   web:
     build:
       context: .
@@ -10,8 +44,13 @@ services:
         NPM_REGISTRY: ${NPM_REGISTRY:-https://registry.npmjs.org/}
     restart: unless-stopped
     env_file: .env
+    environment:
+      DATABASE_URL: *database_url
     expose:
       - '3000'
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
 
   caddy:
     image: ${CADDY_IMAGE:-caddy:2-alpine}
@@ -28,9 +67,7 @@ services:
       - caddy_data:/data
       - caddy_config:/config
 
-  # Phase 3 (database) will add a Postgres service here, with a named volume
-  # so the data survives rebuilds.
-
 volumes:
+  pgdata:
   caddy_data:
   caddy_config:

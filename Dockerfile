@@ -10,6 +10,15 @@ ARG NPM_REGISTRY=https://registry.npmjs.org/
 COPY package.json ./
 RUN npm install --no-audit --no-fund --registry=${NPM_REGISTRY}
 
+# Database tools: migrations and seed (used by the `migrate` service in docker-compose.yml)
+FROM ${NODE_IMAGE} AS tools
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY package.json ./
+COPY db ./db
+COPY scripts ./scripts
+CMD ["node", "scripts/migrate.mjs"]
+
 FROM ${NODE_IMAGE} AS build
 WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1 NEXT_OUTPUT=standalone

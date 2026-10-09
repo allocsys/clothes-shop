@@ -4,6 +4,8 @@ out
 .git
 .env
 .env.*
+!.env.example
 *.tsbuildinfo
 npm-debug.log*
 docs
+backups
