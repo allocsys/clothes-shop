@@ -42,16 +42,16 @@ export default function Header() {
             <summary aria-label='منو' className='glass-btn grid h-10 w-10 cursor-pointer list-none place-items-center rounded-full [&::-webkit-details-marker]:hidden'>
               <IconMenu />
             </summary>
-            <nav className='glass-panel absolute inset-x-0 top-full max-h-[75vh] overflow-y-auto px-4 py-4'>
+            <nav className='absolute inset-x-0 top-full max-h-[75vh] overflow-y-auto border-t border-ink/10 bg-sand px-4 py-4 shadow-2xl'>
               <Link href='/shop' className='mb-3 block rounded-full bg-brand py-2.5 text-center text-sm font-bold text-white shadow-lg'>همه محصولات</Link>
-              <ul className='space-y-2.5'>
+              <ul className='space-y-2'>
                 {categories.map((c) => (
-                  <li key={c.slug} className='glass-btn !overflow-visible rounded-2xl px-4 py-3'>
+                  <li key={c.slug} className='rounded-2xl border border-ink/10 bg-surface px-4 py-3'>
                     <Link href={'/shop?category=' + c.slug} className='block text-base font-bold text-ink'>{c.title}</Link>
                     {c.children && (
                       <ul className='mt-2.5 flex flex-wrap gap-2 text-sm'>
                         {c.children.map((x) => (
-                          <li key={x.slug}><Link href={'/shop?category=' + x.slug} className='glass-chip inline-block rounded-full px-3 py-1'>{x.title}</Link></li>
+                          <li key={x.slug}><Link href={'/shop?category=' + x.slug} className='inline-block rounded-full border border-ink/15 bg-sand px-3 py-1 text-ink/70'>{x.title}</Link></li>
                         ))}
                       </ul>
                     )}
@@ -68,7 +68,7 @@ export default function Header() {
               <summary aria-label='جستجو' className='glass-btn mx-1 grid h-10 w-10 cursor-pointer list-none place-items-center rounded-full [&::-webkit-details-marker]:hidden'>
                 <IconSearch />
               </summary>
-              <div className='glass-panel absolute inset-x-0 top-full p-3'>
+              <div className='absolute inset-x-0 top-full border-t border-ink/10 bg-sand p-3 shadow-2xl'>
                 <SearchBar />
               </div>
             </details>
