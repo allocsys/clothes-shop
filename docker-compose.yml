@@ -1,0 +1,36 @@
+# MahPari shop on a single VPS: the app plus Caddy (automatic HTTPS).
+# Usage: cp .env.example .env  ->  edit DOMAIN  ->  docker compose up -d --build
+# Full guide: docs/DEPLOY_VPS.md
+services:
+  web:
+    build:
+      context: .
+      args:
+        NODE_IMAGE: ${NODE_IMAGE:-node:22-alpine}
+        NPM_REGISTRY: ${NPM_REGISTRY:-https://registry.npmjs.org/}
+    restart: unless-stopped
+    env_file: .env
+    expose:
+      - '3000'
+
+  caddy:
+    image: ${CADDY_IMAGE:-caddy:2-alpine}
+    restart: unless-stopped
+    depends_on:
+      - web
+    ports:
+      - '80:80'
+      - '443:443'
+    environment:
+      DOMAIN: ${DOMAIN}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+  # Phase 3 (database) will add a Postgres service here, with a named volume
+  # so the data survives rebuilds.
+
+volumes:
+  caddy_data:
+  caddy_config:

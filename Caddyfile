@@ -1,0 +1,9 @@
+# {$DOMAIN} comes from .env (for example mahpari.ir). Caddy gets and renews the HTTPS certificate by itself.
+{$DOMAIN} {
+	encode gzip zstd
+	reverse_proxy web:3000
+}
+
+www.{$DOMAIN} {
+	redir https://{$DOMAIN}{uri} permanent
+}
