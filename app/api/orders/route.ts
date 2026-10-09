@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import { products } from '@/data/products';
 import { isValidIranMobile, normalizePhone, priceOrder, type OrderItem } from '@/lib/checkout';
+import { getProductsBySlugs } from '@/lib/products';
 
 export const dynamic = 'force-dynamic';
 
@@ -31,6 +31,8 @@ export async function POST(req: Request) {
   }
 
   const rawItems: unknown[] = Array.isArray(body?.items) ? body.items.slice(0, 50) : [];
+  const wanted = (rawItems as any[]).map((it) => (typeof it?.slug === 'string' ? it.slug : '')).filter(Boolean);
+  const products = await getProductsBySlugs(Array.from(new Set(wanted)));
   const items: OrderItem[] = [];
   for (const it of rawItems as any[]) {
     const p = products.find((x) => x.slug === it?.slug);
@@ -43,7 +45,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, error: 'سبد خرید خالی یا نامعتبر است.' }, { status: 400 });
   }
 
-  const totals = priceOrder(items);
+  const totals = priceOrder(items, products);
   const code = 'MP-' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).slice(2, 5).toUpperCase();
 
   // TODO: persist to a database and redirect to a payment gateway (e.g. Zarinpal).
