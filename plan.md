@@ -79,7 +79,7 @@ Last updated: 2026-10-10 (night). Right now: Phase 4: mock payment phone-checked
   - [x] Phone check (confirmed 2026-10-10): place a test order, open `/track` from the footer, enter its code + mobile, change its status in `/admin/orders` and see the steps change
 - [ ] Confirmation SMS (provider-agnostic, same shape as payments; owner has not picked an SMS provider yet)
   - [x] SMS layer (2026-10-10): `lib/sms/` (interface, registry by `SMS_PROVIDER`, fake `mock` provider, `sendSms` that never throws, 8 s timeout, one message of a kind per order), table `sms_log` (migration 005). Mock is refused in production unless `ALLOW_MOCK_SMS=1`. 12 checks passed on real Postgres
-  - [ ] Send the order confirmation text when an order is placed (Persian text, order code + total + tracking link)
+  - [x] Order confirmation text sent when an order is placed (2026-10-10): `lib/sms/templates.ts` (Persian: shop name, order code, total, tracking link with the code only), hooked into `POST /api/orders` fire-and-forget; rejected orders send nothing; works with online payment on and with SMS off. Checked on real Postgres: sms_log row, server log line, 1 message per order
   - [ ] Phone check on Railway with `SMS_PROVIDER=mock` and `ALLOW_MOCK_SMS=1` (message shows in the Railway logs and in `sms_log`)
   - [ ] Real provider file (e.g. Kavenegar) once the owner picks one
 
