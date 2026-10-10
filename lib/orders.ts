@@ -1,6 +1,7 @@
 import { randomInt } from 'node:crypto';
 import { db } from './db';
 import type { OrderItem } from './checkout';
+import { releaseExpiredOrdersSoon } from './orderExpiry';
 
 // Saves an order and takes its items out of stock in ONE transaction:
 // either everything is saved and stock is reduced, or nothing changes.
@@ -49,7 +50,10 @@ export async function createOrder(
   rawItems: OrderItem[],
   products: { slug: string; title: string; price: number }[],
   totals: OrderTotals,
+  opts: { payOnline?: boolean } = {},
 ): Promise<CreateOrderResult> {
+  // Free the stock of unpaid online orders that ran out of time, so the last piece can be bought now.
+  await releaseExpiredOrdersSoon();
   const items = mergeLines(rawItems);
   const client = await db().connect();
   try {
@@ -90,8 +94,8 @@ export async function createOrder(
     for (let attempt = 0; attempt < 5 && !orderId; attempt++) {
       code = makeCode();
       const res = await client.query(
-        `INSERT INTO orders (code, customer_name, mobile, city, postal_code, address, note, subtotal, shipping, total)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+        `INSERT INTO orders (code, customer_name, mobile, city, postal_code, address, note, subtotal, shipping, total, pay_online)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
          ON CONFLICT (code) DO NOTHING
          RETURNING id`,
         [
@@ -105,6 +109,7 @@ export async function createOrder(
           totals.subtotal,
           totals.shipping,
           totals.total,
+          Boolean(opts.payOnline),
         ],
       );
       if (res.rowCount) orderId = res.rows[0].id;

@@ -55,7 +55,7 @@ export async function POST(req: Request) {
   if (hasDb()) {
     let result;
     try {
-      result = await createOrder(customer, items, products, totals);
+      result = await createOrder(customer, items, products, totals, { payOnline: getActiveProvider() !== null });
     } catch (e) {
       console.error('ORDER_FAILED', e);
       return NextResponse.json({ ok: false, error: 'ثبت سفارش انجام نشد. لطفاً دوباره تلاش کنید.' }, { status: 500 });
