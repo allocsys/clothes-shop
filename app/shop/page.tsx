@@ -104,7 +104,7 @@ export default async function ShopPage({ searchParams }: Props) {
 
   const input = 'w-full rounded-xl border border-ink/15 bg-surface px-3 py-2.5 text-sm text-ink outline-none focus:border-brand';
   const chipBox =
-    'block cursor-pointer rounded-full border border-ink/20 bg-surface px-4 py-1.5 text-center text-sm text-ink transition-colors peer-checked:border-brand peer-checked:bg-brand peer-checked:text-white peer-focus-visible:ring-2 peer-focus-visible:ring-brand/50';
+    'block cursor-pointer rounded-full border border-ink/20 bg-surface px-4 py-2.5 text-center text-sm text-ink transition-colors peer-checked:border-brand peer-checked:bg-brand peer-checked:text-white peer-focus-visible:ring-2 peer-focus-visible:ring-brand/50';
 
   return (
     <section className='mt-6'>
@@ -115,7 +115,7 @@ export default async function ShopPage({ searchParams }: Props) {
             <Link
               key={c.slug || 'all'}
               href={c.slug ? '/shop?category=' + c.slug : '/shop'}
-              className={'shrink-0 rounded-full border px-4 py-1.5 text-sm ' + (active ? 'border-brand bg-brand text-white' : 'border-ink/15 bg-surface')}
+              className={'shrink-0 rounded-full border px-4 py-2.5 text-sm ' + (active ? 'border-brand bg-brand text-white' : 'border-ink/15 bg-surface')}
             >
               {c.title}
             </Link>
@@ -124,7 +124,7 @@ export default async function ShopPage({ searchParams }: Props) {
       </div>
 
       <h1 className='mb-3 text-xl font-bold'>
-        محصولات <span className='text-sm font-normal text-ink/50'>({fa(list.length)} کالا)</span>
+        محصولات <span className='text-sm font-normal text-ink/70'>({fa(list.length)} کالا)</span>
       </h1>
 
       <form action='/shop' className='mb-4'>
@@ -200,7 +200,7 @@ export default async function ShopPage({ searchParams }: Props) {
       {pills.length > 0 && (
         <div className='mb-4 flex flex-wrap gap-2'>
           {pills.map((p) => (
-            <Link key={p.label} href={p.to} className='inline-flex items-center gap-1.5 rounded-full bg-brand/15 px-3 py-1 text-xs text-brand'>
+            <Link key={p.label} href={p.to} className='inline-flex min-h-10 items-center gap-1.5 rounded-full bg-brand/15 px-3 py-1 text-xs text-brand'>
               {p.label}
               <span aria-hidden='true'>×</span>
               <span className='sr-only'>حذف</span>
@@ -211,7 +211,7 @@ export default async function ShopPage({ searchParams }: Props) {
 
       {list.length === 0 ? (
         <div className='py-20 text-center'>
-          <p className='text-ink/60'>محصولی پیدا نشد. فیلتر یا عبارت جستجو را تغییر دهید.</p>
+          <p className='text-ink/70'>محصولی پیدا نشد. فیلتر یا عبارت جستجو را تغییر دهید.</p>
           <Link href={s.category ? '/shop?category=' + s.category : '/shop'} className='mt-4 inline-block rounded-full bg-brand px-6 py-2.5 text-sm font-bold text-white'>
             حذف همه فیلترها
           </Link>
