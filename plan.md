@@ -5,7 +5,7 @@ Live: https://clothes-shop-production-d9d8.up.railway.app
 
 How we work: one step at a time. Finish a step, check it on the live site, tick the box, then start the next one.
 Legend: `[x]` done, `[ ]` to do, `[?]` needs a decision from the owner first.
-Last updated: 2026-10-10 (night). Right now: Phase 4: mock payment phone-checked, order tracking page `/track` built (phone check pending); next = the real gateway after the provider decision, then confirmation SMS.
+Last updated: 2026-10-10 (night). Right now: Phase 4: mock payment phone-checked, order tracking page `/track` built (phone check pending); next = the real gateway after the provider decision, then confirmation SMS. The mock gateway stays ON in Railway staging by the owner's choice.
 
 ---
 
@@ -45,6 +45,7 @@ Last updated: 2026-10-10 (night). Right now: Phase 4: mock payment phone-checked
 - [x] Hosting decision (2026-10-09): Iranian VPS + Docker as the main target (Railway stays as test/staging)
 - [x] Self-hosted fonts (no Google Fonts at build), Dockerfile, docker-compose + Caddy HTTPS, docs/DEPLOY_VPS.md
 - [ ] Off-server database backups: the Railway Postgres volume is only 500 MB and has no backup set up (on the VPS `scripts/backup.sh` covers the database and photos; copy the files off the server too)
+- [x] Git note (2026-10-10): in the chat sessions the normal `git push` is refused, so commits reach GitHub through the Madmcp tool and GitHub shows them as "Unverified" (owner chose to leave it; linking GitHub to Claude restores the normal push)
 - [ ] Buy domain (.ir) + Iranian VPS (Ubuntu, 2 vCPU / 2-4 GB, Iran DC) and do first deploy using docs/DEPLOY_VPS.md
 - [x] Database foundation: Postgres schema (products, variants with stock, orders, order_items), `lib/db.ts`, migrate + seed scripts, compose db service, backup script (tested on Postgres 16)
 - [x] Railway: Postgres service added to `diligent-enthusiasm` / production (2026-10-09) and `DATABASE_URL` on `clothes-shop` set to `${{Postgres.DATABASE_URL}}`; it takes effect on the next deploy (this push)
@@ -70,6 +71,7 @@ Last updated: 2026-10-10 (night). Right now: Phase 4: mock payment phone-checked
   - [x] Admin (2026-10-10): payment badge in the orders list and detail (paid / unpaid after an online attempt / needs refund), payment attempts with gateway receipt number and masked card on the order page, "needs refund" = paid for a canceled order or paid twice; the owner returns the money in the gateway panel and taps "پول را برگرداندم" (two taps, `db/migrations/003_refunds.sql`, `POST /api/admin/payments/<id>/refunded`); dashboard shows pending refunds. 14 checks on a real Postgres
   - [x] Unpaid online orders release their stock after 1 hour (2026-10-10; `PAYMENT_HOLD_MINUTES`, default 60): `lib/orderExpiry.ts` cancels and restocks orders made while online payment was ON (`orders.pay_online`, `db/migrations/004_pay_online.sql`) that are still unpaid, runs every 2 minutes in the background (`instrumentation.ts`) and right before each new order; orders with a payment attempt started in the last 15 minutes are left alone; offline orders never expire; a late payment on an expired order shows up as "needs refund". Shared `lib/orderStock.ts` restock is also used by the admin cancel. Tested on a real Postgres incl. two servers sweeping at once (restocked exactly once)
   - [x] Phone check on Railway with `PAYMENT_PROVIDER=mock` and `ALLOW_MOCK_PAYMENT=1` (staging only; all passed 2026-10-10)
+  - [x] Decision (2026-10-10): keep the mock gateway ON in Railway staging for now (both variables stay set). Remove `PAYMENT_PROVIDER` and `ALLOW_MOCK_PAYMENT` there before real customers or when the real gateway goes live
   - [ ] Real gateway provider file (after the provider decision), sandbox test, then live
 - [?] Decide: shipping model (flat fee, by city, free above X). Currently placeholder in `lib/checkout.ts`
 - [x] Order status page `/track` (2026-10-10): the customer enters the order code + the mobile number used for the order (`POST /api/track`, `lib/orderTracking.ts`); a wrong code and a wrong mobile give the same answer, only wrong guesses count toward a block (8 per IP per 15 minutes, `lib/rateLimit.ts`), and the answer never contains name, address, city or phone: status steps (new, confirmed, shipped, delivered, or canceled), paid state, items and totals. Code typing is forgiving (lower case, spaces, no dash, Persian digits: `lib/orderCode.ts`). Linked from the footer, the mobile menu, the order-placed screen and `/order/<code>`. 38 API checks + 21 mobile-browser checks (light/dark) on a real Postgres
