@@ -4,7 +4,7 @@ import { useState, type FormEvent } from 'react';
 import { ADDRESS_LIMIT, type SavedAddress } from '@/lib/addressTypes';
 
 const field = 'w-full rounded-xl border border-ink/15 bg-surface px-4 py-3 text-sm text-ink outline-none focus:border-brand';
-const smallBtn = 'rounded-full border border-ink/15 px-3 py-1.5 text-xs font-bold disabled:opacity-50';
+const smallBtn = 'rounded-full border border-ink/15 px-4 py-2.5 text-xs font-bold disabled:opacity-50';
 
 type Draft = { title: string; city: string; postalCode: string; address: string; isDefault: boolean };
 const emptyDraft: Draft = { title: '', city: '', postalCode: '', address: '', isDefault: false };
