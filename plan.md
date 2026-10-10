@@ -5,7 +5,7 @@ Live: https://clothes-shop-production-d9d8.up.railway.app
 
 How we work: one step at a time. Finish a step, check it on the live site, tick the box, then start the next one.
 Legend: `[x]` done, `[ ]` to do, `[?]` needs a decision from the owner first.
-Last updated: 2026-10-10 (night). Right now: Phase 5 accounts: login, profile name and order history are done and tested; next = saved addresses (migration 007), then checkout prefill. Still waiting on the owner: test order for the SMS phone check, SMS provider choice. Mock payment and mock SMS stay ON in Railway staging.
+Last updated: 2026-10-10 (night). Right now: Phase 5 accounts: login, profile name and order history are done and tested; next = checkout prefill from the account (name, mobile, saved default address), then Phase 7. Still waiting on the owner: test order for the SMS phone check, SMS provider choice. Mock payment and mock SMS stay ON in Railway staging.
 
 ---
 
@@ -96,7 +96,7 @@ Last updated: 2026-10-10 (night). Right now: Phase 5 accounts: login, profile na
 - [ ] Account page: profile, saved addresses, order history
   - [x] Profile name: edit and save on `/account` (`PATCH /api/account`, `lib/account.ts`, `components/ProfileNameForm.tsx`), greeting "سلام <name>" (phone-checked 2026-10-10)
   - [x] Order history on `/account` (`lib/accountOrders.ts`): the logged-in customer sees only orders placed with their own mobile (newest first, 30 max): code, Persian date, status, items, total, paid / unpaid, link to tracking; never the address or note. Tested with a real Postgres (other mobile never leaks, injection-like input, limit) and a phone-size browser run (2026-10-10)
-  - [ ] Saved addresses (migration 007, add / edit / delete, one default)
+  - [x] Saved addresses on `/account` (migration 007 `customer_addresses`, `lib/addresses.ts`, `/api/account/addresses` + `/[id]`, `components/AddressBook.tsx`): add, edit, delete (second tap confirms), choose the default; first address is the default automatically, deleting the default hands the mark to the oldest one, max 10, optional 10-digit postal code; one transaction + per-customer lock so quick taps never give two defaults or go over the limit; every call is limited to the logged-in customer's own rows (another customer gets 404). Tested with a real Postgres (37 checks incl. parallel taps, injection-like text) and a phone-size browser run (2026-10-10). Not yet phone-checked
   - [ ] Checkout prefill from the account (name, mobile, address)
 
 ## Phase 6 — Admin panel
