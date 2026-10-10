@@ -204,8 +204,8 @@ export default function CartView() {
 
         <h2 className='mb-3 mt-6 font-bold'>اطلاعات ارسال</h2>
         <div className='space-y-3'>
-          <input className={field} placeholder='نام و نام خانوادگی' autoComplete='name' value={form.name} onChange={set('name')} />
-          <input className={field} placeholder='شماره موبایل' inputMode='tel' autoComplete='tel' dir='ltr' style={{ textAlign: 'right' }} value={form.phone} onChange={set('phone')} />
+          <input className={field} placeholder='نام و نام خانوادگی' aria-label='نام و نام خانوادگی' autoComplete='name' value={form.name} onChange={set('name')} />
+          <input className={field} placeholder='شماره موبایل' inputMode='tel' aria-label='شماره موبایل' autoComplete='tel' dir='ltr' style={{ textAlign: 'right' }} value={form.phone} onChange={set('phone')} />
           {saved.length > 1 && (
             <select className={field} aria-label='آدرس ذخیره‌شده' value={pickedId} onChange={(e) => pickAddress(e.target.value)}>
               {saved.map((a) => (
@@ -214,11 +214,11 @@ export default function CartView() {
             </select>
           )}
           <div className='grid grid-cols-2 gap-3'>
-            <input className={field} placeholder='شهر' autoComplete='address-level2' value={form.city} onChange={set('city')} />
-            <input className={field} placeholder='کد پستی (اختیاری)' inputMode='numeric' autoComplete='postal-code' value={form.postalCode} onChange={set('postalCode')} />
+            <input className={field} placeholder='شهر' aria-label='شهر' autoComplete='address-level2' value={form.city} onChange={set('city')} />
+            <input className={field} placeholder='کد پستی (اختیاری)' inputMode='numeric' aria-label='کد پستی' autoComplete='postal-code' value={form.postalCode} onChange={set('postalCode')} />
           </div>
-          <textarea className={field + ' min-h-24'} placeholder='آدرس کامل' autoComplete='street-address' value={form.address} onChange={set('address')} />
-          <textarea className={field + ' min-h-16'} placeholder='توضیحات (اختیاری)' value={form.notes} onChange={set('notes')} />
+          <textarea className={field + ' min-h-24'} placeholder='آدرس کامل' aria-label='آدرس کامل' autoComplete='street-address' value={form.address} onChange={set('address')} />
+          <textarea className={field + ' min-h-16'} placeholder='توضیحات (اختیاری)' aria-label='توضیحات' value={form.notes} onChange={set('notes')} />
         </div>
 
         {error && <p role='alert' className='mt-3 text-sm text-rose'>{error}</p>}
