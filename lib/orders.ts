@@ -130,3 +130,12 @@ export async function createOrder(
     client.release();
   }
 }
+
+// What the public order page may show: no name, address or phone.
+export type OrderSummary = { code: string; total: number; status: string; paymentStatus: 'unpaid' | 'paid' };
+
+export async function getOrderSummary(code: string): Promise<OrderSummary | null> {
+  const res = await db().query('SELECT code, total, status, payment_status FROM orders WHERE code = $1', [code]);
+  const r = res.rows[0];
+  return r ? { code: r.code, total: r.total, status: r.status, paymentStatus: r.payment_status } : null;
+}

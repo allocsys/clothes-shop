@@ -13,7 +13,7 @@ const fa = (n: number) => new Intl.NumberFormat('fa-IR').format(n);
 const field =
   'w-full rounded-xl border border-ink/15 bg-surface px-4 py-3 text-sm text-ink outline-none focus:border-brand';
 
-type Done = { code: string; total: number };
+type Done = { code: string; total: number; payError?: boolean };
 
 export default function CartView() {
   const { lines, ready, setQty, remove, clear } = useCart();
@@ -36,7 +36,14 @@ export default function CartView() {
         <h1 className='mt-4 text-xl font-bold'>سفارش شما ثبت شد</h1>
         <p className='mt-2 text-sm text-ink/70'>کد پیگیری: <span className='font-bold text-brand' dir='ltr'>{done.code}</span></p>
         <p className='mt-1 text-sm text-ink/70'>مبلغ کل: {formatPrice(done.total)}</p>
-        <p className='mt-4 text-xs leading-6 text-ink/50'>پرداخت آنلاین هنوز فعال نشده است. فروشگاه برای هماهنگی با شما تماس می‌گیرد.</p>
+        {done.payError ? (
+          <>
+            <p className='mt-4 text-xs leading-6 text-rose'>اتصال به درگاه پرداخت برقرار نشد. سفارش شما نگه داشته شده است؛ می‌توانید از صفحه سفارش پرداخت را انجام دهید.</p>
+            <Link href={'/order/' + done.code} className='mt-4 inline-block rounded-full bg-brand px-8 py-3 font-bold text-white'>پرداخت سفارش</Link>
+          </>
+        ) : (
+          <p className='mt-4 text-xs leading-6 text-ink/50'>پرداخت آنلاین هنوز فعال نشده است. فروشگاه برای هماهنگی با شما تماس می‌گیرد.</p>
+        )}
         <Link href='/shop' className='mt-6 inline-block rounded-full bg-brand px-8 py-3 font-bold text-white'>ادامه خرید</Link>
       </section>
     );
@@ -85,7 +92,12 @@ export default function CartView() {
         return;
       }
       clear();
-      setDone({ code: data.code, total: data.total });
+      if (data.payUrl) {
+        // Online payment: go to the gateway (keep the button busy while the browser leaves).
+        window.location.href = data.payUrl;
+        return;
+      }
+      setDone({ code: data.code, total: data.total, payError: Boolean(data.payError) });
     } catch {
       setError('ارتباط با سرور برقرار نشد. دوباره تلاش کنید.');
     } finally {

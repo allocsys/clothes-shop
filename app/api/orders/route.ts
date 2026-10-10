@@ -3,6 +3,9 @@ import { isValidIranMobile, normalizePhone, priceOrder, type OrderItem } from '@
 import { hasDb } from '@/lib/db';
 import { createOrder } from '@/lib/orders';
 import { getProductsBySlugs } from '@/lib/products';
+import { getActiveProvider, providerMisconfigured } from '@/lib/payments';
+import { startPayment } from '@/lib/payments/service';
+import { siteOrigin } from '@/lib/payments/origin';
 
 export const dynamic = 'force-dynamic';
 
@@ -63,6 +66,14 @@ export async function POST(req: Request) {
           ? `از «${result.title}» (سایز ${result.size}، رنگ ${result.color}) فقط ${result.available} عدد موجود است.`
           : `«${result.title}» (سایز ${result.size}، رنگ ${result.color}) ناموجود شد.`;
       return NextResponse.json({ ok: false, error: msg, outOfStock: true }, { status: 409 });
+    }
+    // Online payment on: start it right away and send the customer to the gateway.
+    // If the gateway cannot be reached the order still exists; the customer can pay later from /order/<code>.
+    if (providerMisconfigured()) console.error('PAYMENT_PROVIDER is set but unknown or not allowed here: online payment is OFF');
+    if (getActiveProvider()) {
+      const pay = await startPayment(result.code, customer.phone, siteOrigin(req)).catch(() => null);
+      if (pay?.ok) return NextResponse.json({ ok: true, code: result.code, ...totals, payUrl: pay.redirectUrl });
+      return NextResponse.json({ ok: true, code: result.code, ...totals, payError: true });
     }
     return NextResponse.json({ ok: true, code: result.code, ...totals });
   }
