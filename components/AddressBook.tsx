@@ -75,7 +75,7 @@ export default function AddressBook({ initial }: { initial: SavedAddress[] }) {
     <div className='rounded-3xl bg-surface p-6'>
       <h2 className='text-base font-bold'>آدرس‌های من</h2>
 
-      {list.length === 0 && editing === null && <p className='mt-3 text-sm leading-7 text-ink/60'>هنوز آدرسی ذخیره نکرده‌اید. با ذخیره آدرس، هنگام خرید لازم نیست دوباره آن را بنویسید.</p>}
+      {list.length === 0 && editing === null && <p className='mt-3 text-sm leading-7 text-ink/70'>هنوز آدرسی ذخیره نکرده‌اید. با ذخیره آدرس، هنگام خرید لازم نیست دوباره آن را بنویسید.</p>}
 
       {list.length > 0 && (
         <ul className='mt-3 space-y-3'>
@@ -86,7 +86,7 @@ export default function AddressBook({ initial }: { initial: SavedAddress[] }) {
                 {a.isDefault && <span className='rounded-full bg-brand/10 px-3 py-1 text-xs text-brand'>پیش‌فرض</span>}
               </div>
               <p className='mt-2 text-sm leading-7'>{a.city}، {a.address}</p>
-              {a.postalCode && <p className='text-xs text-ink/60'>کد پستی: <span dir='ltr'>{a.postalCode}</span></p>}
+              {a.postalCode && <p className='text-xs text-ink/70'>کد پستی: <span dir='ltr'>{a.postalCode}</span></p>}
               <div className='mt-3 flex flex-wrap gap-2'>
                 <button type='button' disabled={busy} onClick={() => startEdit(a)} className={smallBtn}>ویرایش</button>
                 {!a.isDefault && <button type='button' disabled={busy} onClick={() => call('/api/account/addresses/' + a.id, 'PATCH', { makeDefault: true })} className={smallBtn}>پیش‌فرض کن</button>}
@@ -122,7 +122,7 @@ export default function AddressBook({ initial }: { initial: SavedAddress[] }) {
       ) : list.length < ADDRESS_LIMIT ? (
         <button type='button' disabled={busy} onClick={startNew} className='mt-4 rounded-2xl border border-brand px-5 py-2.5 text-sm font-bold text-brand disabled:opacity-50'>افزودن آدرس</button>
       ) : (
-        <p className='mt-4 text-xs text-ink/60'>به حداکثر تعداد آدرس رسیده‌اید. برای افزودن آدرس جدید، یکی را حذف کنید.</p>
+        <p className='mt-4 text-xs text-ink/70'>به حداکثر تعداد آدرس رسیده‌اید. برای افزودن آدرس جدید، یکی را حذف کنید.</p>
       )}
 
       {error && <p role='alert' className='mt-3 rounded-2xl bg-rose/10 px-4 py-3 text-sm font-bold text-rose'>{error}</p>}
