@@ -1,18 +1,20 @@
 import Link from 'next/link';
 import LogoutButton from '@/components/admin/LogoutButton';
 import { db, hasDb } from '@/lib/db';
+import { refundCount } from '@/lib/adminPayments';
 
 export const dynamic = 'force-dynamic';
 
-async function counts(): Promise<{ products: number; orders: number; fresh: number } | null> {
+async function counts(): Promise<{ products: number; orders: number; fresh: number; refunds: number } | null> {
   if (!hasDb()) return null;
   try {
-    const [p, o, f] = await Promise.all([
+    const [p, o, f, refunds] = await Promise.all([
       db().query('SELECT count(*)::int AS n FROM products'),
       db().query('SELECT count(*)::int AS n FROM orders'),
       db().query("SELECT count(*)::int AS n FROM orders WHERE status = 'new'"),
+      refundCount(),
     ]);
-    return { products: p.rows[0].n, orders: o.rows[0].n, fresh: f.rows[0].n };
+    return { products: p.rows[0].n, orders: o.rows[0].n, fresh: f.rows[0].n, refunds };
   } catch {
     return null;
   }
@@ -37,6 +39,7 @@ export default async function AdminHome() {
           <p className='text-sm text-ink/60'>سفارش‌ها ←</p>
           <p className='mt-1 text-2xl font-bold text-brand'>{c ? fa(c.orders) : '—'}</p>
           {c && c.fresh > 0 && <p className='mt-1 text-xs font-bold text-rose'>{fa(c.fresh)} سفارش جدید</p>}
+          {c && c.refunds > 0 && <p className='mt-1 text-xs font-bold text-rose'>{fa(c.refunds)} بازپرداخت در انتظار</p>}
         </Link>
       </div>
       {!c && <p className='mt-3 text-sm text-ink/50'>دیتابیس وصل نیست؛ شمارنده‌ها خالی‌اند.</p>}

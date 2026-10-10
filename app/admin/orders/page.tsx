@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import OrderStatusBadge from '@/components/admin/OrderStatusBadge';
+import PaymentBadge from '@/components/admin/PaymentBadge';
 import { formatDateTime } from '@/lib/adminDate';
 import { isStatus, listOrders, STATUS_LABEL, STATUSES, statusCounts } from '@/lib/adminOrders';
 import { hasDb } from '@/lib/db';
@@ -77,7 +78,10 @@ export default async function AdminOrdersPage({ searchParams }: { searchParams: 
             <Link href={'/admin/orders/' + o.id} className='block rounded-2xl bg-surface p-4'>
               <div className='flex items-center justify-between gap-2'>
                 <span className='font-bold' dir='ltr'>{o.code}</span>
-                <OrderStatusBadge status={o.status} />
+                <span className='flex items-center gap-1.5'>
+                  <PaymentBadge paid={o.paid} attempts={o.payAttempts} needsRefund={o.needsRefund} />
+                  <OrderStatusBadge status={o.status} />
+                </span>
               </div>
               <p className='mt-1 truncate'>{o.customerName} · {o.city}</p>
               <div className='mt-1 flex items-center justify-between gap-2 text-sm text-ink/60'>

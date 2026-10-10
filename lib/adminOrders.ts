@@ -1,4 +1,5 @@
 import { db } from '@/lib/db';
+import { NEEDS_REFUND_SQL } from '@/lib/adminPayments';
 
 // Orders for the admin panel: list, one order, and changing its status.
 // Canceling an order puts its pieces back in stock, once, inside the same transaction.
@@ -17,6 +18,9 @@ export type OrderRow = {
   total: number;
   createdAt: string; // ISO
   itemCount: number;
+  paid: boolean;
+  payAttempts: number;
+  needsRefund: boolean;
 };
 
 export const PAGE_SIZE = 30;
@@ -24,6 +28,7 @@ export const PAGE_SIZE = 30;
 type ListRow = {
   id: number; code: string; status: OrderStatus; customer_name: string; mobile: string; city: string;
   total: number; created_at: Date; item_count: number;
+  payment_status: string; pay_attempts: number; needs_refund: boolean;
 };
 
 export async function listOrders(opts: { status?: string; q?: string; page?: number }): Promise<{ rows: OrderRow[]; hasMore: boolean }> {
@@ -42,7 +47,10 @@ export async function listOrders(opts: { status?: string; q?: string; page?: num
   args.push(PAGE_SIZE + 1, (page - 1) * PAGE_SIZE);
   const { rows } = await db().query<ListRow>(
     `SELECT o.id, o.code, o.status, o.customer_name, o.mobile, o.city, o.total, o.created_at,
-            COALESCE((SELECT SUM(qty) FROM order_items i WHERE i.order_id = o.id), 0)::int AS item_count
+            COALESCE((SELECT SUM(qty) FROM order_items i WHERE i.order_id = o.id), 0)::int AS item_count,
+            o.payment_status,
+            (SELECT count(*) FROM payments p WHERE p.order_id = o.id)::int AS pay_attempts,
+            EXISTS (SELECT 1 FROM payments p WHERE p.order_id = o.id AND ${NEEDS_REFUND_SQL}) AS needs_refund
        FROM orders o
       ${where.length ? 'WHERE ' + where.join(' AND ') : ''}
       ORDER BY o.created_at DESC, o.id DESC
@@ -54,6 +62,7 @@ export async function listOrders(opts: { status?: string; q?: string; page?: num
     rows: rows.slice(0, PAGE_SIZE).map((r) => ({
       id: r.id, code: r.code, status: r.status, customerName: r.customer_name, mobile: r.mobile, city: r.city,
       total: r.total, createdAt: r.created_at.toISOString(), itemCount: r.item_count,
+      paid: r.payment_status === 'paid', payAttempts: r.pay_attempts, needsRefund: r.needs_refund,
     })),
   };
 }
@@ -70,11 +79,16 @@ export type OrderDetail = {
   id: number; code: string; status: OrderStatus; customerName: string; mobile: string; city: string;
   postalCode: string; address: string; note: string; subtotal: number; shipping: number; total: number;
   createdAt: string; items: OrderItemRow[];
+  paid: boolean; paidAt: string | null; payments: PaymentRow[];
+};
+export type PaymentRow = {
+  id: number; provider: string; amount: number; status: 'started' | 'paid' | 'failed'; gatewayRef: string | null;
+  cardMask: string | null; error: string | null; createdAt: string; paidAt: string | null; refundedAt: string | null; needsRefund: boolean;
 };
 
 export async function getOrder(id: number): Promise<OrderDetail | null> {
   const o = await db().query(
-    `SELECT id, code, status, customer_name, mobile, city, postal_code, address, note, subtotal, shipping, total, created_at
+    `SELECT id, code, status, customer_name, mobile, city, postal_code, address, note, subtotal, shipping, total, created_at, payment_status, paid_at
        FROM orders WHERE id = $1`,
     [id],
   );
@@ -84,8 +98,20 @@ export async function getOrder(id: number): Promise<OrderDetail | null> {
     'SELECT product_slug, title, size, color, qty, unit_price FROM order_items WHERE order_id = $1 ORDER BY id',
     [id],
   );
+  const pays = await db().query(
+    `SELECT p.id, p.provider, p.amount, p.status, p.gateway_ref, p.card_mask, p.error, p.created_at, p.paid_at, p.refunded_at,
+            ${NEEDS_REFUND_SQL} AS needs_refund
+       FROM payments p JOIN orders o ON o.id = p.order_id WHERE p.order_id = $1 ORDER BY p.id`,
+    [id],
+  );
   return {
     id: r.id, code: r.code, status: r.status, customerName: r.customer_name, mobile: r.mobile, city: r.city,
+    paid: r.payment_status === 'paid', paidAt: r.paid_at ? (r.paid_at as Date).toISOString() : null,
+    payments: pays.rows.map((x) => ({
+      id: x.id, provider: x.provider, amount: x.amount, status: x.status, gatewayRef: x.gateway_ref, cardMask: x.card_mask,
+      error: x.error, createdAt: (x.created_at as Date).toISOString(), paidAt: x.paid_at ? (x.paid_at as Date).toISOString() : null,
+      refundedAt: x.refunded_at ? (x.refunded_at as Date).toISOString() : null, needsRefund: x.needs_refund,
+    })),
     postalCode: r.postal_code, address: r.address, note: r.note, subtotal: r.subtotal, shipping: r.shipping,
     total: r.total, createdAt: (r.created_at as Date).toISOString(),
     items: items.rows.map((i) => ({ slug: i.product_slug, title: i.title, size: i.size, color: i.color, qty: i.qty, unitPrice: i.unit_price })),
