@@ -5,7 +5,7 @@ Live: https://clothes-shop-production-d9d8.up.railway.app
 
 How we work: one step at a time. Finish a step, check it on the live site, tick the box, then start the next one.
 Legend: `[x]` done, `[ ]` to do, `[?]` needs a decision from the owner first.
-Last updated: 2026-10-10 (night). Right now: Phase 5 accounts: login, profile name and order history are done and tested; next = checkout prefill from the account (name, mobile, saved default address), then Phase 7. Still waiting on the owner: test order for the SMS phone check, SMS provider choice. Mock payment and mock SMS stay ON in Railway staging.
+Last updated: 2026-10-10 (night). Right now: Phase 5 accounts are done and tested (login, profile name, order history, saved addresses, checkout prefill; the prefill still needs the owner's phone check); next = Phase 7 polish (info pages, 404/500, accessibility), then Phase 8 SEO. Still waiting on the owner: test order for the SMS phone check, SMS provider choice. Mock payment and mock SMS stay ON in Railway staging.
 
 ---
 
@@ -93,11 +93,11 @@ Last updated: 2026-10-10 (night). Right now: Phase 5 accounts: login, profile na
   - [x] Login screen + logged-in view + logout on `/account` (phone-size browser test passes)
   - [x] Phone check on Railway: log in with your own number, reload, log out; menu shows "حساب من" when logged in (confirmed 2026-10-10)
   - [ ] Real SMS provider so codes arrive by text (same open item as the confirmation SMS)
-- [ ] Account page: profile, saved addresses, order history
+- [x] Account page: profile, saved addresses, order history
   - [x] Profile name: edit and save on `/account` (`PATCH /api/account`, `lib/account.ts`, `components/ProfileNameForm.tsx`), greeting "سلام <name>" (phone-checked 2026-10-10)
   - [x] Order history on `/account` (`lib/accountOrders.ts`): the logged-in customer sees only orders placed with their own mobile (newest first, 30 max): code, Persian date, status, items, total, paid / unpaid, link to tracking; never the address or note. Tested with a real Postgres (other mobile never leaks, injection-like input, limit) and a phone-size browser run (2026-10-10); phone-checked (confirmed 2026-10-10)
   - [x] Saved addresses on `/account` (migration 007 `customer_addresses`, `lib/addresses.ts`, `/api/account/addresses` + `/[id]`, `components/AddressBook.tsx`): add, edit, delete (second tap confirms), choose the default; first address is the default automatically, deleting the default hands the mark to the oldest one, max 10, optional 10-digit postal code; one transaction + per-customer lock so quick taps never give two defaults or go over the limit; every call is limited to the logged-in customer's own rows (another customer gets 404). Tested with a real Postgres (37 checks incl. parallel taps, injection-like text) and a phone-size browser run (2026-10-10). Phone-checked (confirmed 2026-10-10)
-  - [ ] Checkout prefill from the account (name, mobile, address)
+  - [x] Checkout prefill from the account (`components/CartView.tsx`, `AccountProvider` now also holds the name): a logged-in customer sees name, mobile and the default saved address already filled in; each field is filled only if it is still empty and untouched, so anything typed (or cleared) by the customer is never overwritten; with 2+ saved addresses a picker switches city, postal code and address; logged-out visitors and customers with no saved address see the same form as before. 19 mobile-browser checks on a real Postgres incl. delayed address answer while typing, an order placed from the prefilled form (saved with the account mobile), zero addresses, and a fresh visitor (2026-10-10). Phone check pending: log in, add 2 addresses on `/account`, add something to the cart, open the cart
 
 ## Phase 6 — Admin panel
 - [x] Admin login (protected): single password in the `ADMIN_PASSWORD` server setting, signed 7-day cookie, middleware locks `/admin` and `/api/admin`, 5-wrong-tries limit, locked when the password is not set (2026-10-10). Set `ADMIN_PASSWORD` on Railway / in the VPS `.env`, then phone check at `/admin`
