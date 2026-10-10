@@ -12,3 +12,11 @@ export function orderPlacedText(p: { code: string; total: number; origin: string
     'پیگیری سفارش: ' + p.origin + '/track?code=' + p.code,
   ].join('\n');
 }
+
+// Login code. Short on purpose; the "@domain #code" web-OTP line can be added later when the real domain exists.
+export function loginCodeText(p: { code: string; minutes: number }): string {
+  return [
+    site.name + ': کد ورود شما ' + p.code,
+    'این کد تا ' + p.minutes + ' دقیقه معتبر است. آن را به کسی نگویید.',
+  ].join('\n');
+}
