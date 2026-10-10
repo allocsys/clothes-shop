@@ -9,10 +9,11 @@ import { AccountLabel } from '@/components/AccountProvider';
 
 type Category = { slug: string; title: string; children?: { slug: string; title: string }[] };
 
-// TODO: edit to match your real pages
+// Useful links tab of the drawer. Info pages live in app/pages/[slug].
 const usefulLinks: [string, string][] = [
   ['صفحه اصلی', '/'],
   ['فروشگاه', '/shop'],
+  ['علاقه‌مندی‌ها', '/wishlist'],
   ['پیگیری سفارش', '/track'],
   ['درباره ما', '/pages/about-us'],
   ['تماس با ما', '/pages/contact-us'],
