@@ -6,10 +6,10 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, t
 // The pages stay static (fast); the answer comes from /api/auth/me after the page loads.
 // A tiny hint in localStorage makes the right label appear at once on the next visit; the server answer always wins.
 export type AccountState = 'unknown' | 'in' | 'out';
-type Ctx = { state: AccountState; mobile: string; refresh: () => Promise<void> };
+type Ctx = { state: AccountState; mobile: string; name: string; refresh: () => Promise<void> };
 
 const HINT = 'mahpari:account-hint';
-const AccountContext = createContext<Ctx>({ state: 'unknown', mobile: '', refresh: async () => {} });
+const AccountContext = createContext<Ctx>({ state: 'unknown', mobile: '', name: '', refresh: async () => {} });
 
 export function useAccount() {
   return useContext(AccountContext);
@@ -18,6 +18,7 @@ export function useAccount() {
 export function AccountProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<AccountState>('unknown');
   const [mobile, setMobile] = useState('');
+  const [name, setName] = useState('');
 
   const refresh = useCallback(async () => {
     try {
@@ -26,10 +27,12 @@ export function AccountProvider({ children }: { children: ReactNode }) {
       if (data?.customer) {
         setState('in');
         setMobile(String(data.customer.mobile ?? ''));
+        setName(String(data.customer.name ?? ''));
         try { localStorage.setItem(HINT, '1'); } catch { /* private mode: fine */ }
       } else {
         setState('out');
         setMobile('');
+        setName('');
         try { localStorage.removeItem(HINT); } catch { /* ignore */ }
       }
     } catch {
@@ -42,7 +45,7 @@ export function AccountProvider({ children }: { children: ReactNode }) {
     void refresh();
   }, [refresh]);
 
-  const value = useMemo(() => ({ state, mobile, refresh }), [state, mobile, refresh]);
+  const value = useMemo(() => ({ state, mobile, name, refresh }), [state, mobile, name, refresh]);
   return <AccountContext.Provider value={value}>{children}</AccountContext.Provider>;
 }
 
