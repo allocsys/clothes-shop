@@ -5,7 +5,7 @@ Live: https://clothes-shop-production-d9d8.up.railway.app
 
 How we work: one step at a time. Finish a step, check it on the live site, tick the box, then start the next one.
 Legend: `[x]` done, `[ ]` to do, `[?]` needs a decision from the owner first.
-Last updated: 2026-10-10 (night). Right now: Phase 4 payment, gateway-agnostic core built and phone-checked with the mock gateway; next = the real gateway after the provider decision, then order tracking.
+Last updated: 2026-10-10 (night). Right now: Phase 4: mock payment phone-checked, order tracking page `/track` built (phone check pending); next = the real gateway after the provider decision, then confirmation SMS.
 
 ---
 
@@ -72,7 +72,8 @@ Last updated: 2026-10-10 (night). Right now: Phase 4 payment, gateway-agnostic c
   - [x] Phone check on Railway with `PAYMENT_PROVIDER=mock` and `ALLOW_MOCK_PAYMENT=1` (staging only; all passed 2026-10-10)
   - [ ] Real gateway provider file (after the provider decision), sandbox test, then live
 - [?] Decide: shipping model (flat fee, by city, free above X). Currently placeholder in `lib/checkout.ts`
-- [ ] Order status page: "track my order" by tracking code + phone
+- [x] Order status page `/track` (2026-10-10): the customer enters the order code + the mobile number used for the order (`POST /api/track`, `lib/orderTracking.ts`); a wrong code and a wrong mobile give the same answer, only wrong guesses count toward a block (8 per IP per 15 minutes, `lib/rateLimit.ts`), and the answer never contains name, address, city or phone: status steps (new, confirmed, shipped, delivered, or canceled), paid state, items and totals. Code typing is forgiving (lower case, spaces, no dash, Persian digits: `lib/orderCode.ts`). Linked from the footer, the mobile menu, the order-placed screen and `/order/<code>`. 38 API checks + 21 mobile-browser checks (light/dark) on a real Postgres
+  - [ ] Phone check: place a test order, open `/track` from the footer, enter its code + mobile, change its status in `/admin/orders` and see the steps change
 - [ ] Confirmation SMS or email
 
 ## Phase 5 — Accounts
