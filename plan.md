@@ -5,6 +5,7 @@ Live: https://clothes-shop-production-d9d8.up.railway.app
 
 How we work: one step at a time. Finish a step, check it on the live site, tick the box, then start the next one.
 Legend: `[x]` done, `[ ]` to do, `[?]` needs a decision from the owner first.
+Last updated: 2026-10-10 (evening). Right now: Phase 6, next task = sizes, colors and stock per size/color in the admin.
 
 ---
 
@@ -16,7 +17,7 @@ Legend: `[x]` done, `[ ]` to do, `[?]` needs a decision from the owner first.
 - [x] Dark mode (CSS variable theme)
 - [x] Slide-in mobile menu drawer
 - [x] Cart: add to cart, quantities, totals, saved in browser
-- [x] Checkout form + orders API (orders only logged, not stored)
+- [x] Checkout form + orders API (first version only logged orders; they are saved in the database since Phase 4)
 - [x] Deployed on Railway, auto-deploy on push to `main`
 
 ## Phase 1 — Verify what we built
@@ -43,6 +44,7 @@ Legend: `[x]` done, `[ ]` to do, `[?]` needs a decision from the owner first.
 - [x] Decided (2026-10-09): women's clothing only for now; men's/kids can be added later as a new top-level category
 - [x] Hosting decision (2026-10-09): Iranian VPS + Docker as the main target (Railway stays as test/staging)
 - [x] Self-hosted fonts (no Google Fonts at build), Dockerfile, docker-compose + Caddy HTTPS, docs/DEPLOY_VPS.md
+- [ ] Off-server database backups: the Railway Postgres volume is only 500 MB and has no backup set up (on the VPS `scripts/backup.sh` covers the database and photos; copy the files off the server too)
 - [ ] Buy domain (.ir) + Iranian VPS (Ubuntu, 2 vCPU / 2-4 GB, Iran DC) and do first deploy using docs/DEPLOY_VPS.md
 - [x] Database foundation: Postgres schema (products, variants with stock, orders, order_items), `lib/db.ts`, migrate + seed scripts, compose db service, backup script (tested on Postgres 16)
 - [x] Railway: Postgres service added to `diligent-enthusiasm` / production (2026-10-09) and `DATABASE_URL` on `clothes-shop` set to `${{Postgres.DATABASE_URL}}`; it takes effect on the next deploy (this push)
@@ -72,6 +74,8 @@ Legend: `[x]` done, `[ ]` to do, `[?]` needs a decision from the owner first.
 
 ## Phase 6 — Admin panel
 - [x] Admin login (protected): single password in the `ADMIN_PASSWORD` server setting, signed 7-day cookie, middleware locks `/admin` and `/api/admin`, 5-wrong-tries limit, locked when the password is not set (2026-10-10). Set `ADMIN_PASSWORD` on Railway / in the VPS `.env`, then phone check at `/admin`
+- [ ] Owner: type `ADMIN_PASSWORD` in Railway (clothes-shop → Variables), then phone-check `/admin`: login, logout, products list, edit a product, hide/show (the shop updates at once)
+- [?] Later, if more people need access: separate admin accounts (decided 2026-10-10: one shared password for now)
 - [ ] Add / edit / hide products, prices, discounts, stock:
   - [x] Products list in `/admin/products` (all products incl. hidden, photo, price, old price, total stock, sold-out, hidden badge); tested with a real Postgres
   - [x] Edit a product in `/admin/products/<id>`: title, description, category, price, old price (discount), hide/show; validated on the server, API re-checks the login (`lib/adminGuard.ts`); tested with a real Postgres
