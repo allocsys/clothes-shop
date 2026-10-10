@@ -207,9 +207,9 @@ export default function CartView() {
           <input className={field} placeholder='نام و نام خانوادگی' autoComplete='name' value={form.name} onChange={set('name')} />
           <input className={field} placeholder='شماره موبایل' inputMode='tel' autoComplete='tel' dir='ltr' style={{ textAlign: 'right' }} value={form.phone} onChange={set('phone')} />
           {saved.length > 1 && (
-            <select className={field} aria-label='\u0622\u062f\u0631\u0633 \u0630\u062e\u06cc\u0631\u0647\u200c\u0634\u062f\u0647' value={pickedId} onChange={(e) => pickAddress(e.target.value)}>
+            <select className={field} aria-label='آدرس ذخیره‌شده' value={pickedId} onChange={(e) => pickAddress(e.target.value)}>
               {saved.map((a) => (
-                <option key={a.id} value={a.id}>{(a.title || a.city) + (a.isDefault ? ' (\u067e\u06cc\u0634\u200c\u0641\u0631\u0636)' : '')}</option>
+                <option key={a.id} value={a.id}>{(a.title || a.city) + (a.isDefault ? ' (پیش‌فرض)' : '')}</option>
               ))}
             </select>
           )}
