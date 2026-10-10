@@ -2,6 +2,7 @@
 
 import { useEffect, useState, type FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAccount } from '@/components/AccountProvider';
 
 const field = 'w-full rounded-xl border border-ink/15 bg-surface px-4 py-3 text-sm text-ink outline-none focus:border-brand';
 const button = 'w-full rounded-2xl bg-brand py-3.5 font-bold text-white disabled:opacity-50';
@@ -9,6 +10,7 @@ const button = 'w-full rounded-2xl bg-brand py-3.5 font-bold text-white disabled
 // Two steps: mobile number -> 6-digit code from SMS. The first successful login creates the account.
 export default function LoginForm() {
   const router = useRouter();
+  const { refresh } = useAccount();
   const [step, setStep] = useState<'mobile' | 'code'>('mobile');
   const [mobile, setMobile] = useState('');
   const [code, setCode] = useState('');
@@ -66,6 +68,7 @@ export default function LoginForm() {
       return setError('ارتباط با سرور برقرار نشد.');
     }
     if (res.ok && data?.ok) {
+      await refresh(); // header and menu switch to "My account"
       router.refresh(); // the page now sees the login cookie and shows the account
       return;
     }
