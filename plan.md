@@ -71,7 +71,7 @@ Legend: `[x]` done, `[ ]` to do, `[?]` needs a decision from the owner first.
 - [ ] Account page: profile, saved addresses, order history
 
 ## Phase 6 — Admin panel
-- [ ] Admin login (protected)
+- [x] Admin login (protected): single password in the `ADMIN_PASSWORD` server setting, signed 7-day cookie, middleware locks `/admin` and `/api/admin`, 5-wrong-tries limit, locked when the password is not set (2026-10-10). Set `ADMIN_PASSWORD` on Railway / in the VPS `.env`, then phone check at `/admin`
 - [ ] Add / edit / hide products, prices, discounts, stock
 - [ ] Orders list, change status, print packing slip
 - [ ] Simple sales overview
