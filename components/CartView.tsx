@@ -7,6 +7,7 @@ import { MAX_QTY, useCart } from '@/components/CartProvider';
 import { useProducts } from '@/components/useProducts';
 import { FREE_SHIPPING_FROM, isValidIranMobile, priceOrder } from '@/lib/checkout';
 import { formatPrice } from '@/lib/format';
+import { saveLastOrder } from '@/lib/lastOrder';
 
 const fa = (n: number) => new Intl.NumberFormat('fa-IR').format(n);
 
@@ -95,6 +96,7 @@ export default function CartView() {
         setError(data.error || 'ثبت سفارش انجام نشد. دوباره تلاش کنید.');
         return;
       }
+      saveLastOrder(data.code, form.phone);
       clear();
       if (data.payUrl) {
         // Online payment: go to the gateway (keep the button busy while the browser leaves).
