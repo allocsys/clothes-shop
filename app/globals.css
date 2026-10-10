@@ -12,24 +12,43 @@
   --c-sand: 246 243 251;
   --c-gold: 217 179 108;
   --c-night: 36 26 71;
-  --c-rose: 180 86 110;
+  --c-rose: 160 64 92;
   --c-surface: 255 255 255;
+  /* Fill colors for solid buttons/badges that carry white text (see .bg-brand below) */
+  --c-brand-solid: 107 79 160;
+  --c-rose-solid: 160 64 92;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --c-brand: 139 107 208;
+    --c-brand: 164 136 232;
     --c-ink: 236 233 247;
     --c-sand: 21 18 31;
     --c-gold: 217 179 108;
     --c-night: 15 11 34;
     --c-rose: 217 122 146;
     --c-surface: 31 27 46;
+    /* In dark mode the text shade of brand/rose is too light to carry white text,
+       so solid fills use a deeper shade (white text 4.5:1 or more) */
+    --c-brand-solid: 130 98 198;
+    --c-rose-solid: 180 86 110;
   }
 }
 
 html {
   scroll-behavior: smooth;
+}
+
+/* Keyboard focus: one clear ring on everything clickable or typeable.
+   Placed after the Tailwind layers so it also beats `outline-none` on inputs
+   (those keep their border color change as well). Mouse and touch taps do not show it. */
+:focus-visible {
+  outline: 2px solid rgb(var(--c-brand));
+  outline-offset: 2px;
+}
+/* Pills and glass buttons clip their content (overflow hidden), so draw the ring inside */
+.glass-btn:focus-visible {
+  outline-offset: -2px;
 }
 
 /* "+۱" that pops above the cart icon after an item lands in the cart (components/CartFeedback.tsx) */
@@ -124,6 +143,16 @@ html {
   .glass-btn > *:not(.absolute) {
     position: relative;
   }
+}
+
+/* Solid brand/rose fills (buttons, badges with white text) use the "solid" shades.
+   Tinted fills like bg-brand/10 keep using the text shades. */
+.bg-brand,
+.peer:checked ~ .peer-checked\:bg-brand {
+  background-color: rgb(var(--c-brand-solid));
+}
+.bg-rose {
+  background-color: rgb(var(--c-rose-solid));
 }
 
 /* Dark mode glass */

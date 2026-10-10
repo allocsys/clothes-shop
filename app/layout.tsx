@@ -32,11 +32,17 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang='fa' dir='rtl'>
       <body className='bg-sand font-sans text-ink antialiased'>
+        <a
+          href='#main'
+          className='sr-only focus:not-sr-only focus:fixed focus:right-3 focus:top-3 focus:z-[100] focus:rounded-full focus:bg-night focus:px-4 focus:py-2 focus:text-sm focus:font-bold focus:text-white'
+        >
+          پرش به محتوای صفحه
+        </a>
         <AccountProvider>
         <CartProvider>
         <WishlistProvider>
           <ChromeGate><Header /></ChromeGate>
-        <main className='mx-auto min-h-[60vh] max-w-7xl px-4 pb-6 md:pb-10'>{children}</main>
+        <main id='main' tabIndex={-1} className='mx-auto min-h-[60vh] max-w-7xl px-4 pb-6 focus-visible:outline-none md:pb-10'>{children}</main>
         <ChromeGate><Footer /></ChromeGate>
         <ChromeGate><MobileTabBar /></ChromeGate>
         </WishlistProvider>
