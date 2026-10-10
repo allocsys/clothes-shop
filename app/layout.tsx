@@ -10,6 +10,7 @@ import MobileTabBar from '@/components/MobileTabBar';
 import ChromeGate from '@/components/ChromeGate';
 import { CartProvider } from '@/components/CartProvider';
 import { WishlistProvider } from '@/components/WishlistProvider';
+import { AccountProvider } from '@/components/AccountProvider';
 import { site } from '@/lib/site';
 
 export const metadata: Metadata = {
@@ -31,6 +32,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang='fa' dir='rtl'>
       <body className='bg-sand font-sans text-ink antialiased'>
+        <AccountProvider>
         <CartProvider>
         <WishlistProvider>
           <ChromeGate><Header /></ChromeGate>
@@ -39,6 +41,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <ChromeGate><MobileTabBar /></ChromeGate>
         </WishlistProvider>
         </CartProvider>
+        </AccountProvider>
       </body>
     </html>
   );

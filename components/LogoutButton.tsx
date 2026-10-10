@@ -2,9 +2,11 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAccount } from '@/components/AccountProvider';
 
 export default function LogoutButton() {
   const router = useRouter();
+  const { refresh } = useAccount();
   const [busy, setBusy] = useState(false);
 
   async function logout() {
@@ -12,6 +14,7 @@ export default function LogoutButton() {
     try {
       await fetch('/api/auth/logout', { method: 'POST' });
     } finally {
+      await refresh();
       router.refresh();
       setBusy(false);
     }
