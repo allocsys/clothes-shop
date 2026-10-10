@@ -123,7 +123,7 @@ Last updated: 2026-10-11 (accessibility pass in progress, see Phase 7; last edit
   - [x] First-draft Persian texts written 2026-10-11 (`app/pages/[slug]/page.tsx`, untested build). Contact page shows phone, address and social links automatically once `lib/site.ts` is filled
   - [ ] Owner review: return window (draft says 7 days), who pays return shipping, shipping fee text (taken from `lib/checkout.ts`), privacy wording
   - [ ] Build check and phone check of all 5 pages next session
-- [ ] Useful-links list in the mobile menu (`components/MobileMenu.tsx`)
+- [x] Useful-links list in the mobile menu (`components/MobileMenu.tsx`): the tab already existed with 8 links; wishlist added 2026-10-11 (untested)
 - [x] Error pages in brand style (2026-10-11): `app/not-found.tsx` (404 for unknown addresses, hidden products, wrong order codes), `app/error.tsx` (page crash: retry button + home link, never shows the technical message), `app/global-error.tsx` (last resort when the layout itself crashes). 20 phone-size browser checks (light + dark, 404 status codes, retry, no leaked error text)
 - [x] Empty states check (2026-10-11): empty cart, empty wishlist, cart/wishlist holding a product that no longer exists, shop with no results (the clear-filters button keeps the chosen category), new customer with no addresses and no orders; all already had a friendly message, none crashed, so no code change. 14 odd shop addresses (SQL-like text, 5000 characters, bad numbers, unknown category or size, repeated parameters, broken encoding) all answer normally. 32 phone-size browser checks, light and dark
 - [ ] Accessibility pass (focus states, contrast in light and dark)
@@ -134,9 +134,9 @@ Last updated: 2026-10-11 (accessibility pass in progress, see Phase 7; last edit
   - [ ] Still to review: admin forms, shop filter chips, mobile tab bar sizes, mobile menu links
 
 ## Phase 8 — SEO and performance
-- [ ] Per-page titles and descriptions
-- [ ] `sitemap.xml`, `robots.txt`
-- [ ] Product structured data (JSON-LD)
+- [ ] Per-page titles and descriptions (written 2026-10-11, untested: product page `generateMetadata` with canonical + social image, info pages, shop description; cart and wishlist set to noindex)
+- [ ] `sitemap.xml`, `robots.txt` (written 2026-10-11, untested: `app/sitemap.ts`, `app/robots.ts`; set `SITE_URL` on the server when the real domain exists, see `lib/siteUrl.ts`)
+- [ ] Product structured data (JSON-LD) (written 2026-10-11 in the product page, untested; prices sent as IRR = Toman x 10)
 - [ ] Image optimization and Lighthouse pass on mobile
 
 ## Phase 9 — Launch
