@@ -176,13 +176,13 @@ export default function CartView() {
                 <p className='mt-1 text-xs text-ink/70'>سایز {line.size} · {line.color}</p>
                 <div className='mt-auto flex items-end justify-between pt-2'>
                   <div className='flex items-center rounded-full border border-ink/15'>
-                    <button type='button' aria-label='کم کردن' onClick={() => setQty(line, line.qty - 1)} className='grid h-9 w-9 place-items-center text-lg'>−</button>
+                    <button type='button' aria-label='کم کردن' onClick={() => setQty(line, line.qty - 1)} className='grid h-10 w-10 place-items-center text-lg'>−</button>
                     <span className='min-w-6 text-center text-sm font-bold'>{fa(line.qty)}</span>
-                    <button type='button' aria-label='زیاد کردن' disabled={line.qty >= MAX_QTY} onClick={() => setQty(line, line.qty + 1)} className='grid h-9 w-9 place-items-center text-lg disabled:opacity-30'>+</button>
+                    <button type='button' aria-label='زیاد کردن' disabled={line.qty >= MAX_QTY} onClick={() => setQty(line, line.qty + 1)} className='grid h-10 w-10 place-items-center text-lg disabled:opacity-30'>+</button>
                   </div>
                   <div className='text-left'>
                     <p className='text-sm font-bold text-brand'>{formatPrice(product.price * line.qty)}</p>
-                    <button type='button' onClick={() => remove(line)} className='text-xs text-rose'>حذف</button>
+                    <button type='button' onClick={() => remove(line)} className='min-h-10 px-1 text-xs text-rose'>حذف</button>
                   </div>
                 </div>
               </div>
