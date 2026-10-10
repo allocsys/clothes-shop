@@ -10,7 +10,7 @@ export default async function TrackPage({ searchParams }: { searchParams: Promis
   return (
     <section className='mx-auto mt-8 max-w-md'>
       <h1 className='text-xl font-bold'>پیگیری سفارش</h1>
-      <p className='mt-2 mb-5 text-sm leading-7 text-ink/60'>کد پیگیری سفارش و شماره موبایلی که هنگام خرید وارد کرده‌اید را وارد کنید.</p>
+      <p className='mt-2 mb-5 text-sm leading-7 text-ink/70'>کد پیگیری سفارش و شماره موبایلی که هنگام خرید وارد کرده‌اید را وارد کنید.</p>
       <TrackForm initialCode={isOrderCode(initial) ? initial : ''} />
     </section>
   );
