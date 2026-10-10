@@ -1,10 +1,12 @@
 'use client';
 
-import { useState, type FormEvent } from 'react';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
 import Link from 'next/link';
 import ProductImage from '@/components/ProductImage';
+import { useAccount } from '@/components/AccountProvider';
 import { MAX_QTY, useCart } from '@/components/CartProvider';
 import { useProducts } from '@/components/useProducts';
+import type { SavedAddress } from '@/lib/addressTypes';
 import { FREE_SHIPPING_FROM, isValidIranMobile, priceOrder } from '@/lib/checkout';
 import { formatPrice } from '@/lib/format';
 import { saveLastOrder } from '@/lib/lastOrder';
@@ -24,7 +26,55 @@ export default function CartView() {
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState<Done | null>(null);
 
-  const set = (k: keyof typeof form) => (e: { target: { value: string } }) => setForm((f) => ({ ...f, [k]: e.target.value }));
+  const account = useAccount();
+  const [saved, setSaved] = useState<SavedAddress[]>([]);
+  const [pickedId, setPickedId] = useState('');
+  // Fields the customer typed in (or cleared) themselves: the account data never overwrites these.
+  const touched = useRef(new Set<string>());
+  const prefilled = useRef(false);
+
+  const set = (k: keyof typeof form) => (e: { target: { value: string } }) => {
+    touched.current.add(k);
+    setForm((f) => ({ ...f, [k]: e.target.value }));
+  };
+
+  // Logged in: fill name, mobile and the default saved address once, only into fields still empty and untouched.
+  useEffect(() => {
+    if (account.state !== 'in' || !account.mobile || prefilled.current) return;
+    prefilled.current = true;
+    const { mobile, name } = account;
+    (async () => {
+      let list: SavedAddress[] = [];
+      try {
+        const res = await fetch('/api/account/addresses', { cache: 'no-store' });
+        const data = await res.json();
+        if (res.ok && data?.ok && Array.isArray(data.addresses)) list = data.addresses;
+      } catch {
+        // No saved addresses available: name and mobile are still filled.
+      }
+      const def = list[0];
+      const t = touched.current;
+      const fill = (k: keyof typeof form, v: string, cur: string) => (t.has(k) || cur.trim() ? cur : v);
+      setSaved(list);
+      if (def) setPickedId(String(def.id));
+      setForm((f) => ({
+        ...f,
+        name: fill('name', name, f.name),
+        phone: fill('phone', mobile, f.phone),
+        city: fill('city', def?.city ?? '', f.city),
+        postalCode: fill('postalCode', def?.postalCode ?? '', f.postalCode),
+        address: fill('address', def?.address ?? '', f.address),
+      }));
+    })();
+  }, [account]);
+
+  function pickAddress(id: string) {
+    setPickedId(id);
+    const a = saved.find((x) => String(x.id) === id);
+    if (!a) return;
+    ['city', 'postalCode', 'address'].forEach((k) => touched.current.add(k));
+    setForm((f) => ({ ...f, city: a.city, postalCode: a.postalCode, address: a.address }));
+  }
 
   if (done) {
     return (
@@ -156,6 +206,13 @@ export default function CartView() {
         <div className='space-y-3'>
           <input className={field} placeholder='نام و نام خانوادگی' autoComplete='name' value={form.name} onChange={set('name')} />
           <input className={field} placeholder='شماره موبایل' inputMode='tel' autoComplete='tel' dir='ltr' style={{ textAlign: 'right' }} value={form.phone} onChange={set('phone')} />
+          {saved.length > 1 && (
+            <select className={field} aria-label='\u0622\u062f\u0631\u0633 \u0630\u062e\u06cc\u0631\u0647\u200c\u0634\u062f\u0647' value={pickedId} onChange={(e) => pickAddress(e.target.value)}>
+              {saved.map((a) => (
+                <option key={a.id} value={a.id}>{(a.title || a.city) + (a.isDefault ? ' (\u067e\u06cc\u0634\u200c\u0641\u0631\u0636)' : '')}</option>
+              ))}
+            </select>
+          )}
           <div className='grid grid-cols-2 gap-3'>
             <input className={field} placeholder='شهر' autoComplete='address-level2' value={form.city} onChange={set('city')} />
             <input className={field} placeholder='کد پستی (اختیاری)' inputMode='numeric' autoComplete='postal-code' value={form.postalCode} onChange={set('postalCode')} />
