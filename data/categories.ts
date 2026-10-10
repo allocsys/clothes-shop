@@ -45,3 +45,11 @@ export function categoryTitle(slug: string): string {
   };
   return walk(categories) ?? slug;
 }
+
+// Flat list for dropdowns: sub-categories are shown as "parent › child".
+export function categoryOptions(): { slug: string; title: string }[] {
+  return categories.flatMap((c) => [
+    { slug: c.slug, title: c.title },
+    ...(c.children ?? []).map((x) => ({ slug: x.slug, title: c.title + ' › ' + x.title })),
+  ]);
+}

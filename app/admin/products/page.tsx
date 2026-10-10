@@ -60,11 +60,16 @@ export default async function AdminProductsPage() {
                   <span className='font-bold text-rose'>ناموجود</span>
                 )}
               </p>
-              {p.isActive && (
-                <Link href={'/product/' + p.slug} target='_blank' className='mt-1 inline-block text-xs text-brand'>
-                  مشاهده در فروشگاه
+              <div className='mt-2 flex gap-4 text-xs'>
+                <Link href={'/admin/products/' + p.id} className='font-bold text-brand'>
+                  ویرایش
                 </Link>
-              )}
+                {p.isActive && (
+                  <Link href={'/product/' + p.slug} target='_blank' className='text-brand'>
+                    مشاهده در فروشگاه
+                  </Link>
+                )}
+              </div>
             </div>
           </li>
         ))}
