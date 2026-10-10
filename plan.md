@@ -5,7 +5,7 @@ Live: https://clothes-shop-production-d9d8.up.railway.app
 
 How we work: one step at a time. Finish a step, check it on the live site, tick the box, then start the next one.
 Legend: `[x]` done, `[ ]` to do, `[?]` needs a decision from the owner first.
-Last updated: 2026-10-10 (evening). Right now: Phase 6 is done and phone-checked; next = Phase 4 payment or Phase 7 content, after owner decisions.
+Last updated: 2026-10-10 (evening). Right now: Phase 4 payment, gateway-agnostic core built; next = admin payment status, then stock release for unpaid orders.
 
 ---
 
@@ -62,7 +62,15 @@ Last updated: 2026-10-10 (evening). Right now: Phase 6 is done and phone-checked
 ## Phase 4 — Orders and payment
 - [x] Save orders in the database: `lib/orders.ts` writes orders + order_items and decrements stock in one transaction; out-of-stock returns a clear message (tested on Postgres 16 incl. parallel orders for the last piece; confirmed on phone, 2026-10-10). Without `DATABASE_URL` it still logs `NEW_ORDER`
 - [?] Decide: payment provider (Zarinpal or other)
-- [ ] Payment gateway: start payment, callback, verify, mark order paid
+- [ ] Payment gateway (gateway-agnostic core built 2026-10-10, real gateway still to plug in once the provider is chosen):
+  - [x] Database: `db/migrations/002_payments.sql` (`payments` table = one row per attempt; `orders.payment_status` unpaid/paid + `paid_at`; the database refuses a second successful payment for one order and a reused gateway reference)
+  - [x] One interface for every gateway (`lib/payments/types.ts`: start, parseCallback, verify), registry chosen by `PAYMENT_PROVIDER` (`lib/payments/index.ts`), fake test gateway (`lib/payments/mock.ts` + `/pay/mock`, refused in production unless `ALLOW_MOCK_PAYMENT=1`). Adding Zarinpal = one new file + one line in the registry
+  - [x] Logic (`lib/payments/service.ts`): amount always from our order, gateway answer always re-verified, repeated/late callbacks harmless, parallel callbacks count once, a duplicate payment or a payment on an already-canceled order is recorded and flagged for refund; `POST /api/pay/start` (order code + mobile), `GET/POST /api/pay/callback/<provider>`
+  - [x] Checkout sends the customer to the gateway when payment is ON; result page `/order/<code>` (no personal data, "pay again" with mobile). With `PAYMENT_PROVIDER` empty nothing changes. 31 checks against a real Postgres incl. replay, duplicate, canceled order, 6 parallel callbacks
+  - [ ] Admin: show paid / unpaid and flag "needs refund" payments in the orders list and detail
+  - [ ] Unpaid online orders hold stock: release it after a time limit (decide minutes)
+  - [ ] Phone check on Railway with `PAYMENT_PROVIDER=mock` and `ALLOW_MOCK_PAYMENT=1` (staging only)
+  - [ ] Real gateway provider file (after the provider decision), sandbox test, then live
 - [?] Decide: shipping model (flat fee, by city, free above X). Currently placeholder in `lib/checkout.ts`
 - [ ] Order status page: "track my order" by tracking code + phone
 - [ ] Confirmation SMS or email
@@ -77,7 +85,7 @@ Last updated: 2026-10-10 (evening). Right now: Phase 6 is done and phone-checked
 - [x] Owner set `ADMIN_PASSWORD` in Railway (2026-10-10)
 - [x] Phone-checked `/admin`: login, logout, products list, edit a product, hide/show, edit sizes/colors/stock (confirmed 2026-10-10)
 - [?] Later, if more people need access: separate admin accounts (decided 2026-10-10: one shared password for now)
-- [ ] Add / edit / hide products, prices, discounts, stock:
+- [x] Add / edit / hide products, prices, discounts, stock:
   - [x] Products list in `/admin/products` (all products incl. hidden, photo, price, old price, total stock, sold-out, hidden badge); tested with a real Postgres
   - [x] Edit a product in `/admin/products/<id>`: title, description, category, price, old price (discount), hide/show; validated on the server, API re-checks the login (`lib/adminGuard.ts`); tested with a real Postgres
   - [x] Edit sizes, colors and stock per size/color in `/admin/products/<id>` (`lib/adminVariants.ts`, `PUT /api/admin/products/<id>/variants`, `components/admin/VariantsEditor.tsx`): add/remove rows, absolute stock; only rows the admin changed are written, and a row whose stock changed meanwhile (new order) gives a conflict message instead of overwriting; at least one row required; tested with a real Postgres incl. injection-like text and parallel orders (2026-10-10)
