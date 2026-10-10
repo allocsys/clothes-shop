@@ -72,7 +72,12 @@ Legend: `[x]` done, `[ ]` to do, `[?]` needs a decision from the owner first.
 
 ## Phase 6 — Admin panel
 - [x] Admin login (protected): single password in the `ADMIN_PASSWORD` server setting, signed 7-day cookie, middleware locks `/admin` and `/api/admin`, 5-wrong-tries limit, locked when the password is not set (2026-10-10). Set `ADMIN_PASSWORD` on Railway / in the VPS `.env`, then phone check at `/admin`
-- [ ] Add / edit / hide products, prices, discounts, stock
+- [ ] Add / edit / hide products, prices, discounts, stock:
+  - [x] Products list in `/admin/products` (all products incl. hidden, photo, price, old price, total stock, sold-out, hidden badge); tested with a real Postgres
+  - [ ] Edit a product: title, description, category, price, old price (discount), hide/show
+  - [ ] Edit sizes, colors and stock per size/color
+  - [ ] Photo upload (admin only, through `lib/storage.ts`): resize/convert, set main photo, reorder, delete
+  - [ ] Add a new product
 - [ ] Orders list, change status, print packing slip
 - [ ] Simple sales overview
 
