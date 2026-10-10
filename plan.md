@@ -5,7 +5,7 @@ Live: https://clothes-shop-production-d9d8.up.railway.app
 
 How we work: one step at a time. Finish a step, check it on the live site, tick the box, then start the next one.
 Legend: `[x]` done, `[ ]` to do, `[?]` needs a decision from the owner first.
-Last updated: 2026-10-10 (evening). Right now: Phase 6, next task = simple sales overview in the admin.
+Last updated: 2026-10-10 (evening). Right now: Phase 6 is built; waiting for the phone checks (orders, sales overview), then Phase 4 payment / Phase 7 content after owner decisions.
 
 ---
 
@@ -87,7 +87,8 @@ Last updated: 2026-10-10 (evening). Right now: Phase 6, next task = simple sales
   - [x] Phone-checked add a new product (confirmed 2026-10-10)
 - [x] Orders in the admin (2026-10-10): `/admin/orders` (newest first, status chips with counts, search by code/mobile/name, 30 per page), `/admin/orders/<id>` (customer, items snapshot, totals), status changes via `PATCH /api/admin/orders/<id>` (`lib/adminOrders.ts`, pure rules in `lib/orderStatus.ts`: one step forward, one step back, or cancel before delivery; canceled is final), cancel puts the pieces back in stock exactly once in the same transaction, stale/duplicate clicks are refused, dashboard card links here and shows new orders; packing slip `/admin/orders/<id>/print` (checkboxes, address, note, items, totals; buttons hidden on paper). Tested with a real Postgres incl. 5 parallel cancels and a deleted variant
   - [ ] Phone check: place a test order in the shop, open it in `/admin/orders`, confirm, ship, print the slip (browser print or save as PDF), cancel another one and see the stock come back
-- [ ] Simple sales overview
+- [x] Simple sales overview (2026-10-10): `/admin/sales` (`lib/adminStats.ts`): revenue + order count for today / last 7 / last 30 days / all time, 14-day bar list, orders per status (links to the filtered list), top 5 products by pieces in the last 30 days; canceled orders are not counted; days follow Tehran time. Tested with a real Postgres (numbers checked by hand incl. a canceled order and old orders); dashboard has a link
+  - [ ] Phone check: open `/admin/sales` from the dashboard and see that the numbers match your orders
 
 ## Phase 7 — Content and polish
 - [ ] Real promo text, footer contacts and social links (TODOs in `lib/site.ts`, `components/Footer.tsx`)
