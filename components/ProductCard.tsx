@@ -31,9 +31,9 @@ export default function ProductCard({ product }: { product: Product }) {
         <h3 className='mt-2 text-sm font-medium group-hover:text-brand'>{product.title}</h3>
         <p className='mt-0.5 text-sm font-bold text-brand'>
           {formatPrice(product.price)}
-          {product.oldPrice && <span className='mr-2 text-xs font-normal text-ink/40 line-through'>{formatPrice(product.oldPrice)}</span>}
+          {product.oldPrice && <span className='mr-2 text-xs font-normal text-ink/70 line-through'>{formatPrice(product.oldPrice)}</span>}
         </p>
-        <p className='mt-0.5 text-xs text-ink/50'>{product.sizes.join(' · ')}</p>
+        <p className='mt-0.5 text-xs text-ink/70'>{product.sizes.join(' · ')}</p>
       </Link>
       {/* Heart sits outside the link so tapping it never navigates */}
       <WishlistButton slug={product.slug} className='absolute left-2 top-2' />
