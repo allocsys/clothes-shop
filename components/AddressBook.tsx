@@ -102,12 +102,12 @@ export default function AddressBook({ initial }: { initial: SavedAddress[] }) {
       {editing !== null ? (
         <form onSubmit={save} className='mt-4 space-y-3 border-t border-ink/10 pt-4'>
           <p className='text-sm font-bold'>{editing === 'new' ? 'آدرس جدید' : 'ویرایش آدرس'}</p>
-          <input className={field} placeholder='عنوان (اختیاری، مثلاً خانه)' maxLength={30} value={draft.title} onChange={set('title')} />
+          <input className={field} placeholder='عنوان (اختیاری، مثلاً خانه)' aria-label='عنوان آدرس' maxLength={30} value={draft.title} onChange={set('title')} />
           <div className='grid grid-cols-2 gap-3'>
-            <input className={field} placeholder='شهر' maxLength={60} autoComplete='address-level2' value={draft.city} onChange={set('city')} />
-            <input className={field} placeholder='کد پستی (اختیاری)' inputMode='numeric' maxLength={12} autoComplete='postal-code' dir='ltr' value={draft.postalCode} onChange={set('postalCode')} />
+            <input className={field} placeholder='شهر' maxLength={60} aria-label='شهر' autoComplete='address-level2' value={draft.city} onChange={set('city')} />
+            <input className={field} placeholder='کد پستی (اختیاری)' inputMode='numeric' maxLength={12} aria-label='کد پستی' autoComplete='postal-code' dir='ltr' value={draft.postalCode} onChange={set('postalCode')} />
           </div>
-          <textarea className={field + ' min-h-24'} placeholder='آدرس کامل' maxLength={400} autoComplete='street-address' value={draft.address} onChange={set('address')} />
+          <textarea className={field + ' min-h-24'} placeholder='آدرس کامل' maxLength={400} aria-label='آدرس کامل' autoComplete='street-address' value={draft.address} onChange={set('address')} />
           {showDefaultBox && (
             <label className='flex items-center gap-2 text-sm'>
               <input type='checkbox' checked={draft.isDefault} onChange={(e) => setDraft((d) => ({ ...d, isDefault: e.target.checked }))} />
