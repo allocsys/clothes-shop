@@ -5,7 +5,7 @@ Live: https://clothes-shop-production-d9d8.up.railway.app
 
 How we work: one step at a time. Finish a step, check it on the live site, tick the box, then start the next one.
 Legend: `[x]` done, `[ ]` to do, `[?]` needs a decision from the owner first.
-Last updated: 2026-10-10 (evening). Right now: Phase 6, next task = photo upload in the admin.
+Last updated: 2026-10-10 (evening). Right now: Phase 6, next task = add a new product in the admin.
 
 ---
 
@@ -54,7 +54,7 @@ Last updated: 2026-10-10 (evening). Right now: Phase 6, next task = photo upload
   - [x] Photos shown through `next/image` in the product page, cards and cart, drawing as fallback (`components/ProductImage.tsx`, `lib/media.ts`); DB stores keys like `products/abc.jpg`
   - [x] Storage layer `lib/storage.ts` (disk driver, safe keys) + `/media/<key>` route; tested incl. bad paths and the image optimizer in the standalone build
   - [x] Docker: `uploads` volume, writable `/uploads`, photo backup in `scripts/backup.sh`, notes in `docs/DEPLOY_VPS.md`
-  - [ ] Upload from the admin panel (comes with Phase 6). Until then: copy files into the uploads folder and put the keys in `products.images`
+  - [x] Upload from the admin panel (Phase 6, 2026-10-10)
   - [ ] Phone check with a real photo; check the Docker image on the VPS (Alpine `sharp`)
   - [ ] Later, when moving: S3 driver for ArvanCloud in `lib/storage.ts` + `NEXT_PUBLIC_MEDIA_BASE_URL`
 - [x] Stock tracking per size/color: orders check and decrement stock safely; product page greys out sold-out sizes/colors, shows "only N left" (3 or fewer) and a disabled "ناموجود" button; cards show a "ناموجود" strip (confirmed on phone, 2026-10-10)
@@ -75,13 +75,14 @@ Last updated: 2026-10-10 (evening). Right now: Phase 6, next task = photo upload
 ## Phase 6 — Admin panel
 - [x] Admin login (protected): single password in the `ADMIN_PASSWORD` server setting, signed 7-day cookie, middleware locks `/admin` and `/api/admin`, 5-wrong-tries limit, locked when the password is not set (2026-10-10). Set `ADMIN_PASSWORD` on Railway / in the VPS `.env`, then phone check at `/admin`
 - [x] Owner set `ADMIN_PASSWORD` in Railway (2026-10-10)
-- [ ] Phone-check `/admin`: login, logout, products list, edit a product, hide/show, edit sizes/colors/stock (the shop updates at once)
+- [x] Phone-checked `/admin`: login, logout, products list, edit a product, hide/show, edit sizes/colors/stock (confirmed 2026-10-10)
 - [?] Later, if more people need access: separate admin accounts (decided 2026-10-10: one shared password for now)
 - [ ] Add / edit / hide products, prices, discounts, stock:
   - [x] Products list in `/admin/products` (all products incl. hidden, photo, price, old price, total stock, sold-out, hidden badge); tested with a real Postgres
   - [x] Edit a product in `/admin/products/<id>`: title, description, category, price, old price (discount), hide/show; validated on the server, API re-checks the login (`lib/adminGuard.ts`); tested with a real Postgres
   - [x] Edit sizes, colors and stock per size/color in `/admin/products/<id>` (`lib/adminVariants.ts`, `PUT /api/admin/products/<id>/variants`, `components/admin/VariantsEditor.tsx`): add/remove rows, absolute stock; only rows the admin changed are written, and a row whose stock changed meanwhile (new order) gives a conflict message instead of overwriting; at least one row required; tested with a real Postgres incl. injection-like text and parallel orders (2026-10-10)
-  - [ ] Photo upload (admin only, through `lib/storage.ts`): resize/convert, set main photo, reorder, delete
+  - [x] Photo upload in `/admin/products/<id>` (admin only; `lib/adminPhotos.ts`, `POST/PUT/DELETE /api/admin/products/<id>/photos`, `components/admin/PhotoManager.tsx`): the browser shrinks the photo first, the server checks it is a real picture, fixes rotation, resizes to 1600px, converts to WebP and strips metadata, then stores it through `lib/storage.ts`; set main photo, move earlier/later, delete (2-tap confirm, file removed too); max 10 photos, 8 MB per file; tested with a real Postgres incl. fake/empty/oversize files, bad keys and 14 parallel uploads (2026-10-10). `sharp` is now an explicit dependency
+  - [ ] Phone check: upload a real photo from the phone camera/gallery, set main, reorder, delete; see it on the shop. NOTE: on Railway the disk is wiped at every deploy, so uploaded photos disappear on the next push (staging only). To keep them there, add a Railway volume on `clothes-shop` mounted at `/data` and set `UPLOAD_DIR=/data/uploads`. On the VPS the Docker `uploads` volume keeps them
   - [ ] Add a new product
 - [ ] Orders list, change status, print packing slip
 - [ ] Simple sales overview
