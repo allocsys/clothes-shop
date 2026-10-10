@@ -1,5 +1,6 @@
 import LoginForm from '@/components/LoginForm';
 import LogoutButton from '@/components/LogoutButton';
+import ProfileNameForm from '@/components/ProfileNameForm';
 import { hasDb } from '@/lib/db';
 import { getCurrentCustomer, type Customer } from '@/lib/auth/session';
 
@@ -29,10 +30,11 @@ export default async function AccountPage() {
 
   return (
     <section className='mx-auto mt-8 max-w-md space-y-5'>
-      <h1 className='text-xl font-bold'>حساب من</h1>
+      <h1 className='text-xl font-bold'>{customer.name ? 'سلام ' + customer.name : 'حساب من'}</h1>
       <div className='rounded-3xl bg-surface p-6'>
         <p className='text-sm text-ink/60'>شماره موبایل</p>
         <p className='mt-1 text-lg font-bold' dir='ltr'>{customer.mobile}</p>
+        <ProfileNameForm initialName={customer.name} />
       </div>
       <LogoutButton />
     </section>
