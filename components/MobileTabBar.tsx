@@ -19,7 +19,7 @@ export default function MobileTabBar() {
       {tabs.map(({ label, href, Icon }) => {
         const active = href === '/' ? pathname === '/' : pathname.startsWith(href);
         return (
-          <Link key={href} href={href} className={'flex flex-col items-center gap-1 rounded-2xl py-1.5 text-[11px] ' + (active ? 'glass-btn font-bold text-brand' : 'text-ink/60')}>
+          <Link key={href} href={href} className={'flex flex-col items-center gap-1 rounded-2xl py-1.5 text-[11px] ' + (active ? 'glass-btn font-bold text-brand' : 'text-ink/70')}>
             <Icon width={22} height={22} />
             {label}
           </Link>
