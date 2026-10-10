@@ -89,7 +89,7 @@ export default function TrackForm({ initialCode = '' }: { initialCode?: string }
     return (
       <section aria-live='polite' className='rounded-3xl bg-surface p-6'>
         <p className='text-sm text-ink/70'>کد پیگیری: <span className='font-bold text-brand' dir='ltr'>{order.code}</span></p>
-        <p className='mt-1 text-xs text-ink/50'>ثبت‌شده در {formatDateTime(order.createdAt)}</p>
+        <p className='mt-1 text-xs text-ink/70'>ثبت‌شده در {formatDateTime(order.createdAt)}</p>
 
         {canceled ? (
           <p className='mt-5 rounded-2xl bg-rose/10 px-4 py-3 text-sm font-bold text-rose'>{STEP_TEXT.canceled}</p>
@@ -98,10 +98,10 @@ export default function TrackForm({ initialCode = '' }: { initialCode?: string }
             <ol className='mt-6 grid grid-cols-4 gap-1 text-center' aria-label='مراحل سفارش'>
               {STEPS.map((s, i) => (
                 <li key={s} aria-current={i === step ? 'step' : undefined} className='flex flex-col items-center gap-2'>
-                  <span className={'grid h-8 w-8 place-items-center rounded-full text-xs font-bold ' + (i <= step ? 'bg-brand text-white' : 'bg-ink/10 text-ink/40')}>
+                  <span className={'grid h-8 w-8 place-items-center rounded-full text-xs font-bold ' + (i <= step ? 'bg-brand text-white' : 'bg-ink/10 text-ink/70')}>
                     {i < step ? '✓' : new Intl.NumberFormat('fa-IR').format(i + 1)}
                   </span>
-                  <span className={'text-[11px] leading-4 ' + (i === step ? 'font-bold text-brand' : 'text-ink/50')}>{STATUS_LABEL[s]}</span>
+                  <span className={'text-[11px] leading-4 ' + (i === step ? 'font-bold text-brand' : 'text-ink/70')}>{STATUS_LABEL[s]}</span>
                 </li>
               ))}
             </ol>
@@ -122,15 +122,15 @@ export default function TrackForm({ initialCode = '' }: { initialCode?: string }
             <li key={i} className='flex items-start justify-between gap-3 py-3'>
               <div>
                 <p className='font-bold'>{it.title}</p>
-                <p className='mt-0.5 text-xs text-ink/60'>{it.size} · {it.color} · {new Intl.NumberFormat('fa-IR').format(it.qty)} عدد</p>
+                <p className='mt-0.5 text-xs text-ink/70'>{it.size} · {it.color} · {new Intl.NumberFormat('fa-IR').format(it.qty)} عدد</p>
               </div>
               <span className='shrink-0 text-ink/80'>{formatPrice(it.unitPrice * it.qty)}</span>
             </li>
           ))}
         </ul>
         <dl className='mt-2 space-y-1 border-t border-ink/10 pt-3 text-sm'>
-          <div className='flex justify-between'><dt className='text-ink/60'>جمع کالاها</dt><dd>{formatPrice(order.subtotal)}</dd></div>
-          <div className='flex justify-between'><dt className='text-ink/60'>هزینه ارسال</dt><dd>{order.shipping === 0 ? 'رایگان' : formatPrice(order.shipping)}</dd></div>
+          <div className='flex justify-between'><dt className='text-ink/70'>جمع کالاها</dt><dd>{formatPrice(order.subtotal)}</dd></div>
+          <div className='flex justify-between'><dt className='text-ink/70'>هزینه ارسال</dt><dd>{order.shipping === 0 ? 'رایگان' : formatPrice(order.shipping)}</dd></div>
           <div className='flex justify-between text-base font-bold'><dt>مبلغ کل</dt><dd>{formatPrice(order.total)}</dd></div>
         </dl>
 
@@ -138,7 +138,7 @@ export default function TrackForm({ initialCode = '' }: { initialCode?: string }
           پیگیری سفارش دیگر
         </button>
         {remembered && (
-          <button type='button' onClick={() => { forgetLastOrder(); setRemembered(false); setOrder(null); setCode(''); setMobile(''); }} className='mt-3 w-full text-center text-xs text-ink/50 underline'>
+          <button type='button' onClick={() => { forgetLastOrder(); setRemembered(false); setOrder(null); setCode(''); setMobile(''); }} className='mt-3 w-full text-center text-xs text-ink/70 underline'>
             این سفارش را از این دستگاه فراموش کن
           </button>
         )}
