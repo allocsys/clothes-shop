@@ -24,6 +24,7 @@ const quickLinks = [
   ['حساب کاربری من', '/account'],
   ['علاقه‌مندی‌ها', '/wishlist'],
   ['سبد خرید', '/cart'],
+  ['پیگیری سفارش', '/track'],
   ['رویه بازگشت کالا', '/pages/return-policy'],
   ['قوانین و مقررات', '/pages/terms-and-conditions'],
 ];
