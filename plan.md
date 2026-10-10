@@ -5,7 +5,7 @@ Live: https://clothes-shop-production-d9d8.up.railway.app
 
 How we work: one step at a time. Finish a step, check it on the live site, tick the box, then start the next one.
 Legend: `[x]` done, `[ ]` to do, `[?]` needs a decision from the owner first.
-Last updated: 2026-10-10 (night). Right now: Phase 4: mock payment phone-checked, order tracking page `/track` built, now opens directly on the buying device (phone-checked); next = the real gateway after the provider decision, then confirmation SMS. The mock gateway stays ON in Railway staging by the owner's choice.
+Last updated: 2026-10-10 (night). Right now: Phase 5 accounts: phone + SMS-code login is built and tested in the sandbox (mock SMS; the login code is in the Railway deploy logs as `SMS_MOCK ... کد ورود شما NNNNNN`); next = account details (name, order history, saved addresses, checkout prefill). Still waiting on the owner: test order for the SMS phone check, SMS provider choice. Mock payment and mock SMS stay ON in Railway staging.
 
 ---
 
@@ -86,6 +86,13 @@ Last updated: 2026-10-10 (night). Right now: Phase 4: mock payment phone-checked
 ## Phase 5 — Accounts
 - [?] Decide: SMS provider for OTP (e.g. Kavenegar, Melipayamak)
 - [ ] Phone number + OTP login
+  - [x] Database: `customers`, `login_codes` (only a salted hash of the code), `customer_sessions` (only a hash of the cookie token) — migration 006
+  - [x] Code rules in `lib/auth/otp.ts`: 6 digits, valid 5 min, one use, 5 wrong guesses lock it, 1 new code per 60 s, 5 per hour per mobile, a new code cancels the old one (15 checks pass on a real Postgres)
+  - [x] SMS kind `login_code`; the code is never written to `sms_log`
+  - [x] API `/api/auth/request`, `/verify`, `/logout` (per-IP limits too; the answer never reveals whether a number has an account; if the SMS cannot be sent the code is dropped so the customer can retry at once)
+  - [x] Login screen + logged-in view + logout on `/account` (phone-size browser test passes)
+  - [ ] Phone check on Railway: log in with your own number (code appears in the Railway deploy logs while SMS is mock), reload, log out
+  - [ ] Real SMS provider so codes arrive by text (same open item as the confirmation SMS)
 - [ ] Account page: profile, saved addresses, order history
 
 ## Phase 6 — Admin panel
