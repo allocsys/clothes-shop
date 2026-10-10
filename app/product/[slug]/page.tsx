@@ -24,8 +24,8 @@ export default async function ProductPage({ params }: Props) {
 
   return (
     <article className='mt-6'>
-      <nav className='mb-4 text-xs text-ink/50'>
-        <Link href='/'>خانه</Link> / <Link href='/shop'>فروشگاه</Link> / {product.title}
+      <nav className='mb-4 text-xs text-ink/70'>
+        <Link href='/' className='inline-block py-2.5'>خانه</Link> / <Link href='/shop' className='inline-block py-2.5'>فروشگاه</Link> / {product.title}
       </nav>
       <div className='grid gap-8 md:grid-cols-2'>
         <ProductGallery title={product.title} category={product.category} slug={product.slug} images={product.images} />
@@ -33,7 +33,7 @@ export default async function ProductPage({ params }: Props) {
           <h1 className='text-2xl font-bold'>{product.title}</h1>
           <p className='mt-3 text-xl font-bold text-brand'>
             {formatPrice(product.price)}
-            {product.oldPrice && <span className='mr-3 text-sm font-normal text-ink/40 line-through'>{formatPrice(product.oldPrice)}</span>}
+            {product.oldPrice && <span className='mr-3 text-sm font-normal text-ink/70 line-through'>{formatPrice(product.oldPrice)}</span>}
           </p>
           <p className='mt-4 leading-8 text-ink/70'>{product.description}</p>
 
