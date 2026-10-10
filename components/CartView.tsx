@@ -44,7 +44,11 @@ export default function CartView() {
         ) : (
           <p className='mt-4 text-xs leading-6 text-ink/50'>پرداخت آنلاین هنوز فعال نشده است. فروشگاه برای هماهنگی با شما تماس می‌گیرد.</p>
         )}
-        <Link href='/shop' className='mt-6 inline-block rounded-full bg-brand px-8 py-3 font-bold text-white'>ادامه خرید</Link>
+        <p className='mt-4 text-xs leading-6 text-ink/50'>کد پیگیری را نگه دارید؛ با آن و شماره موبایلتان می‌توانید وضعیت سفارش را ببینید.</p>
+        <Link href={'/track?code=' + done.code} className='mt-3 inline-block font-bold text-brand underline'>پیگیری سفارش</Link>
+        <div>
+          <Link href='/shop' className='mt-6 inline-block rounded-full bg-brand px-8 py-3 font-bold text-white'>ادامه خرید</Link>
+        </div>
       </section>
     );
   }
