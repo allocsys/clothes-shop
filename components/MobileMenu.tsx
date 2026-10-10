@@ -5,6 +5,7 @@ import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { IconMenu, IconSearch, IconUser } from '@/components/Icons';
+import { AccountLabel } from '@/components/AccountProvider';
 
 type Category = { slug: string; title: string; children?: { slug: string; title: string }[] };
 
@@ -171,7 +172,7 @@ export default function MobileMenu({ categories, name }: { categories: Category[
         <div className='border-t border-ink/10 px-5 pt-4 pb-[max(1.25rem,env(safe-area-inset-bottom))]'>
           <Link href='/account' onClick={close} className='flex items-center justify-center gap-2 rounded-2xl bg-brand py-3.5 font-bold text-white'>
             <IconUser width={22} height={22} />
-            عضویت / ورود
+            <AccountLabel out='عضویت / ورود' inn='حساب من' />
           </Link>
         </div>
       </aside>
