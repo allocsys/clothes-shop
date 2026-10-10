@@ -5,7 +5,7 @@ import { toEnglishDigits } from '@/lib/checkout';
 import { formatPrice } from '@/lib/format';
 import { getProducts } from '@/lib/products';
 
-export const metadata = { title: 'فروشگاه' };
+export const metadata = { description: 'خرید آنلاین مانتو، شومیز، شلوار، دامن، تی‌شرت و ست زنانه با قیمت مناسب؛ فیلتر بر اساس سایز، رنگ و قیمت.', title: 'فروشگاه' };
 export const dynamic = 'force-dynamic';
 
 type Raw = string | string[] | undefined;
