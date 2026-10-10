@@ -120,6 +120,9 @@ Last updated: 2026-10-11 (accessibility pass in progress, see Phase 7; last edit
 ## Phase 7 — Content and polish
 - [ ] Real promo text, footer contacts and social links (TODOs in `lib/site.ts`, `components/Footer.tsx`)
 - [ ] Real info pages: About, Contact, FAQ, Return policy, Terms
+  - [x] First-draft Persian texts written 2026-10-11 (`app/pages/[slug]/page.tsx`, untested build). Contact page shows phone, address and social links automatically once `lib/site.ts` is filled
+  - [ ] Owner review: return window (draft says 7 days), who pays return shipping, shipping fee text (taken from `lib/checkout.ts`), privacy wording
+  - [ ] Build check and phone check of all 5 pages next session
 - [ ] Useful-links list in the mobile menu (`components/MobileMenu.tsx`)
 - [x] Error pages in brand style (2026-10-11): `app/not-found.tsx` (404 for unknown addresses, hidden products, wrong order codes), `app/error.tsx` (page crash: retry button + home link, never shows the technical message), `app/global-error.tsx` (last resort when the layout itself crashes). 20 phone-size browser checks (light + dark, 404 status codes, retry, no leaked error text)
 - [x] Empty states check (2026-10-11): empty cart, empty wishlist, cart/wishlist holding a product that no longer exists, shop with no results (the clear-filters button keeps the chosen category), new customer with no addresses and no orders; all already had a friendly message, none crashed, so no code change. 14 odd shop addresses (SQL-like text, 5000 characters, bad numbers, unknown category or size, repeated parameters, broken encoding) all answer normally. 32 phone-size browser checks, light and dark
