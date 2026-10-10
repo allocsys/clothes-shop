@@ -24,7 +24,7 @@ export default function AddToCart({ slug, category, sizes, colors, stock }: Prop
   const left = size && color ? stockOf(stock, size, color) : Infinity;
 
   const chip = (active: boolean, gone: boolean) =>
-    'rounded-full border px-4 py-1.5 text-sm transition-colors ' +
+    'min-h-10 rounded-full border px-4 py-1.5 text-sm transition-colors ' +
     (gone
       ? 'cursor-not-allowed border-ink/10 bg-surface text-ink/30 line-through'
       : active
@@ -89,7 +89,7 @@ export default function AddToCart({ slug, category, sizes, colors, stock }: Prop
       </div>
 
       {soldOut ? (
-        <button type='button' disabled className='mt-8 w-full cursor-not-allowed rounded-full bg-ink/15 py-3.5 font-bold text-ink/50 md:w-auto md:px-14'>
+        <button type='button' disabled className='mt-8 w-full cursor-not-allowed rounded-full bg-ink/15 py-3.5 font-bold text-ink/70 md:w-auto md:px-14'>
           ناموجود
         </button>
       ) : (

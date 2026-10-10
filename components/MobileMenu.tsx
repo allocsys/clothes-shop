@@ -108,10 +108,11 @@ export default function MobileMenu({ categories, name }: { categories: Category[
           <input
             name='q'
             type='search'
+            aria-label='جستجوی محصول'
             placeholder='جستجو در میان محصولات...'
             className='w-full rounded-xl border border-ink/15 bg-surface py-3 pl-4 pr-11 text-sm text-ink outline-none focus:border-brand'
           />
-          <button type='submit' aria-label='جستجو' className='absolute right-3 top-1/2 -translate-y-1/2 text-ink/50'>
+          <button type='submit' aria-label='جستجو' className='absolute inset-y-0 right-0 grid w-11 place-items-center text-ink/70'>
             <IconSearch width={20} height={20} />
           </button>
         </form>
@@ -139,7 +140,7 @@ export default function MobileMenu({ categories, name }: { categories: Category[
                           aria-label={'زیرمجموعه ' + c.title}
                           aria-expanded={isOpen}
                           onClick={() => setExpanded(isOpen ? null : c.slug)}
-                          className='grid h-9 w-9 place-items-center rounded-full text-ink/60'
+                          className='grid h-10 w-10 place-items-center rounded-full text-ink/70'
                         >
                           <Chevron open={isOpen} />
                         </button>

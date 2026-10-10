@@ -14,10 +14,11 @@ function SearchBar() {
       <input
         name='q'
         type='search'
+        aria-label='جستجوی محصول'
         placeholder='جستجوی محصول...'
         className='w-full rounded-full glass-field py-2.5 pl-4 pr-11 text-sm outline-none focus:border-brand'
       />
-      <button type='submit' aria-label='جستجو' className='absolute right-3 top-1/2 -translate-y-1/2 text-ink/50'>
+      <button type='submit' aria-label='جستجو' className='absolute inset-y-0 right-0 grid w-11 place-items-center text-ink/70'>
         <IconSearch width={20} height={20} />
       </button>
     </form>
@@ -46,7 +47,7 @@ export default function Header() {
             <MobileMenu categories={categories} name={site.name} />
           </div>
 
-          <Link href='/' aria-label={site.name}><Logo uid='hm' /></Link>
+          <Link href='/' aria-label={site.name} className='block py-1'><Logo uid='hm' /></Link>
 
           <div className='flex items-center justify-self-end'>
             <details>

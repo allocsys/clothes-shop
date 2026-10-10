@@ -7,7 +7,7 @@ export default function SectionHeading({ title, href }: { title: string; href?: 
         <span className='h-5 w-1.5 rounded-full bg-gold' />
         {title}
       </h2>
-      {href && <Link href={href} className='text-sm text-brand'>مشاهده همه</Link>}
+      {href && <Link href={href} className='inline-block py-2.5 text-sm text-brand'>مشاهده همه</Link>}
     </div>
   );
 }
