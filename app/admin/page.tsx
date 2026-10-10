@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import LogoutButton from '@/components/admin/LogoutButton';
 import { db, hasDb } from '@/lib/db';
 
@@ -24,10 +25,10 @@ export default async function AdminHome() {
       </div>
 
       <div className='mt-6 grid grid-cols-2 gap-3'>
-        <div className='rounded-2xl bg-surface p-4'>
-          <p className='text-sm text-ink/60'>محصولات</p>
+        <Link href='/admin/products' className='rounded-2xl bg-surface p-4'>
+          <p className='text-sm text-ink/60'>محصولات ←</p>
           <p className='mt-1 text-2xl font-bold text-brand'>{c ? fa(c.products) : '—'}</p>
-        </div>
+        </Link>
         <div className='rounded-2xl bg-surface p-4'>
           <p className='text-sm text-ink/60'>سفارش‌ها</p>
           <p className='mt-1 text-2xl font-bold text-brand'>{c ? fa(c.orders) : '—'}</p>

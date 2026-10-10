@@ -32,3 +32,16 @@ export function categorySlugs(slug: string): string[] {
   const found = walk(categories);
   return found.length ? found : [slug];
 }
+
+// Display title for a category slug (searches sub-categories too); falls back to the slug.
+export function categoryTitle(slug: string): string {
+  const walk = (list: Category[]): string | undefined => {
+    for (const c of list) {
+      if (c.slug === slug) return c.title;
+      const inner = c.children ? walk(c.children) : undefined;
+      if (inner) return inner;
+    }
+    return undefined;
+  };
+  return walk(categories) ?? slug;
+}
