@@ -1,10 +1,12 @@
 'use client';
 
 import Link from 'next/link';
-import { useState, type FormEvent } from 'react';
+import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
 import { formatDateTime } from '@/lib/adminDate';
 import { formatPrice } from '@/lib/format';
 import { STATUS_LABEL, isStatus } from '@/lib/orderStatus';
+import { normalizeOrderCode } from '@/lib/orderCode';
+import { forgetLastOrder, readLastOrder } from '@/lib/lastOrder';
 import type { TrackedOrder } from '@/lib/orderTracking';
 
 // The four steps a normal order goes through. A canceled order has its own banner instead.
@@ -26,23 +28,58 @@ export default function TrackForm({ initialCode = '' }: { initialCode?: string }
   const [busy, setBusy] = useState(false);
   const [order, setOrder] = useState<TrackedOrder | null>(null);
 
-  async function submit(e: FormEvent) {
-    e.preventDefault();
+  const [remembered, setRemembered] = useState(false);
+  const autoTried = useRef(false);
+
+  const lookup = useCallback(async (c: string, m: string) => {
     setError('');
     setBusy(true);
     try {
       const res = await fetch('/api/track', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code, mobile }),
+        body: JSON.stringify({ code: c, mobile: m }),
       });
       const data = await res.json().catch(() => null);
-      if (!res.ok || !data?.ok) setError(data?.error || 'پیگیری انجام نشد. دوباره تلاش کنید.');
-      else setOrder(data.order);
+      if (!res.ok || !data?.ok) {
+        setError(data?.error || 'پیگیری انجام نشد. دوباره تلاش کنید.');
+        return false;
+      }
+      setOrder(data.order);
+      return true;
     } catch {
       setError('ارتباط با سرور برقرار نشد.');
+      return false;
+    } finally {
+      setBusy(false);
     }
-    setBusy(false);
+  }, []);
+
+  // Same device as the purchase: open the tracking straight away.
+  // With ?code= only a matching remembered order is used; with no code, the last order placed here is used.
+  useEffect(() => {
+    if (autoTried.current) return;
+    autoTried.current = true;
+    const last = readLastOrder();
+    if (!last) return;
+    if (initialCode && normalizeOrderCode(last.code) !== normalizeOrderCode(initialCode)) return;
+    setCode(last.code);
+    setMobile(last.mobile);
+    setRemembered(true);
+    void lookup(last.code, last.mobile).then((ok) => {
+      if (!ok) {
+        // Order not found any more: forget it and show the normal form.
+        forgetLastOrder();
+        setRemembered(false);
+        setMobile('');
+        setError('');
+      }
+    });
+  }, [initialCode, lookup]);
+
+  function submit(e: FormEvent) {
+    e.preventDefault();
+    void lookup(code, mobile);
   }
 
   if (order) {
@@ -97,9 +134,14 @@ export default function TrackForm({ initialCode = '' }: { initialCode?: string }
           <div className='flex justify-between text-base font-bold'><dt>مبلغ کل</dt><dd>{formatPrice(order.total)}</dd></div>
         </dl>
 
-        <button type='button' onClick={() => { setOrder(null); setMobile(''); }} className='mt-6 w-full rounded-full bg-surface py-3 font-bold text-brand ring-1 ring-brand/30'>
+        <button type='button' onClick={() => { setOrder(null); setMobile(''); setCode(''); }} className='mt-6 w-full rounded-full bg-surface py-3 font-bold text-brand ring-1 ring-brand/30'>
           پیگیری سفارش دیگر
         </button>
+        {remembered && (
+          <button type='button' onClick={() => { forgetLastOrder(); setRemembered(false); setOrder(null); setCode(''); setMobile(''); }} className='mt-3 w-full text-center text-xs text-ink/50 underline'>
+            این سفارش را از این دستگاه فراموش کن
+          </button>
+        )}
       </section>
     );
   }
