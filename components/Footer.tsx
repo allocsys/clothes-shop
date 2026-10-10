@@ -36,10 +36,10 @@ function LinkList({ title, items }: { title: string; items: string[][] }) {
         <span className='h-5 w-1.5 rounded-full bg-gold' />
         {title}
       </h3>
-      <ul className='space-y-3 text-sm'>
+      <ul className='text-sm'>
         {items.map(([label, href]) => (
           <li key={href}>
-            <Link href={href} className='flex items-center gap-2 text-white/70 hover:text-white'>
+            <Link href={href} className='flex items-center gap-2 py-2.5 text-white/70 hover:text-white'>
               <IconChevronLeft width={14} height={14} className='shrink-0 text-gold' />
               {label}
             </Link>
