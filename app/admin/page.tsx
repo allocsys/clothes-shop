@@ -4,11 +4,15 @@ import { db, hasDb } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
-async function counts(): Promise<{ products: number; orders: number } | null> {
+async function counts(): Promise<{ products: number; orders: number; fresh: number } | null> {
   if (!hasDb()) return null;
   try {
-    const [p, o] = await Promise.all([db().query('SELECT count(*)::int AS n FROM products'), db().query('SELECT count(*)::int AS n FROM orders')]);
-    return { products: p.rows[0].n, orders: o.rows[0].n };
+    const [p, o, f] = await Promise.all([
+      db().query('SELECT count(*)::int AS n FROM products'),
+      db().query('SELECT count(*)::int AS n FROM orders'),
+      db().query("SELECT count(*)::int AS n FROM orders WHERE status = 'new'"),
+    ]);
+    return { products: p.rows[0].n, orders: o.rows[0].n, fresh: f.rows[0].n };
   } catch {
     return null;
   }
@@ -29,14 +33,15 @@ export default async function AdminHome() {
           <p className='text-sm text-ink/60'>محصولات ←</p>
           <p className='mt-1 text-2xl font-bold text-brand'>{c ? fa(c.products) : '—'}</p>
         </Link>
-        <div className='rounded-2xl bg-surface p-4'>
-          <p className='text-sm text-ink/60'>سفارش‌ها</p>
+        <Link href='/admin/orders' className='rounded-2xl bg-surface p-4'>
+          <p className='text-sm text-ink/60'>سفارش‌ها ←</p>
           <p className='mt-1 text-2xl font-bold text-brand'>{c ? fa(c.orders) : '—'}</p>
-        </div>
+          {c && c.fresh > 0 && <p className='mt-1 text-xs font-bold text-rose'>{fa(c.fresh)} سفارش جدید</p>}
+        </Link>
       </div>
       {!c && <p className='mt-3 text-sm text-ink/50'>دیتابیس وصل نیست؛ شمارنده‌ها خالی‌اند.</p>}
 
-      <p className='mt-8 text-sm text-ink/60'>بخش‌های مدیریت محصولات و سفارش‌ها در قدم‌های بعدی اضافه می‌شوند.</p>
+      <p className='mt-8 text-sm text-ink/60'>نمای کلی فروش در قدم بعدی اضافه می‌شود.</p>
     </div>
   );
 }
