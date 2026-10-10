@@ -28,7 +28,10 @@ export default async function AdminProductsPage() {
   return (
     <div>
       <Link href='/admin' className='text-sm text-brand'>← پنل مدیریت</Link>
-      <h1 className='mt-3 text-xl font-bold'>محصولات</h1>
+      <div className='mt-3 flex items-center justify-between gap-3'>
+        <h1 className='text-xl font-bold'>محصولات</h1>
+        <Link href='/admin/products/new' className='rounded-full bg-brand px-4 py-2 text-sm font-bold text-white'>+ محصول جدید</Link>
+      </div>
       <p className='mt-1 text-sm text-ink/60'>
         {fa(products.length)} محصول{hidden > 0 ? ` (${fa(hidden)} مخفی)` : ''}
       </p>
