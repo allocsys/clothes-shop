@@ -98,11 +98,11 @@ export default function LoginForm() {
           />
           <button type='submit' disabled={busy || code.trim().length !== 6} className={button}>{busy ? 'در حال بررسی…' : 'ورود'}</button>
           <div className='flex items-center justify-between text-xs text-ink/70'>
-            <button type='button' onClick={() => { setStep('mobile'); setError(''); setInfo(''); }} className='underline'>تغییر شماره</button>
+            <button type='button' onClick={() => { setStep('mobile'); setError(''); setInfo(''); }} className='py-2.5 underline'>تغییر شماره</button>
             {wait > 0 ? (
               <span>ارسال دوباره تا {new Intl.NumberFormat('fa-IR').format(wait)} ثانیه دیگر</span>
             ) : (
-              <button type='button' onClick={() => void sendCode()} disabled={busy} className='font-bold text-brand underline'>ارسال دوباره کد</button>
+              <button type='button' onClick={() => void sendCode()} disabled={busy} className='py-2.5 font-bold text-brand underline'>ارسال دوباره کد</button>
             )}
           </div>
         </form>
