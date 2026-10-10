@@ -12,6 +12,7 @@ type Category = { slug: string; title: string; children?: { slug: string; title:
 const usefulLinks: [string, string][] = [
   ['صفحه اصلی', '/'],
   ['فروشگاه', '/shop'],
+  ['پیگیری سفارش', '/track'],
   ['درباره ما', '/pages/about-us'],
   ['تماس با ما', '/pages/contact-us'],
   ['سوالات متداول', '/pages/faq'],
