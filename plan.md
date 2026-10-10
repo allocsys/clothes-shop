@@ -5,7 +5,7 @@ Live: https://clothes-shop-production-d9d8.up.railway.app
 
 How we work: one step at a time. Finish a step, check it on the live site, tick the box, then start the next one.
 Legend: `[x]` done, `[ ]` to do, `[?]` needs a decision from the owner first.
-Last updated: 2026-10-10 (night). Right now: Phase 5 accounts are done and tested (login, profile name, order history, saved addresses, checkout prefill; the prefill still needs the owner's phone check); next = Phase 7 polish: 404/500 pages and empty states are done; still to do: accessibility pass, mobile menu links. The info pages (About, Contact, FAQ, Returns, Terms) wait for the owner's real texts and currently show a placeholder sentence. Then Phase 8 SEO. Still waiting on the owner: test order for the SMS phone check, SMS provider choice. Mock payment and mock SMS stay ON in Railway staging.
+Last updated: 2026-10-11 (accessibility pass in progress, see Phase 7; last edits were made without a browser test). Right now: Phase 5 accounts are done and tested (login, profile name, order history, saved addresses, checkout prefill; the prefill still needs the owner's phone check); next = Phase 7 polish: 404/500 pages and empty states are done; still to do: accessibility pass, mobile menu links. The info pages (About, Contact, FAQ, Returns, Terms) wait for the owner's real texts and currently show a placeholder sentence. Then Phase 8 SEO. Still waiting on the owner: test order for the SMS phone check, SMS provider choice. Mock payment and mock SMS stay ON in Railway staging.
 
 ---
 
@@ -124,6 +124,11 @@ Last updated: 2026-10-10 (night). Right now: Phase 5 accounts are done and teste
 - [x] Error pages in brand style (2026-10-11): `app/not-found.tsx` (404 for unknown addresses, hidden products, wrong order codes), `app/error.tsx` (page crash: retry button + home link, never shows the technical message), `app/global-error.tsx` (last resort when the layout itself crashes). 20 phone-size browser checks (light + dark, 404 status codes, retry, no leaked error text)
 - [x] Empty states check (2026-10-11): empty cart, empty wishlist, cart/wishlist holding a product that no longer exists, shop with no results (the clear-filters button keeps the chosen category), new customer with no addresses and no orders; all already had a friendly message, none crashed, so no code change. 14 odd shop addresses (SQL-like text, 5000 characters, bad numbers, unknown category or size, repeated parameters, broken encoding) all answer normally. 32 phone-size browser checks, light and dark
 - [ ] Accessibility pass (focus states, contrast in light and dark)
+  - [x] Contrast: readable secondary text on the hero, cards, wishlist, tabs, tracking, cart, addresses, login, account, order page and admin dashboard (2026-10-10)
+  - [x] Already in place: global `:focus-visible` outline, skip link to `#main`, `lang='fa'` + `dir='rtl'`
+  - [x] Written 2026-10-11 WITHOUT a browser test: bigger tap targets (cart +/- and remove, login helper buttons, tracking forget button, address action buttons) and aria-labels on checkout and address form fields
+  - [ ] Next session (with network): build, run phone-size browser checks on those pages, tick this item
+  - [ ] Still to review: admin forms, shop filter chips, mobile tab bar sizes, mobile menu links
 
 ## Phase 8 — SEO and performance
 - [ ] Per-page titles and descriptions
