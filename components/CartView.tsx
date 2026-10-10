@@ -93,9 +93,9 @@ export default function CartView() {
             <Link href={'/order/' + done.code} className='mt-4 inline-block rounded-full bg-brand px-8 py-3 font-bold text-white'>پرداخت سفارش</Link>
           </>
         ) : (
-          <p className='mt-4 text-xs leading-6 text-ink/50'>پرداخت آنلاین هنوز فعال نشده است. فروشگاه برای هماهنگی با شما تماس می‌گیرد.</p>
+          <p className='mt-4 text-xs leading-6 text-ink/70'>پرداخت آنلاین هنوز فعال نشده است. فروشگاه برای هماهنگی با شما تماس می‌گیرد.</p>
         )}
-        <p className='mt-4 text-xs leading-6 text-ink/50'>کد پیگیری را نگه دارید؛ با آن و شماره موبایلتان می‌توانید وضعیت سفارش را ببینید.</p>
+        <p className='mt-4 text-xs leading-6 text-ink/70'>کد پیگیری را نگه دارید؛ با آن و شماره موبایلتان می‌توانید وضعیت سفارش را ببینید.</p>
         <Link href={'/track?code=' + done.code} className='mt-3 inline-block font-bold text-brand underline'>پیگیری سفارش</Link>
         <div>
           <Link href='/shop' className='mt-6 inline-block rounded-full bg-brand px-8 py-3 font-bold text-white'>ادامه خرید</Link>
@@ -104,7 +104,7 @@ export default function CartView() {
     );
   }
 
-  if (!ready || loading) return <p className='py-20 text-center text-ink/50'>در حال بارگذاری...</p>;
+  if (!ready || loading) return <p className='py-20 text-center text-ink/70'>در حال بارگذاری...</p>;
 
   const detailed = lines.flatMap((l) => {
     const p = products.find((x) => x.slug === l.slug);
@@ -114,7 +114,7 @@ export default function CartView() {
   if (detailed.length === 0) {
     return (
       <section className='py-20 text-center'>
-        <p className='text-ink/60'>سبد خرید شما خالی است.</p>
+        <p className='text-ink/70'>سبد خرید شما خالی است.</p>
         <Link href='/shop' className='mt-5 inline-block rounded-full bg-brand px-8 py-3 font-bold text-white'>مشاهده محصولات</Link>
       </section>
     );
@@ -173,7 +173,7 @@ export default function CartView() {
               </Link>
               <div className='flex min-w-0 flex-1 flex-col'>
                 <Link href={'/product/' + product.slug} className='font-bold'>{product.title}</Link>
-                <p className='mt-1 text-xs text-ink/60'>سایز {line.size} · {line.color}</p>
+                <p className='mt-1 text-xs text-ink/70'>سایز {line.size} · {line.color}</p>
                 <div className='mt-auto flex items-end justify-between pt-2'>
                   <div className='flex items-center rounded-full border border-ink/15'>
                     <button type='button' aria-label='کم کردن' onClick={() => setQty(line, line.qty - 1)} className='grid h-9 w-9 place-items-center text-lg'>−</button>
@@ -199,7 +199,7 @@ export default function CartView() {
           <div className='flex justify-between border-t border-ink/10 pt-2 font-bold'><dt>مبلغ قابل پرداخت</dt><dd className='text-brand'>{formatPrice(total)}</dd></div>
         </dl>
         {missing > 0 && (
-          <p className='mt-2 text-xs text-ink/50'>با {formatPrice(missing)} خرید بیشتر، ارسال رایگان می‌شود.</p>
+          <p className='mt-2 text-xs text-ink/70'>با {formatPrice(missing)} خرید بیشتر، ارسال رایگان می‌شود.</p>
         )}
 
         <h2 className='mb-3 mt-6 font-bold'>اطلاعات ارسال</h2>
@@ -226,7 +226,7 @@ export default function CartView() {
         <button type='submit' disabled={busy} className='mt-5 w-full rounded-full bg-brand py-3.5 font-bold text-white disabled:opacity-60'>
           {busy ? 'در حال ثبت...' : 'ثبت سفارش'}
         </button>
-        <p className='mt-2 text-center text-xs text-ink/50'>پرداخت آنلاین به‌زودی فعال می‌شود.</p>
+        <p className='mt-2 text-center text-xs text-ink/70'>پرداخت آنلاین به‌زودی فعال می‌شود.</p>
       </form>
     </div>
   );
