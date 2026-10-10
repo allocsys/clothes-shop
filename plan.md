@@ -5,7 +5,7 @@ Live: https://clothes-shop-production-d9d8.up.railway.app
 
 How we work: one step at a time. Finish a step, check it on the live site, tick the box, then start the next one.
 Legend: `[x]` done, `[ ]` to do, `[?]` needs a decision from the owner first.
-Last updated: 2026-10-10 (evening). Right now: Phase 4 payment, gateway-agnostic core built; next = stock release for unpaid online orders.
+Last updated: 2026-10-10 (evening). Right now: Phase 4 payment, gateway-agnostic core built; next = staging phone check of the mock payment, then the real gateway after the provider decision.
 
 ---
 
@@ -68,7 +68,7 @@ Last updated: 2026-10-10 (evening). Right now: Phase 4 payment, gateway-agnostic
   - [x] Logic (`lib/payments/service.ts`): amount always from our order, gateway answer always re-verified, repeated/late callbacks harmless, parallel callbacks count once, a duplicate payment or a payment on an already-canceled order is recorded and flagged for refund; `POST /api/pay/start` (order code + mobile), `GET/POST /api/pay/callback/<provider>`
   - [x] Checkout sends the customer to the gateway when payment is ON; result page `/order/<code>` (no personal data, "pay again" with mobile). With `PAYMENT_PROVIDER` empty nothing changes. 31 checks against a real Postgres incl. replay, duplicate, canceled order, 6 parallel callbacks
   - [x] Admin (2026-10-10): payment badge in the orders list and detail (paid / unpaid after an online attempt / needs refund), payment attempts with gateway receipt number and masked card on the order page, "needs refund" = paid for a canceled order or paid twice; the owner returns the money in the gateway panel and taps "پول را برگرداندم" (two taps, `db/migrations/003_refunds.sql`, `POST /api/admin/payments/<id>/refunded`); dashboard shows pending refunds. 14 checks on a real Postgres
-  - [ ] Unpaid online orders hold stock: release it after a time limit (decide minutes)
+  - [x] Unpaid online orders release their stock after 1 hour (2026-10-10; `PAYMENT_HOLD_MINUTES`, default 60): `lib/orderExpiry.ts` cancels and restocks orders made while online payment was ON (`orders.pay_online`, `db/migrations/004_pay_online.sql`) that are still unpaid, runs every 2 minutes in the background (`instrumentation.ts`) and right before each new order; orders with a payment attempt started in the last 15 minutes are left alone; offline orders never expire; a late payment on an expired order shows up as "needs refund". Shared `lib/orderStock.ts` restock is also used by the admin cancel. Tested on a real Postgres incl. two servers sweeping at once (restocked exactly once)
   - [ ] Phone check on Railway with `PAYMENT_PROVIDER=mock` and `ALLOW_MOCK_PAYMENT=1` (staging only)
   - [ ] Real gateway provider file (after the provider decision), sandbox test, then live
 - [?] Decide: shipping model (flat fee, by city, free above X). Currently placeholder in `lib/checkout.ts`
