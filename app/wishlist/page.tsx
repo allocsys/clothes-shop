@@ -1,6 +1,6 @@
 import WishlistView from '@/components/WishlistView';
 
-export const metadata = { title: 'علاقه‌مندی‌ها' };
+export const metadata = { robots: { index: false, follow: false }, title: 'علاقه‌مندی‌ها' };
 
 export default function WishlistPage() {
   return <WishlistView />;
