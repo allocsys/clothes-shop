@@ -5,7 +5,7 @@ Live: https://clothes-shop-production-d9d8.up.railway.app
 
 How we work: one step at a time. Finish a step, check it on the live site, tick the box, then start the next one.
 Legend: `[x]` done, `[ ]` to do, `[?]` needs a decision from the owner first.
-Last updated: 2026-10-10 (night). Right now: Phase 5 accounts: phone + SMS-code login is built and tested in the sandbox (mock SMS; the login code is in the Railway deploy logs as `SMS_MOCK ... کد ورود شما NNNNNN`); next = account details (name, order history, saved addresses, checkout prefill). Still waiting on the owner: test order for the SMS phone check, SMS provider choice. Mock payment and mock SMS stay ON in Railway staging.
+Last updated: 2026-10-10 (night). Right now: Phase 5 accounts: login, profile name and order history are done and tested; next = saved addresses (migration 007), then checkout prefill. Still waiting on the owner: test order for the SMS phone check, SMS provider choice. Mock payment and mock SMS stay ON in Railway staging.
 
 ---
 
@@ -91,9 +91,13 @@ Last updated: 2026-10-10 (night). Right now: Phase 5 accounts: phone + SMS-code 
   - [x] SMS kind `login_code`; the code is never written to `sms_log`
   - [x] API `/api/auth/request`, `/verify`, `/logout` (per-IP limits too; the answer never reveals whether a number has an account; if the SMS cannot be sent the code is dropped so the customer can retry at once)
   - [x] Login screen + logged-in view + logout on `/account` (phone-size browser test passes)
-  - [ ] Phone check on Railway: log in with your own number (code appears in the Railway deploy logs while SMS is mock), reload, log out
+  - [x] Phone check on Railway: log in with your own number, reload, log out; menu shows "حساب من" when logged in (confirmed 2026-10-10)
   - [ ] Real SMS provider so codes arrive by text (same open item as the confirmation SMS)
 - [ ] Account page: profile, saved addresses, order history
+  - [x] Profile name: edit and save on `/account` (`PATCH /api/account`, `lib/account.ts`, `components/ProfileNameForm.tsx`), greeting "سلام <name>" (phone-checked 2026-10-10)
+  - [x] Order history on `/account` (`lib/accountOrders.ts`): the logged-in customer sees only orders placed with their own mobile (newest first, 30 max): code, Persian date, status, items, total, paid / unpaid, link to tracking; never the address or note. Tested with a real Postgres (other mobile never leaks, injection-like input, limit) and a phone-size browser run (2026-10-10)
+  - [ ] Saved addresses (migration 007, add / edit / delete, one default)
+  - [ ] Checkout prefill from the account (name, mobile, address)
 
 ## Phase 6 — Admin panel
 - [x] Admin login (protected): single password in the `ADMIN_PASSWORD` server setting, signed 7-day cookie, middleware locks `/admin` and `/api/admin`, 5-wrong-tries limit, locked when the password is not set (2026-10-10). Set `ADMIN_PASSWORD` on Railway / in the VPS `.env`, then phone check at `/admin`
