@@ -138,7 +138,7 @@ export default function TrackForm({ initialCode = '' }: { initialCode?: string }
           پیگیری سفارش دیگر
         </button>
         {remembered && (
-          <button type='button' onClick={() => { forgetLastOrder(); setRemembered(false); setOrder(null); setCode(''); setMobile(''); }} className='mt-3 w-full text-center text-xs text-ink/70 underline'>
+          <button type='button' onClick={() => { forgetLastOrder(); setRemembered(false); setOrder(null); setCode(''); setMobile(''); }} className='mt-3 w-full py-2.5 text-center text-xs text-ink/70 underline'>
             این سفارش را از این دستگاه فراموش کن
           </button>
         )}
