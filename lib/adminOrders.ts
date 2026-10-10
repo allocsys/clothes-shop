@@ -1,5 +1,6 @@
 import { db } from '@/lib/db';
 import { NEEDS_REFUND_SQL } from '@/lib/adminPayments';
+import { restockOrder } from '@/lib/orderStock';
 
 // Orders for the admin panel: list, one order, and changing its status.
 // Canceling an order puts its pieces back in stock, once, inside the same transaction.
@@ -147,19 +148,7 @@ export async function changeStatus(id: number, to: OrderStatus, from: OrderStatu
     let restocked = 0;
     if (to === 'canceled') {
       // Put the pieces back. A size/color that was deleted from the product meanwhile cannot be restocked.
-      const items = await client.query<{ product_slug: string; size: string; color: string; qty: number }>(
-        'SELECT product_slug, size, color, qty FROM order_items WHERE order_id = $1 ORDER BY product_slug, size, color',
-        [id],
-      );
-      for (const it of items.rows) {
-        const res = await client.query(
-          `UPDATE variants v SET stock = v.stock + $4
-             FROM products p
-            WHERE v.product_id = p.id AND p.slug = $1 AND v.size = $2 AND v.color = $3`,
-          [it.product_slug, it.size, it.color, it.qty],
-        );
-        if (res.rowCount) restocked += it.qty;
-      }
+      restocked = await restockOrder(client, id);
     }
     await client.query('UPDATE orders SET status = $2 WHERE id = $1', [id, to]);
     await client.query('COMMIT');
