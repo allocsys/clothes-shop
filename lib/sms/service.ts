@@ -1,7 +1,7 @@
 import { db, hasDb } from '@/lib/db';
 import { getActiveSmsProvider, smsMisconfigured } from './index';
 
-export type SmsKind = 'order_placed';
+export type SmsKind = 'order_placed' | 'login_code';
 
 export type SmsOutcome =
   | { status: 'sent' }
@@ -22,7 +22,8 @@ function withTimeout<T>(p: Promise<T>): Promise<T> {
 
 // Sends one SMS and records it in sms_log. NEVER throws: a broken SMS must never break an order.
 // With an orderCode, the same kind is sent at most once per order.
-export async function sendSms(input: { kind: SmsKind; to: string; text: string; orderCode?: string }): Promise<SmsOutcome> {
+// logText: what to keep in sms_log instead of the real text (a login code must never be stored in the log).
+export async function sendSms(input: { kind: SmsKind; to: string; text: string; orderCode?: string; logText?: string }): Promise<SmsOutcome> {
   try {
     const provider = getActiveSmsProvider();
     if (!provider) {
@@ -38,7 +39,7 @@ export async function sendSms(input: { kind: SmsKind; to: string; text: string; 
          VALUES ($1, $2, $3, $4, $5)
          ON CONFLICT (kind, order_code) WHERE order_code IS NOT NULL DO NOTHING
          RETURNING id`,
-        [input.kind, input.orderCode ?? null, input.to, input.text, provider.id],
+        [input.kind, input.orderCode ?? null, input.to, input.logText ?? input.text, provider.id],
       );
       if (ins.rowCount === 0) return { status: 'skipped', reason: 'duplicate' };
       logId = ins.rows[0].id;
