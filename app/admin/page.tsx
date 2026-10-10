@@ -41,7 +41,10 @@ export default async function AdminHome() {
       </div>
       {!c && <p className='mt-3 text-sm text-ink/50'>دیتابیس وصل نیست؛ شمارنده‌ها خالی‌اند.</p>}
 
-      <p className='mt-8 text-sm text-ink/60'>نمای کلی فروش در قدم بعدی اضافه می‌شود.</p>
+      <Link href='/admin/sales' className='mt-3 block rounded-2xl bg-surface p-4'>
+        <p className='text-sm text-ink/60'>نمای کلی فروش ←</p>
+        <p className='mt-1 text-xs text-ink/50'>امروز، ۷ و ۳۰ روز اخیر، نمودار روزانه، پرفروش‌ها</p>
+      </Link>
     </div>
   );
 }
