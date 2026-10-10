@@ -5,7 +5,7 @@ Live: https://clothes-shop-production-d9d8.up.railway.app
 
 How we work: one step at a time. Finish a step, check it on the live site, tick the box, then start the next one.
 Legend: `[x]` done, `[ ]` to do, `[?]` needs a decision from the owner first.
-Last updated: 2026-10-10 (evening). Right now: Phase 6, next task = add a new product in the admin.
+Last updated: 2026-10-10 (evening). Right now: Phase 6, next task = orders list + change status + packing slip in the admin.
 
 ---
 
@@ -82,8 +82,9 @@ Last updated: 2026-10-10 (evening). Right now: Phase 6, next task = add a new pr
   - [x] Edit a product in `/admin/products/<id>`: title, description, category, price, old price (discount), hide/show; validated on the server, API re-checks the login (`lib/adminGuard.ts`); tested with a real Postgres
   - [x] Edit sizes, colors and stock per size/color in `/admin/products/<id>` (`lib/adminVariants.ts`, `PUT /api/admin/products/<id>/variants`, `components/admin/VariantsEditor.tsx`): add/remove rows, absolute stock; only rows the admin changed are written, and a row whose stock changed meanwhile (new order) gives a conflict message instead of overwriting; at least one row required; tested with a real Postgres incl. injection-like text and parallel orders (2026-10-10)
   - [x] Photo upload in `/admin/products/<id>` (admin only; `lib/adminPhotos.ts`, `POST/PUT/DELETE /api/admin/products/<id>/photos`, `components/admin/PhotoManager.tsx`): the browser shrinks the photo first, the server checks it is a real picture, fixes rotation, resizes to 1600px, converts to WebP and strips metadata, then stores it through `lib/storage.ts`; set main photo, move earlier/later, delete (2-tap confirm, file removed too); max 10 photos, 8 MB per file; tested with a real Postgres incl. fake/empty/oversize files, bad keys and 14 parallel uploads (2026-10-10). `sharp` is now an explicit dependency
-  - [ ] Phone check: upload a real photo from the phone camera/gallery, set main, reorder, delete; see it on the shop. NOTE: on Railway the disk is wiped at every deploy, so uploaded photos disappear on the next push (staging only). To keep them there, add a Railway volume on `clothes-shop` mounted at `/data` and set `UPLOAD_DIR=/data/uploads`. On the VPS the Docker `uploads` volume keeps them
-  - [ ] Add a new product
+  - [x] Phone-checked photo upload (confirmed 2026-10-10). NOTE: on Railway the disk is wiped at every deploy, so uploaded photos disappear on the next push (staging only). To keep them there, add a Railway volume on `clothes-shop` mounted at `/data` and set `UPLOAD_DIR=/data/uploads`. On the VPS the Docker `uploads` volume keeps them
+  - [x] Add a new product (`/admin/products/new`, `POST /api/admin/products`, `createProduct` in `lib/adminProducts.ts`): name, category, price, old price, description, at least one size/color/stock row; made in one transaction, address (slug) = category + random suffix (e.g. `dress-3fa9c1`); starts hidden so it can be shown after photos are added; then opens the edit page to add photos. Tested with a real Postgres incl. validation, injection-like text, hidden -> 404, show -> page and shop list, ordering the new variants (2026-10-10)
+  - [ ] Phone check: add a new product from the phone, add photos, show it, see it in the shop
 - [ ] Orders list, change status, print packing slip
 - [ ] Simple sales overview
 
