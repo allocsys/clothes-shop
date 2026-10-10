@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { site } from '@/lib/site';
 import { formatPrice } from '@/lib/format';
@@ -167,6 +168,13 @@ export function generateStaticParams() {
 }
 
 type Props = { params: Promise<{ slug: string }> };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params;
+  const page = pages[slug];
+  if (!page) return {};
+  return { title: page.title, description: page.intro };
+}
 
 function ContactBlock() {
   const { phone, address } = site.contact;
