@@ -1,3 +1,4 @@
+import { randomBytes } from 'crypto';
 import { categoryOptions } from '@/data/categories';
 import { db } from '@/lib/db';
 
@@ -146,4 +147,44 @@ export async function updateProductBasics(id: number, v: BasicsInput): Promise<A
     [id, v.title, v.description, v.category, v.price, v.oldPrice, v.isActive],
   );
   return rows[0] ? toAdminProduct(rows[0]) : null;
+}
+
+// ---- Creating a product ----
+
+export type NewVariant = { size: string; color: string; stock: number };
+
+// Inserts the product and its first sizes/colors in one transaction. The address (slug) is made from the
+// category plus a random suffix, e.g. "dress-3fa9c1": always URL-safe, never clashes with Persian titles.
+export async function createProduct(v: BasicsInput, variants: NewVariant[]): Promise<{ id: number; slug: string }> {
+  const client = await db().connect();
+  try {
+    await client.query('BEGIN');
+    let created: { id: number; slug: string } | null = null;
+    for (let attempt = 0; attempt < 5 && !created; attempt++) {
+      const slug = `${v.category}-${randomBytes(3).toString('hex')}`;
+      await client.query('SAVEPOINT s');
+      try {
+        const res = await client.query<{ id: number; slug: string }>(
+          `INSERT INTO products (slug, title, description, category, price, old_price, is_active)
+           VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id, slug`,
+          [slug, v.title, v.description, v.category, v.price, v.oldPrice, v.isActive],
+        );
+        created = res.rows[0];
+      } catch (e) {
+        if ((e as { code?: string }).code !== '23505') throw e; // only retry a duplicate slug
+        await client.query('ROLLBACK TO SAVEPOINT s');
+      }
+    }
+    if (!created) throw new Error('Could not make a unique product address');
+    for (const x of variants) {
+      await client.query('INSERT INTO variants (product_id, size, color, stock) VALUES ($1, $2, $3, $4)', [created.id, x.size, x.color, x.stock]);
+    }
+    await client.query('COMMIT');
+    return created;
+  } catch (e) {
+    await client.query('ROLLBACK').catch(() => {});
+    throw e;
+  } finally {
+    client.release();
+  }
 }

@@ -5,19 +5,10 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { categoryOptions } from '@/data/categories';
 import type { AdminProduct, BasicsErrors } from '@/lib/adminProducts';
+import { parseToman } from '@/lib/parseNumber';
 
 const FIELD = 'w-full rounded-2xl border border-ink/15 bg-surface px-4 py-3 outline-none focus:border-brand';
 const options = categoryOptions();
-
-// "۱٬۸۵۰٬۰۰۰" / "1,850,000" -> 1850000. Empty -> null. Anything else -> 'bad'.
-function parseToman(input: string): number | null | 'bad' {
-  const latin = input
-    .replace(/[\u06F0-\u06F9]/g, (d) => String(d.charCodeAt(0) - 0x06f0))
-    .replace(/[\u0660-\u0669]/g, (d) => String(d.charCodeAt(0) - 0x0660))
-    .replace(/[,\s\u066C\u060C]/g, '');
-  if (latin === '') return null;
-  return /^\d{1,10}$/.test(latin) ? Number(latin) : 'bad';
-}
 
 const show = (n: number | null) => (n == null ? '' : new Intl.NumberFormat('en-US').format(n));
 const fa = (n: number) => new Intl.NumberFormat('fa-IR').format(n);

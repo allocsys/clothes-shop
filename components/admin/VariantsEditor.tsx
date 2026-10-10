@@ -3,20 +3,12 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import type { AdminVariant } from '@/lib/adminVariants';
+import { parseCount } from '@/lib/parseNumber';
 
 const FIELD = 'w-full rounded-xl border border-ink/15 bg-surface px-3 py-2.5 outline-none focus:border-brand';
 const SIZE_HINTS = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'Free'];
 
 type Row = { key: number; size: string; color: string; stock: string; loaded: number | null };
-
-// "۱۲" / "12" -> 12; empty or garbage -> null
-function parseCount(input: string): number | null {
-  const latin = input
-    .replace(/[\u06F0-\u06F9]/g, (d) => String(d.charCodeAt(0) - 0x06f0))
-    .replace(/[\u0660-\u0669]/g, (d) => String(d.charCodeAt(0) - 0x0660))
-    .trim();
-  return /^\d{1,5}$/.test(latin) ? Number(latin) : null;
-}
 
 const toRows = (list: AdminVariant[], start = 0): Row[] =>
   list.map((v, i) => ({ key: start + i, size: v.size, color: v.color, stock: String(v.stock), loaded: v.stock }));
