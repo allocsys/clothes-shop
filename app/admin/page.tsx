@@ -32,21 +32,21 @@ export default async function AdminHome() {
 
       <div className='mt-6 grid grid-cols-2 gap-3'>
         <Link href='/admin/products' className='rounded-2xl bg-surface p-4'>
-          <p className='text-sm text-ink/60'>محصولات ←</p>
+          <p className='text-sm text-ink/70'>محصولات ←</p>
           <p className='mt-1 text-2xl font-bold text-brand'>{c ? fa(c.products) : '—'}</p>
         </Link>
         <Link href='/admin/orders' className='rounded-2xl bg-surface p-4'>
-          <p className='text-sm text-ink/60'>سفارش‌ها ←</p>
+          <p className='text-sm text-ink/70'>سفارش‌ها ←</p>
           <p className='mt-1 text-2xl font-bold text-brand'>{c ? fa(c.orders) : '—'}</p>
           {c && c.fresh > 0 && <p className='mt-1 text-xs font-bold text-rose'>{fa(c.fresh)} سفارش جدید</p>}
           {c && c.refunds > 0 && <p className='mt-1 text-xs font-bold text-rose'>{fa(c.refunds)} بازپرداخت در انتظار</p>}
         </Link>
       </div>
-      {!c && <p className='mt-3 text-sm text-ink/50'>دیتابیس وصل نیست؛ شمارنده‌ها خالی‌اند.</p>}
+      {!c && <p className='mt-3 text-sm text-ink/70'>دیتابیس وصل نیست؛ شمارنده‌ها خالی‌اند.</p>}
 
       <Link href='/admin/sales' className='mt-3 block rounded-2xl bg-surface p-4'>
-        <p className='text-sm text-ink/60'>نمای کلی فروش ←</p>
-        <p className='mt-1 text-xs text-ink/50'>امروز، ۷ و ۳۰ روز اخیر، نمودار روزانه، پرفروش‌ها</p>
+        <p className='text-sm text-ink/70'>نمای کلی فروش ←</p>
+        <p className='mt-1 text-xs text-ink/70'>امروز، ۷ و ۳۰ روز اخیر، نمودار روزانه، پرفروش‌ها</p>
       </Link>
     </div>
   );
