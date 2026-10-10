@@ -58,7 +58,7 @@ export default function Hero() {
           </div>
           <div className='relative flex h-full flex-col items-start justify-end p-6 md:p-10'>
             <h2 className='font-display text-4xl leading-tight text-white md:text-6xl'>{s.title}</h2>
-            <p className='mt-2 max-w-xs text-sm text-white/80 md:text-base'>{s.sub}</p>
+            <p className='mt-2 max-w-xs text-sm text-white/90 md:text-base'>{s.sub}</p>
             <Link href={s.href} className='mt-5 rounded-full bg-gold px-6 py-2.5 text-sm font-bold text-night'>{s.cta}</Link>
           </div>
         </div>
