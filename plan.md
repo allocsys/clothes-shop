@@ -5,7 +5,7 @@ Live: https://clothes-shop-production-d9d8.up.railway.app
 
 How we work: one step at a time. Finish a step, check it on the live site, tick the box, then start the next one.
 Legend: `[x]` done, `[ ]` to do, `[?]` needs a decision from the owner first.
-Last updated: 2026-10-10 (evening). Right now: Phase 6, next task = orders list + change status + packing slip in the admin.
+Last updated: 2026-10-10 (evening). Right now: Phase 6, next task = simple sales overview in the admin.
 
 ---
 
@@ -84,8 +84,9 @@ Last updated: 2026-10-10 (evening). Right now: Phase 6, next task = orders list 
   - [x] Photo upload in `/admin/products/<id>` (admin only; `lib/adminPhotos.ts`, `POST/PUT/DELETE /api/admin/products/<id>/photos`, `components/admin/PhotoManager.tsx`): the browser shrinks the photo first, the server checks it is a real picture, fixes rotation, resizes to 1600px, converts to WebP and strips metadata, then stores it through `lib/storage.ts`; set main photo, move earlier/later, delete (2-tap confirm, file removed too); max 10 photos, 8 MB per file; tested with a real Postgres incl. fake/empty/oversize files, bad keys and 14 parallel uploads (2026-10-10). `sharp` is now an explicit dependency
   - [x] Phone-checked photo upload (confirmed 2026-10-10). NOTE: on Railway the disk is wiped at every deploy, so uploaded photos disappear on the next push (staging only). To keep them there, add a Railway volume on `clothes-shop` mounted at `/data` and set `UPLOAD_DIR=/data/uploads`. On the VPS the Docker `uploads` volume keeps them
   - [x] Add a new product (`/admin/products/new`, `POST /api/admin/products`, `createProduct` in `lib/adminProducts.ts`): name, category, price, old price, description, at least one size/color/stock row; made in one transaction, address (slug) = category + random suffix (e.g. `dress-3fa9c1`); starts hidden so it can be shown after photos are added; then opens the edit page to add photos. Tested with a real Postgres incl. validation, injection-like text, hidden -> 404, show -> page and shop list, ordering the new variants (2026-10-10)
-  - [ ] Phone check: add a new product from the phone, add photos, show it, see it in the shop
-- [ ] Orders list, change status, print packing slip
+  - [x] Phone-checked add a new product (confirmed 2026-10-10)
+- [x] Orders in the admin (2026-10-10): `/admin/orders` (newest first, status chips with counts, search by code/mobile/name, 30 per page), `/admin/orders/<id>` (customer, items snapshot, totals), status changes via `PATCH /api/admin/orders/<id>` (`lib/adminOrders.ts`, pure rules in `lib/orderStatus.ts`: one step forward, one step back, or cancel before delivery; canceled is final), cancel puts the pieces back in stock exactly once in the same transaction, stale/duplicate clicks are refused, dashboard card links here and shows new orders; packing slip `/admin/orders/<id>/print` (checkboxes, address, note, items, totals; buttons hidden on paper). Tested with a real Postgres incl. 5 parallel cancels and a deleted variant
+  - [ ] Phone check: place a test order in the shop, open it in `/admin/orders`, confirm, ship, print the slip (browser print or save as PDF), cancel another one and see the stock come back
 - [ ] Simple sales overview
 
 ## Phase 7 — Content and polish
