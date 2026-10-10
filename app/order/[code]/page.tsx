@@ -46,6 +46,7 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
       {canceled && <p className='mt-3 text-sm text-rose'>این سفارش لغو شده است.</p>}
       {!paid && !canceled && !canPay && <p className='mt-3 text-xs leading-6 text-ink/50'>سفارش شما ثبت شده است. فروشگاه برای هماهنگی با شما تماس می‌گیرد.</p>}
       {canPay && <PayAgainForm code={order.code} />}
+      <Link href={'/track?code=' + order.code} className='mt-5 block text-sm font-bold text-brand underline'>پیگیری سفارش</Link>
       <Link href='/shop' className='mt-6 inline-block rounded-full bg-surface px-8 py-3 font-bold text-brand ring-1 ring-brand/30'>ادامه خرید</Link>
     </section>
   );
