@@ -4,6 +4,8 @@ import ProfileNameForm from '@/components/ProfileNameForm';
 import { hasDb } from '@/lib/db';
 import { getCurrentCustomer, type Customer } from '@/lib/auth/session';
 import Link from 'next/link';
+import AddressBook from '@/components/AddressBook';
+import { listAddresses, type SavedAddress } from '@/lib/addresses';
 import { listCustomerOrders, type HistoryOrder } from '@/lib/accountOrders';
 import { STATUS_LABEL, isStatus } from '@/lib/orderStatus';
 import { formatPrice } from '@/lib/format';
@@ -40,6 +42,13 @@ export default async function AccountPage() {
     console.error('ACCOUNT_ORDERS_ERROR', e);
   }
 
+  let addresses: SavedAddress[] | null = null;
+  try {
+    addresses = await listAddresses(customer.id);
+  } catch (e) {
+    console.error('ACCOUNT_ADDRESSES_ERROR', e);
+  }
+
   return (
     <section className='mx-auto mt-8 max-w-md space-y-5'>
       <h1 className='text-xl font-bold'>{customer.name ? 'سلام ' + customer.name : 'حساب من'}</h1>
@@ -48,6 +57,14 @@ export default async function AccountPage() {
         <p className='mt-1 text-lg font-bold' dir='ltr'>{customer.mobile}</p>
         <ProfileNameForm initialName={customer.name} />
       </div>
+      {addresses === null ? (
+        <div className='rounded-3xl bg-surface p-6'>
+          <h2 className='text-base font-bold'>آدرس‌های من</h2>
+          <p className='mt-3 text-sm text-ink/60'>فعلاً نمی‌توانیم آدرس‌ها را نشان دهیم. کمی بعد دوباره امتحان کنید.</p>
+        </div>
+      ) : (
+        <AddressBook initial={addresses} />
+      )}
       <div className='rounded-3xl bg-surface p-6'>
         <h2 className='text-base font-bold'>سفارش‌های من</h2>
         {orders === null ? (
