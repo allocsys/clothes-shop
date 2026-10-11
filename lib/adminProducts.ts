@@ -1,6 +1,7 @@
 import { randomBytes } from 'crypto';
 import { categoryOptions } from '@/data/categories';
 import { db } from '@/lib/db';
+import { getStorage, isValidKey } from '@/lib/storage';
 
 // Product data for the admin panel: ALL products (hidden ones too), with stock totals.
 // Needs the database; the shop-facing reads live in lib/products.ts.
@@ -147,6 +148,26 @@ export async function updateProductBasics(id: number, v: BasicsInput): Promise<A
     [id, v.title, v.description, v.category, v.price, v.oldPrice, v.isActive],
   );
   return rows[0] ? toAdminProduct(rows[0]) : null;
+}
+
+// ---- Deleting a product ----
+
+// Removes the product; its sizes/colors go with it (ON DELETE CASCADE). Old orders keep their own snapshot
+// (title, size, color, price in order_items), so they are untouched. The photo files are deleted afterwards,
+// only keys we created under products/ and only if no other product still uses them.
+export async function deleteProduct(id: number): Promise<boolean> {
+  const { rows } = await db().query<{ images: string[] }>('DELETE FROM products WHERE id = $1 RETURNING images', [id]);
+  if (!rows[0]) return false;
+  for (const key of rows[0].images) {
+    try {
+      if (!key.startsWith('products/') || !isValidKey(key)) continue;
+      const still = await db().query('SELECT 1 FROM products WHERE $1 = ANY(images) LIMIT 1', [key]);
+      if (still.rowCount === 0) await getStorage().remove(key);
+    } catch {
+      // a file that cannot be removed must never undo the delete
+    }
+  }
+  return true;
 }
 
 // ---- Creating a product ----
