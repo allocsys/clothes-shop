@@ -10,7 +10,7 @@ type Page = { title: string; intro?: string; sections: Section[] };
 
 // First-draft texts. The owner should read every page once and change the
 // numbers (return days, shipping fee) if the real rules are different.
-const RETURN_DAYS = 'هفت';
+const RETURN_DAYS = 'سه';
 
 const pages: Record<string, Page> = {
   'about-us': {
