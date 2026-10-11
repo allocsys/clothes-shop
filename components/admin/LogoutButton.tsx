@@ -10,7 +10,7 @@ export default function LogoutButton() {
     router.refresh();
   }
   return (
-    <button type='button' onClick={logout} className='rounded-full border border-ink/20 px-4 py-1.5 text-sm'>
+    <button type='button' onClick={logout} className='rounded-full border border-ink/20 px-4 py-2.5 text-sm'>
       خروج
     </button>
   );
