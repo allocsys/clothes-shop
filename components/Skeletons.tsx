@@ -22,22 +22,3 @@ export function GridSkeleton({ count = 8 }: { count?: number }) {
     </div>
   );
 }
-
-export function ProductPageSkeleton() {
-  return (
-    <div className='mt-6 grid gap-6 md:grid-cols-2' aria-hidden='true'>
-      <div className={block + ' aspect-[3/4] rounded-2xl'} />
-      <div className='space-y-4'>
-        <div className={block + ' h-7 w-3/4'} />
-        <div className={block + ' h-6 w-1/3'} />
-        <div className={block + ' h-24 w-full rounded-2xl'} />
-        <div className='flex gap-2'>
-          <div className={block + ' h-11 w-14 rounded-full'} />
-          <div className={block + ' h-11 w-14 rounded-full'} />
-          <div className={block + ' h-11 w-14 rounded-full'} />
-        </div>
-        <div className={block + ' h-12 w-full rounded-full'} />
-      </div>
-    </div>
-  );
-}
