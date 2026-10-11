@@ -25,7 +25,7 @@ export type ShippingSettings = {
   rates: Partial<Record<CarrierId, CarrierRates>>;
 };
 
-const BANDS_G = [1000, 2000, 3000, 5000];
+export const BANDS_G = [1000, 2000, 3000, 5000];
 const zoneRates = (fees: number[], extraPerKg: number): ZoneRates => ({
   bands: BANDS_G.map((upToG, i) => ({ upToG, fee: fees[i] })),
   extraPerKg,
