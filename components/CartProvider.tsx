@@ -1,6 +1,7 @@
 'use client';
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { trackEvent } from '@/components/Analytics';
 
 export type CartLine = { slug: string; size: string; color: string; qty: number };
 export type CartKey = Pick<CartLine, 'slug' | 'size' | 'color'>;
@@ -51,6 +52,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, [lines, ready]);
 
   const add = useCallback((key: CartKey, qty = 1) => {
+    trackEvent({ e: 'add_to_cart', path: window.location.pathname, slug: key.slug });
     setLines((prev) => {
       const found = prev.find((l) => same(l, key));
       if (found) return prev.map((l) => (same(l, key) ? { ...l, qty: Math.min(MAX_QTY, l.qty + qty) } : l));
