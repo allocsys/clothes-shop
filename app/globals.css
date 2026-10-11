@@ -155,8 +155,27 @@ html {
   background-color: rgb(var(--c-rose-solid));
 }
 
+/* Light mode atmosphere: a soft gold glow top-center and a lavender glow on the side instead of one flat color.
+   Cards get a hairline ring and a soft purple shadow. :where() keeps this at zero specificity, so a card with its own shadow class wins. */
+body {
+  background-image:
+    radial-gradient(ellipse 90% 380px at 50% -40px, rgba(217, 179, 108, 0.26), transparent 70%),
+    radial-gradient(ellipse 70% 520px at 105% 160px, rgba(107, 79, 160, 0.16), transparent 70%),
+    radial-gradient(ellipse 70% 480px at -5% 70%, rgba(214, 150, 178, 0.14), transparent 70%);
+  background-repeat: no-repeat;
+}
+:where(.bg-surface.rounded-2xl, .bg-surface.rounded-3xl) {
+  box-shadow: 0 0 0 1px rgba(107, 79, 160, 0.09), 0 10px 26px -14px rgba(107, 79, 160, 0.35);
+}
+
 /* Dark mode glass */
 @media (prefers-color-scheme: dark) {
+  body {
+    background-image: none;
+  }
+  :where(.bg-surface.rounded-2xl, .bg-surface.rounded-3xl) {
+    box-shadow: none;
+  }
   .glass-bar {
     background: linear-gradient(180deg, rgba(31, 27, 46, 0.78), rgba(21, 18, 31, 0.55));
     border-bottom-color: rgba(255, 255, 255, 0.1);
