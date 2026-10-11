@@ -222,7 +222,7 @@ async function main() {
     editPath = hrefs.find((h) => /^\/admin\/products\/\d+$/.test(h || '')) || '';
     await listPage.close();
 
-    const adminPages = ['/admin', '/admin/products', '/admin/products/new', '/admin/orders', '/admin/sales'];
+    const adminPages = ['/admin', '/admin/products', '/admin/products/new', '/admin/orders', '/admin/sales', '/admin/analytics'];
     if (editPath) adminPages.push(editPath);
     for (const p of adminPages) await visit(ctx, p, p);
   }
