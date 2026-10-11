@@ -5,7 +5,7 @@ Live: https://clothes-shop-production-d9d8.up.railway.app
 
 How we work: one step at a time. Finish a step, check it on the live site, tick the box, then start the next one.
 Legend: `[x]` done, `[ ]` to do, `[?]` needs a decision from the owner first.
-Last updated: 2026-10-11 (accessibility pass done; the purchase flow is now tested end to end in CI by a phone-size browser, see Phase 8; the 2026-10-11 edits pass CI but are not all phone-checked yet). Right now: Phase 5 accounts are done and tested (login, profile name, order history, saved addresses, checkout prefill; the prefill still needs the owner's phone check); next = Phase 7 polish: 404/500 pages and empty states are done; still to do: accessibility pass, mobile menu links. The info pages (About, Contact, FAQ, Returns, Terms) wait for the owner's real texts and currently show a placeholder sentence. Then Phase 8 SEO. Still waiting on the owner: test order for the SMS phone check, SMS provider choice. Mock payment and mock SMS stay ON in Railway staging.
+Last updated: 2026-10-11 (analytics built and CI-tested; accessibility pass done; the purchase flow is now tested end to end in CI by a phone-size browser, see Phase 8; the 2026-10-11 edits pass CI but are not all phone-checked yet). Right now: Phase 5 accounts are done and tested (login, profile name, order history, saved addresses, checkout prefill; the prefill still needs the owner's phone check); next = Phase 7 polish: 404/500 pages and empty states are done; still to do: accessibility pass, mobile menu links. The info pages (About, Contact, FAQ, Returns, Terms) wait for the owner's real texts and currently show a placeholder sentence. Then Phase 8 SEO. Still waiting on the owner: test order for the SMS phone check, SMS provider choice. Mock payment and mock SMS stay ON in Railway staging.
 
 ---
 
@@ -147,7 +147,14 @@ Last updated: 2026-10-11 (accessibility pass done; the purchase flow is now test
 - [?] Decide: domain name
 - [ ] Connect custom domain to Railway + HTTPS
 - [ ] Delete leftover empty Railway project `mahpari-shop`
-- [ ] Analytics
+- [x] Analytics (2026-10-11, first-party, no cookies, no IP stored; visitor = daily-changing hash, so nobody is followed across days; bots ignored):
+  - [x] `analytics_events` table (migration 008), `lib/analytics.ts`, collection endpoint `POST /api/a` (always 204, 120 events per minute per address)
+  - [x] Browser tracker `components/Analytics.tsx`: page views, product views, referrer + utm only on the first page of a visit; add to cart (`CartProvider`), checkout start (`CartView`), search with result count (`SearchTrack`)
+  - [x] Server-side events that cannot be faked: order placed (`/api/orders`) and order paid (`/api/pay/callback`, once per order)
+  - [x] Admin page `/admin/analytics` (`lib/adminAnalytics.ts`): visits and page views for 7/30/90 days, daily bars, purchase funnel, sources (Instagram, Telegram, Google...), devices, top pages and products, searches and searches with no result
+  - [x] CI proves it: smoke posts the events, checks the stored rows and that the admin page shows them; phone-check opens the page
+  - [ ] Phone check: browse the live shop for a minute, then open `/admin/analytics`
+  - [ ] Owner: mention in the privacy text (draft added to the Terms page 2026-10-11)
 - [ ] Final end-to-end test: browse → cart → order → pay → admin sees it
 
 ---
