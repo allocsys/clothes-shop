@@ -15,6 +15,9 @@ export default function AddToCart({ slug, category, sizes, colors, stock, image 
   const [size, setSize] = useState(sizes.length === 1 ? sizes[0] : '');
   const [color, setColor] = useState(colors.length === 1 ? colors[0] : '');
   const [status, setStatus] = useState<'idle' | 'error' | 'added' | 'max'>('idle');
+  // Tapping something unavailable gives one small shake (disabled buttons never fire clicks, so these use aria-disabled).
+  const [shakeChip, setShakeChip] = useState('');
+  const [shakeSold, setShakeSold] = useState(false);
 
   const soldOut = isSoldOut(stock);
   const has = (s: string, c: string) => stockOf(stock, s, c) > 0;
@@ -60,12 +63,17 @@ export default function AddToCart({ slug, category, sizes, colors, stock, image 
               key={s}
               type='button'
               aria-pressed={size === s}
-              disabled={gone}
+              aria-disabled={gone || undefined}
               onClick={() => {
+                if (gone) {
+                  setShakeChip('s:' + s);
+                  return;
+                }
                 setSize(s);
                 setStatus('idle');
               }}
-              className={'min-w-10 text-center ' + chip(size === s, gone)}
+              onAnimationEnd={() => setShakeChip('')}
+              className={'min-w-10 text-center ' + chip(size === s, gone) + (shakeChip === 's:' + s ? ' soft-shake' : '')}
             >
               {s}
             </button>
@@ -82,12 +90,17 @@ export default function AddToCart({ slug, category, sizes, colors, stock, image 
               key={c}
               type='button'
               aria-pressed={color === c}
-              disabled={gone}
+              aria-disabled={gone || undefined}
               onClick={() => {
+                if (gone) {
+                  setShakeChip('c:' + c);
+                  return;
+                }
                 setColor(c);
                 setStatus('idle');
               }}
-              className={chip(color === c, gone)}
+              onAnimationEnd={() => setShakeChip('')}
+              className={chip(color === c, gone) + (shakeChip === 'c:' + c ? ' soft-shake' : '')}
             >
               {c}
             </button>
@@ -96,9 +109,23 @@ export default function AddToCart({ slug, category, sizes, colors, stock, image 
       </div>
 
       {soldOut ? (
-        <button type='button' disabled className='mt-8 w-full cursor-not-allowed rounded-full bg-ink/15 py-3.5 font-bold text-ink/70 md:w-auto md:px-14'>
-          ناموجود
-        </button>
+        <div className='mt-8'>
+          <button
+            type='button'
+            aria-disabled='true'
+            onClick={() => setShakeSold(true)}
+            onAnimationEnd={() => setShakeSold(false)}
+            className={'inline-flex w-full cursor-not-allowed items-center justify-center gap-2 rounded-full bg-ink/15 py-3.5 font-bold text-ink/70 md:w-auto md:px-14' + (shakeSold ? ' soft-shake' : '')}
+          >
+            <span aria-hidden='true' className='moon-sway'>
+              <svg width='18' height='18' viewBox='0 0 24 24' fill='currentColor' stroke='currentColor' strokeWidth='1.5' strokeLinejoin='round'>
+                <path d='M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z' />
+              </svg>
+            </span>
+            ناموجود
+          </button>
+          <p className='mt-3 text-sm text-ink/70'>فعلاً تموم شده 🌙</p>
+        </div>
       ) : (
         <button type='button' onClick={(e) => onAdd(e.currentTarget)} className='mt-8 w-full rounded-full bg-brand py-3.5 font-bold text-white active:scale-[0.98] md:w-auto md:px-14'>
           افزودن به سبد خرید
