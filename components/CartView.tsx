@@ -10,6 +10,7 @@ import { trackEvent } from '@/components/Analytics';
 import { MAX_QTY, useCart, type CartLine } from '@/components/CartProvider';
 import { useProducts } from '@/components/useProducts';
 import type { SavedAddress } from '@/lib/addressTypes';
+import { PROVINCES } from '@/data/provinces';
 import { FREE_SHIPPING_FROM, isValidIranMobile, priceOrder } from '@/lib/checkout';
 import { formatPrice } from '@/lib/format';
 import { saveLastOrder } from '@/lib/lastOrder';
@@ -25,7 +26,7 @@ type Done = { code: string; total: number; payError?: boolean };
 export default function CartView() {
   const { lines, ready, setQty, remove, restore, clear } = useCart();
   const { products, loading } = useProducts(lines.map((l) => l.slug));
-  const [form, setForm] = useState({ name: '', phone: '', city: '', address: '', postalCode: '', notes: '' });
+  const [form, setForm] = useState({ name: '', phone: '', province: '', city: '', address: '', postalCode: '', notes: '' });
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState<Done | null>(null);
@@ -100,6 +101,45 @@ export default function CartView() {
     setForm((f) => ({ ...f, city: a.city, postalCode: a.postalCode, address: a.address }));
   }
 
+  // Shipping fee: asked from the server (prices and weights live there) whenever the province or the cart changes.
+  const [quote, setQuote] = useState<{ shipping: number; carrierLabel: string } | null>(null);
+  const [quoteState, setQuoteState] = useState<'idle' | 'loading' | 'error'>('idle');
+  const quoteKey = lines.map((l) => l.slug + ':' + l.qty).join(',');
+  useEffect(() => {
+    setQuote(null);
+    if (!form.province || !quoteKey) {
+      setQuoteState('idle');
+      return;
+    }
+    let stale = false;
+    setQuoteState('loading');
+    const items = quoteKey.split(',').map((s) => {
+      const i = s.lastIndexOf(':');
+      return { slug: s.slice(0, i), qty: Number(s.slice(i + 1)) };
+    });
+    fetch('/api/shipping/quote', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ province: form.province, items }),
+    })
+      .then((r) => r.json())
+      .then((d) => {
+        if (stale) return;
+        if (d?.ok) {
+          setQuote({ shipping: d.shipping, carrierLabel: d.carrierLabel });
+          setQuoteState('idle');
+        } else {
+          setQuoteState('error');
+        }
+      })
+      .catch(() => {
+        if (!stale) setQuoteState('error');
+      });
+    return () => {
+      stale = true;
+    };
+  }, [form.province, quoteKey]);
+
   if (done) {
     return (
       <section className='mx-auto mt-10 max-w-md rounded-3xl bg-surface p-8 text-center'>
@@ -160,12 +200,27 @@ export default function CartView() {
     );
   }
 
-  const { subtotal, shipping, total } = priceOrder(detailed.map((d) => d.line), products);
+  const { subtotal } = priceOrder(detailed.map((d) => d.line), products);
+  const shipping = quote ? quote.shipping : 0;
+  const total = subtotal + shipping;
+  const shippingText = !form.province
+    ? 'پس از انتخاب استان'
+    : quoteState === 'loading'
+      ? '...'
+      : quote
+        ? quote.shipping === 0
+          ? 'رایگان'
+          : formatPrice(quote.shipping)
+        : 'نامشخص';
   const missing = FREE_SHIPPING_FROM - subtotal;
 
   async function submit(e: FormEvent) {
     e.preventDefault();
     setError('');
+    if (!form.province) {
+      setError('استان را انتخاب کنید.');
+      return;
+    }
     if (!form.name.trim() || !form.city.trim() || !form.address.trim()) {
       setError('نام، شهر و آدرس را کامل وارد کنید.');
       return;
@@ -237,9 +292,12 @@ export default function CartView() {
         <h2 className='font-bold'>خلاصه سفارش</h2>
         <dl className='mt-3 space-y-2 text-sm'>
           <div className='flex justify-between'><dt className='text-ink/70'>جمع کالاها</dt><dd>{formatPrice(subtotal)}</dd></div>
-          <div className='flex justify-between'><dt className='text-ink/70'>هزینه ارسال</dt><dd>{shipping === 0 ? 'رایگان' : formatPrice(shipping)}</dd></div>
+          <div className='flex justify-between'><dt className='text-ink/70'>هزینه ارسال</dt><dd>{shippingText}</dd></div>
           <div className='flex justify-between border-t border-ink/10 pt-2 font-bold'><dt>مبلغ قابل پرداخت</dt><dd className='text-brand'>{formatPrice(total)}</dd></div>
         </dl>
+        {!form.province && <p className='mt-2 text-xs text-ink/70'>هزینه ارسال پس از انتخاب استان به مبلغ اضافه می‌شود.</p>}
+        {quote && quote.shipping > 0 && <p className='mt-2 text-xs text-ink/70'>ارسال با {quote.carrierLabel}</p>}
+        {quoteState === 'error' && <p role='alert' className='mt-2 text-xs text-rose'>محاسبهٔ هزینه ارسال انجام نشد. استان را دوباره انتخاب کنید یا صفحه را تازه کنید.</p>}
         {missing > 0 && (
           <div className='mt-3'>
             <div aria-hidden='true' className='h-1.5 overflow-hidden rounded-full bg-ink/10'>
@@ -260,6 +318,12 @@ export default function CartView() {
               ))}
             </select>
           )}
+          <select className={field} aria-label='استان' autoComplete='address-level1' value={form.province} onChange={set('province')}>
+            <option value=''>انتخاب استان</option>
+            {PROVINCES.map((p) => (
+              <option key={p} value={p}>{p}</option>
+            ))}
+          </select>
           <div className='grid grid-cols-2 gap-3'>
             <input className={field} placeholder='شهر' aria-label='شهر' autoComplete='address-level2' value={form.city} onChange={set('city')} />
             <input className={field} placeholder='کد پستی (اختیاری)' inputMode='numeric' aria-label='کد پستی' autoComplete='postal-code' value={form.postalCode} onChange={set('postalCode')} />
