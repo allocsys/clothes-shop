@@ -11,6 +11,7 @@ import ChromeGate from '@/components/ChromeGate';
 import { CartProvider } from '@/components/CartProvider';
 import { WishlistProvider } from '@/components/WishlistProvider';
 import { AccountProvider } from '@/components/AccountProvider';
+import Analytics from '@/components/Analytics';
 import { site } from '@/lib/site';
 
 export const metadata: Metadata = {
@@ -38,6 +39,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         >
           پرش به محتوای صفحه
         </a>
+        <Analytics />
         <AccountProvider>
         <CartProvider>
         <WishlistProvider>
