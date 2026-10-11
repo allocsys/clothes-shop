@@ -30,7 +30,7 @@ export default async function AdminProductsPage() {
       <Link href='/admin' className='text-sm text-brand'>← پنل مدیریت</Link>
       <div className='mt-3 flex items-center justify-between gap-3'>
         <h1 className='text-xl font-bold'>محصولات</h1>
-        <Link href='/admin/products/new' className='rounded-full bg-brand px-4 py-2 text-sm font-bold text-white'>+ محصول جدید</Link>
+        <Link href='/admin/products/new' className='rounded-full bg-brand px-4 py-2.5 text-sm font-bold text-white'>+ محصول جدید</Link>
       </div>
       <p className='mt-1 text-sm text-ink/60'>
         {fa(products.length)} محصول{hidden > 0 ? ` (${fa(hidden)} مخفی)` : ''}
@@ -63,12 +63,12 @@ export default async function AdminProductsPage() {
                   <span className='font-bold text-rose'>ناموجود</span>
                 )}
               </p>
-              <div className='mt-2 flex gap-4 text-xs'>
-                <Link href={'/admin/products/' + p.id} className='font-bold text-brand'>
+              <div className='-ms-2 mt-1 flex gap-1 text-xs'>
+                <Link href={'/admin/products/' + p.id} className='inline-block px-2 py-3 font-bold text-brand'>
                   ویرایش
                 </Link>
                 {p.isActive && (
-                  <Link href={'/product/' + p.slug} target='_blank' className='text-brand'>
+                  <Link href={'/product/' + p.slug} target='_blank' className='inline-block px-2 py-3 text-brand'>
                     مشاهده در فروشگاه
                   </Link>
                 )}
