@@ -80,6 +80,7 @@ export type OrderDetail = {
   id: number; code: string; status: OrderStatus; customerName: string; mobile: string; city: string;
   postalCode: string; address: string; note: string; subtotal: number; shipping: number; total: number;
   createdAt: string; items: OrderItemRow[];
+  province: string | null; shippingCarrier: string | null; weightG: number | null; // null on orders placed before shipping by province
   paid: boolean; paidAt: string | null; payments: PaymentRow[];
 };
 export type PaymentRow = {
@@ -89,7 +90,7 @@ export type PaymentRow = {
 
 export async function getOrder(id: number): Promise<OrderDetail | null> {
   const o = await db().query(
-    `SELECT id, code, status, customer_name, mobile, city, postal_code, address, note, subtotal, shipping, total, created_at, payment_status, paid_at
+    `SELECT id, code, status, customer_name, mobile, city, postal_code, address, note, subtotal, shipping, total, created_at, payment_status, paid_at, province, shipping_carrier, weight_g
        FROM orders WHERE id = $1`,
     [id],
   );
@@ -115,6 +116,7 @@ export async function getOrder(id: number): Promise<OrderDetail | null> {
     })),
     postalCode: r.postal_code, address: r.address, note: r.note, subtotal: r.subtotal, shipping: r.shipping,
     total: r.total, createdAt: (r.created_at as Date).toISOString(),
+    province: r.province, shippingCarrier: r.shipping_carrier, weightG: r.weight_g,
     items: items.rows.map((i) => ({ slug: i.product_slug, title: i.title, size: i.size, color: i.color, qty: i.qty, unitPrice: i.unit_price })),
   };
 }
