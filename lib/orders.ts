@@ -9,13 +9,14 @@ import { releaseExpiredOrdersSoon } from './orderExpiry';
 export type Customer = {
   name: string;
   phone: string;
+  province?: string;
   city: string;
   address: string;
   postalCode: string;
   notes: string;
 };
 
-export type OrderTotals = { subtotal: number; shipping: number; total: number };
+export type OrderTotals = { subtotal: number; shipping: number; total: number; carrier?: string; weightG?: number };
 
 export type CreateOrderResult =
   | { ok: true; code: string }
@@ -94,8 +95,8 @@ export async function createOrder(
     for (let attempt = 0; attempt < 5 && !orderId; attempt++) {
       code = makeCode();
       const res = await client.query(
-        `INSERT INTO orders (code, customer_name, mobile, city, postal_code, address, note, subtotal, shipping, total, pay_online)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+        `INSERT INTO orders (code, customer_name, mobile, city, postal_code, address, note, subtotal, shipping, total, pay_online, province, shipping_carrier, weight_g)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
          ON CONFLICT (code) DO NOTHING
          RETURNING id`,
         [
@@ -110,6 +111,9 @@ export async function createOrder(
           totals.shipping,
           totals.total,
           Boolean(opts.payOnline),
+          customer.province || null,
+          totals.carrier ?? null,
+          totals.weightG ?? null,
         ],
       );
       if (res.rowCount) orderId = res.rows[0].id;
