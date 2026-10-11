@@ -1,6 +1,7 @@
 import { db } from '@/lib/db';
 import { toEnglishDigits } from '@/lib/checkout';
 import { ADDRESS_LIMIT, type SavedAddress } from '@/lib/addressTypes';
+import { isProvince } from '@/data/provinces';
 
 // Saved delivery addresses. Every function takes the customer id of the logged-in customer and only ever
 // touches that customer's own rows. Changes run in one transaction under a per-customer lock, so two
@@ -8,7 +9,7 @@ import { ADDRESS_LIMIT, type SavedAddress } from '@/lib/addressTypes';
 export { ADDRESS_LIMIT };
 export type { SavedAddress };
 
-export type AddressInput = { title: string; city: string; postalCode: string; address: string };
+export type AddressInput = { title: string; province: string; city: string; postalCode: string; address: string };
 
 const clean = (v: unknown, max: number) =>
   typeof v === 'string' ? v.replace(/[\u0000-\u001f\u007f<>]/g, ' ').replace(/[ \t]+/g, ' ').trim().slice(0, max) : '';
@@ -17,24 +18,27 @@ const clean = (v: unknown, max: number) =>
 export function validateAddress(body: any): { ok: true; value: AddressInput } | { ok: false; error: string } {
   const title = clean(body?.title, 30);
   const city = clean(body?.city, 60);
+  const province = clean(body?.province, 40);
   const address = clean(body?.address, 400);
   const postalCode = toEnglishDigits(clean(body?.postalCode, 20)).replace(/[\s-]/g, '');
   if (city.length < 2) return { ok: false, error: 'شهر را وارد کنید.' };
   if (address.length < 8) return { ok: false, error: 'آدرس را کامل‌تر بنویسید.' };
   if (postalCode && !/^\d{10}$/.test(postalCode)) return { ok: false, error: 'کد پستی باید ۱۰ رقم باشد.' };
-  return { ok: true, value: { title, city, postalCode, address } };
+  if (!isProvince(province)) return { ok: false, error: 'استان را انتخاب کنید.' };
+  return { ok: true, value: { title, province, city, postalCode, address } };
 }
 
 const toAddress = (r: any): SavedAddress => ({
   id: r.id,
   title: r.title,
   city: r.city,
+  province: r.province ?? '',
   postalCode: r.postal_code,
   address: r.address,
   isDefault: r.is_default,
 });
 
-const SELECT = `SELECT id, title, city, postal_code, address, is_default FROM customer_addresses WHERE customer_id = $1 ORDER BY is_default DESC, id`;
+const SELECT = `SELECT id, title, province, city, postal_code, address, is_default FROM customer_addresses WHERE customer_id = $1 ORDER BY is_default DESC, id`;
 
 export async function listAddresses(customerId: number): Promise<SavedAddress[]> {
   const r = await db().query(SELECT, [customerId]);
@@ -74,8 +78,8 @@ export function addAddress(customerId: number, input: AddressInput, makeDefault:
     const asDefault = makeDefault || count === 0;
     if (asDefault) await q(`UPDATE customer_addresses SET is_default = false WHERE customer_id = $1 AND is_default`, [customerId]);
     await q(
-      `INSERT INTO customer_addresses (customer_id, title, city, postal_code, address, is_default) VALUES ($1, $2, $3, $4, $5, $6)`,
-      [customerId, input.title, input.city, input.postalCode, input.address, asDefault],
+      `INSERT INTO customer_addresses (customer_id, title, province, city, postal_code, address, is_default) VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+      [customerId, input.title, input.province, input.city, input.postalCode, input.address, asDefault],
     );
     return null;
   });
@@ -89,8 +93,8 @@ export function updateAddress(customerId: number, id: number, input: AddressInpu
     // An address that is already the default stays the default (there must always be one).
     const isDefault = makeDefault || own.rows[0].is_default;
     await q(
-      `UPDATE customer_addresses SET title = $3, city = $4, postal_code = $5, address = $6, is_default = $7 WHERE id = $1 AND customer_id = $2`,
-      [id, customerId, input.title, input.city, input.postalCode, input.address, isDefault],
+      `UPDATE customer_addresses SET title = $3, province = $4, city = $5, postal_code = $6, address = $7, is_default = $8 WHERE id = $1 AND customer_id = $2`,
+      [id, customerId, input.title, input.province, input.city, input.postalCode, input.address, isDefault],
     );
     return null;
   });
