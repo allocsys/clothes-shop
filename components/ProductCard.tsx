@@ -6,7 +6,8 @@ import { formatPrice } from '@/lib/format';
 import { isSoldOut } from '@/lib/stock';
 
 // headingLevel: 3 under a section heading (h2), 2 on pages whose only heading above the list is the h1.
-export default function ProductCard({ product, headingLevel = 3 }: { product: Product; headingLevel?: 2 | 3 }) {
+// priority: true for the first cards on screen, so their photos load at once instead of lazily (better LCP).
+export default function ProductCard({ product, headingLevel = 3, priority }: { product: Product; headingLevel?: 2 | 3; priority?: boolean }) {
   const Heading = headingLevel === 2 ? 'h2' : 'h3';
   const soldOut = isSoldOut(product.stock);
   const off = product.oldPrice ? Math.round((1 - product.price / product.oldPrice) * 100) : 0;
@@ -20,6 +21,7 @@ export default function ProductCard({ product, headingLevel = 3 }: { product: Pr
             seed={product.slug}
             alt={product.title}
             sizes='(min-width: 768px) 25vw, 50vw'
+            priority={priority}
           />
           {soldOut && (
             <span className='absolute inset-x-0 bottom-0 bg-ink/70 py-1.5 text-center text-xs font-bold text-white'>ناموجود</span>
