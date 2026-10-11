@@ -13,6 +13,7 @@ type CartContextValue = {
   add: (key: CartKey, qty?: number) => void;
   setQty: (key: CartKey, qty: number) => void;
   remove: (key: CartKey) => void;
+  restore: (line: CartLine, index: number) => void;
   clear: () => void;
 };
 
@@ -67,11 +68,20 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const remove = useCallback((key: CartKey) => setLines((prev) => prev.filter((l) => !same(l, key))), []);
+  // Undo for remove: put the line back at its old position (no analytics event, nothing if it is already there)
+  const restore = useCallback((line: CartLine, index: number) => {
+    setLines((prev) => {
+      if (prev.some((l) => same(l, line))) return prev;
+      const next = [...prev];
+      next.splice(Math.min(Math.max(index, 0), next.length), 0, line);
+      return next;
+    });
+  }, []);
   const clear = useCallback(() => setLines([]), []);
 
   const value = useMemo<CartContextValue>(
-    () => ({ lines, ready, count: lines.reduce((n, l) => n + l.qty, 0), add, setQty, remove, clear }),
-    [lines, ready, add, setQty, remove, clear],
+    () => ({ lines, ready, count: lines.reduce((n, l) => n + l.qty, 0), add, setQty, remove, restore, clear }),
+    [lines, ready, add, setQty, remove, restore, clear],
   );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
