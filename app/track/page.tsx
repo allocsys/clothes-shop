@@ -9,7 +9,10 @@ export default async function TrackPage({ searchParams }: { searchParams: Promis
   const initial = typeof code === 'string' ? normalizeOrderCode(code.slice(0, 30)) : '';
   return (
     <section className='mx-auto mt-8 max-w-md'>
-      <h1 className='text-xl font-bold'>پیگیری سفارش</h1>
+      <h1 className='flex items-center gap-2 text-xl font-bold'>
+        <span aria-hidden='true' className='h-5 w-1.5 rounded-full bg-gold' />
+        <span>پیگیری سفارش</span>
+      </h1>
       <p className='mt-2 mb-5 text-sm leading-7 text-ink/70'>کد پیگیری سفارش و شماره موبایلی که هنگام خرید وارد کرده‌اید را وارد کنید.</p>
       <TrackForm initialCode={isOrderCode(initial) ? initial : ''} />
     </section>
