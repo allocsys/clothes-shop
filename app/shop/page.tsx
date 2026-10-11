@@ -4,8 +4,24 @@ import { categories, categorySlugs } from '@/data/categories';
 import { toEnglishDigits } from '@/lib/checkout';
 import { formatPrice } from '@/lib/format';
 import { getProducts } from '@/lib/products';
+import type { Metadata } from 'next';
+import { absoluteUrl } from '@/lib/siteUrl';
 
-export const metadata = { description: 'خرید آنلاین مانتو، شومیز، شلوار، دامن، تی‌شرت و ست زنانه با قیمت مناسب؛ فیلتر بر اساس سایز، رنگ و قیمت.', title: 'فروشگاه' };
+const SHOP_DESCRIPTION = 'خرید آنلاین مانتو، شومیز، شلوار، دامن، تی‌شرت و ست زنانه با قیمت مناسب؛ فیلتر بر اساس سایز، رنگ و قیمت.';
+
+// One page per category for search engines; any filter, search or sort view points back to it and is noindex.
+export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
+  const sp = await searchParams;
+  const cat = one(sp.category);
+  const found = cat ? chips.find((c) => c.slug === cat) : undefined;
+  const filtered = [sp.q, sp.sort, sp.size, sp.color, sp.min, sp.max].some((v) => many(v).length > 0);
+  return {
+    title: found ? found.title : 'فروشگاه',
+    description: found ? 'خرید آنلاین ' + found.title + ' زنانه با قیمت مناسب؛ فیلتر بر اساس سایز، رنگ و قیمت.' : SHOP_DESCRIPTION,
+    alternates: { canonical: absoluteUrl(found ? '/shop?category=' + found.slug : '/shop') },
+    ...(filtered || (cat && !found) ? { robots: { index: false, follow: true } } : {}),
+  };
+}
 export const dynamic = 'force-dynamic';
 
 type Raw = string | string[] | undefined;
