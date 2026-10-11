@@ -195,7 +195,7 @@ jobs:
       DATABASE_URL: postgres://postgres:postgres@localhost:5432/shop
       ADMIN_PASSWORD: ci-test-password-123
       UPLOAD_DIR: /tmp/uploads
-      SITE_URL: https://shop.example.test
+      SITE_URL: http://localhost:3100
       SMS_PROVIDER: mock
       ALLOW_MOCK_SMS: '1'
       PAYMENT_PROVIDER: mock
