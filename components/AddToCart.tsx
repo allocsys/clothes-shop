@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useCart } from '@/components/CartProvider';
+import { MAX_QTY, useCart } from '@/components/CartProvider';
 import { flyToCart } from '@/lib/cartAnimation';
 import { isSoldOut, stockOf, type StockMap } from '@/lib/stock';
 
@@ -11,10 +11,10 @@ type Props = { slug: string; category: string; sizes: string[]; colors: string[]
 const LOW_STOCK = 3; // show "only N left" at or below this
 
 export default function AddToCart({ slug, category, sizes, colors, stock, image }: Props) {
-  const { add } = useCart();
+  const { add, lines } = useCart();
   const [size, setSize] = useState(sizes.length === 1 ? sizes[0] : '');
   const [color, setColor] = useState(colors.length === 1 ? colors[0] : '');
-  const [status, setStatus] = useState<'idle' | 'error' | 'added'>('idle');
+  const [status, setStatus] = useState<'idle' | 'error' | 'added' | 'max'>('idle');
 
   const soldOut = isSoldOut(stock);
   const has = (s: string, c: string) => stockOf(stock, s, c) > 0;
@@ -22,6 +22,9 @@ export default function AddToCart({ slug, category, sizes, colors, stock, image 
   const sizeGone = (s: string) => (color ? !has(s, color) : colors.every((c) => !has(s, c)));
   const colorGone = (c: string) => (size ? !has(size, c) : sizes.every((s) => !has(s, c)));
   const left = size && color ? stockOf(stock, size, color) : Infinity;
+  // What this size + color already has in the cart, and the most the cart may hold of it (stock or the per-item limit).
+  const inCart = size && color ? (lines.find((l) => l.slug === slug && l.size === size && l.color === color)?.qty ?? 0) : 0;
+  const cap = Math.min(MAX_QTY, left);
 
   const chip = (active: boolean, gone: boolean) =>
     'min-h-10 rounded-full border px-4 py-1.5 text-sm transition-colors ' +
@@ -37,6 +40,10 @@ export default function AddToCart({ slug, category, sizes, colors, stock, image 
       return;
     }
     if (!has(size, color)) return;
+    if (inCart >= cap) {
+      setStatus('max');
+      return;
+    }
     add({ slug, size, color });
     setStatus('added');
     flyToCart(button, { category, seed: slug, image });
@@ -100,7 +107,15 @@ export default function AddToCart({ slug, category, sizes, colors, stock, image 
 
       <div aria-live='polite' className='mt-3 min-h-6 text-sm'>
         {status === 'error' && <p className='text-rose'>لطفاً سایز و رنگ را انتخاب کنید.</p>}
-        {status !== 'error' && left <= LOW_STOCK && left > 0 && (
+        {status === 'max' && (
+          <p className='text-rose'>
+            {left < MAX_QTY
+              ? 'همهٔ موجودی این مورد (' + new Intl.NumberFormat('fa-IR').format(left) + ' عدد) در سبد شماست.'
+              : 'حداکثر ' + new Intl.NumberFormat('fa-IR').format(MAX_QTY) + ' عدد از هر مورد می‌توانید سفارش دهید.'}{' '}
+            <Link href='/cart' className='font-bold underline'>مشاهده سبد خرید</Link>
+          </p>
+        )}
+        {status !== 'error' && status !== 'max' && left <= LOW_STOCK && left > 0 && (
           <p className='text-rose'>تنها {new Intl.NumberFormat('fa-IR').format(left)} عدد باقی مانده است.</p>
         )}
         {status === 'added' && (
