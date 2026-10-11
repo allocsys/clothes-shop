@@ -13,6 +13,7 @@ import type { SavedAddress } from '@/lib/addressTypes';
 import { FREE_SHIPPING_FROM, isValidIranMobile, priceOrder } from '@/lib/checkout';
 import { formatPrice } from '@/lib/format';
 import { saveLastOrder } from '@/lib/lastOrder';
+import { stockOf } from '@/lib/stock';
 
 const fa = (n: number) => new Intl.NumberFormat('fa-IR').format(n);
 
@@ -214,11 +215,12 @@ export default function CartView() {
               <div className='flex min-w-0 flex-1 flex-col'>
                 <Link href={'/product/' + product.slug} className='inline-block py-2 font-bold'>{product.title}</Link>
                 <p className='mt-1 text-xs text-ink/70'>سایز {line.size} · {line.color}</p>
+                {line.qty >= stockOf(product.stock, line.size, line.color) && <p className='mt-0.5 text-xs text-rose'>حداکثر موجودی</p>}
                 <div className='mt-auto flex items-end justify-between pt-2'>
                   <div className='flex items-center rounded-full border border-ink/15'>
                     <button type='button' aria-label='کم کردن' onClick={() => setQty(line, line.qty - 1)} className='grid h-10 w-10 place-items-center text-lg'>−</button>
                     <span className='min-w-6 text-center text-sm font-bold'>{fa(line.qty)}</span>
-                    <button type='button' aria-label='زیاد کردن' disabled={line.qty >= MAX_QTY} onClick={() => setQty(line, line.qty + 1)} className='grid h-10 w-10 place-items-center text-lg disabled:opacity-30'>+</button>
+                    <button type='button' aria-label='زیاد کردن' disabled={line.qty >= Math.min(MAX_QTY, stockOf(product.stock, line.size, line.color))} onClick={() => setQty(line, line.qty + 1)} className='grid h-10 w-10 place-items-center text-lg disabled:opacity-30'>+</button>
                   </div>
                   <div className='text-left'>
                     <p className='text-sm font-bold text-brand'>{formatPrice(product.price * line.qty)}</p>
