@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { isValidIranMobile, normalizePhone, priceOrder, type OrderItem } from '@/lib/checkout';
+import { isValidIranMobile, normalizePhone, type OrderItem } from '@/lib/checkout';
 import { hasDb } from '@/lib/db';
 import { createOrder, type OrderTotals } from '@/lib/orders';
 import { isProvince } from '@/data/provinces';
