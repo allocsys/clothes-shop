@@ -34,6 +34,9 @@ export async function POST(req: Request) {
     notes: text(body?.customer?.notes, 400),
   };
 
+  if (!customer.province) {
+    return NextResponse.json({ ok: false, error: 'استان را انتخاب کنید.' }, { status: 400 });
+  }
   if (!customer.name || !customer.city || !customer.address) {
     return NextResponse.json({ ok: false, error: 'نام، شهر و آدرس را کامل وارد کنید.' }, { status: 400 });
   }
@@ -57,12 +60,8 @@ export async function POST(req: Request) {
   }
 
   // Shipping depends on the province and the parcel weight, always worked out here from our own data.
-  // Without a (valid) province the old flat fee still applies for now.
-  let totals: OrderTotals = priceOrder(items, products);
-  if (customer.province) {
-    const q = await quoteForCart(items, products, customer.province);
-    totals = { subtotal: q.subtotal, shipping: q.shipping, total: q.subtotal + q.shipping, carrier: q.carrier, weightG: q.weightG };
-  }
+  const q = await quoteForCart(items, products, customer.province);
+  const totals: OrderTotals = { subtotal: q.subtotal, shipping: q.shipping, total: q.subtotal + q.shipping, carrier: q.carrier, weightG: q.weightG };
   // With a database: save the order and reduce stock in one transaction.
   if (hasDb()) {
     let result;
