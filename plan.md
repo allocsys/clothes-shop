@@ -21,14 +21,14 @@ Last updated: 2026-10-11 (cart undo bar, product photo in the add-to-cart animat
 - [x] Deployed on Railway, auto-deploy on push to `main`
 
 ## Phase 1 — Verify what we built
-- [ ] Check the drawer menu, dark mode and cart on a real phone after deploy (see the five checks below)
+- [x] Check the drawer menu, dark mode and cart on a real phone after deploy (all passed, owner, 2026-10-11) (see the five checks below)
 - [x] Confirm the Railway build is green after the cart commits (live site serves cart, product and filter pages, 2026-10-09)
-- [ ] Phone check 1: drawer menu (opens from right, tabs, accordion, login button, closes on X / outside tap)
-- [ ] Phone check 2: dark mode (header, cards, chips, footer readable)
+- [x] Phone check 1 (passed 2026-10-11): drawer menu (opens from right, tabs, accordion, login button, closes on X / outside tap)
+- [x] Phone check 2 (passed 2026-10-11): dark mode (header, cards, chips, footer readable)
 - [x] Phone check 3: product page, pick size + color, add to cart, header badge updates (confirmed 2026-10-10)
 - [x] Phone check 4: cart page and checkout form, place a test order, see confirmation (confirmed 2026-10-10)
-- [ ] Phone check 5: shop filter panel (size, color, price, sort, remove pills)
-- [ ] Fix anything that looks wrong (send screenshots)
+- [x] Phone check 5 (passed 2026-10-11): shop filter panel (size, color, price, sort, remove pills)
+- [x] Fix anything that looks wrong (nothing left, owner 2026-10-11) (send screenshots)
 
 ## Phase 2 — Shop experience
 - [x] Filters on `/shop`: size, color, price range
@@ -38,7 +38,7 @@ Last updated: 2026-10-11 (cart undo bar, product photo in the add-to-cart animat
 - [x] Product page: related products
 - [x] Wishlist (heart on cards + product page, /wishlist page, header/tab count)
 - [x] Add-to-cart animation v2 (2026-10-10): the product's own garment drawing (shirt, pants, dress, coat, set, scarf; `lib/garments.ts`) pops up above the button, folds in half sideways, folds in half upward, then flies to the header cart icon; the icon bounces and a short "+۱" pops (`lib/cartAnimation.ts`, `components/CartFeedback.tsx`). Ignores reduced motion on purpose. Tested in headless mobile Chromium; waiting for a phone check
-- [ ] Phone check: add-to-cart fold-and-fly (v2). Note: the first phone test of v1 showed only the "+۱" because the phone had reduced motion on; v2 ignores that setting
+- [x] Phone check (passed 2026-10-11): add-to-cart fold-and-fly (v2). Note: the first phone test of v1 showed only the "+۱" because the phone had reduced motion on; v2 ignores that setting
 
 ## Phase 3 — Real data
 - [x] Decided (2026-10-09): women's clothing only for now; men's/kids can be added later as a new top-level category
@@ -98,7 +98,7 @@ Last updated: 2026-10-11 (cart undo bar, product photo in the add-to-cart animat
   - [x] Profile name: edit and save on `/account` (`PATCH /api/account`, `lib/account.ts`, `components/ProfileNameForm.tsx`), greeting "سلام <name>" (phone-checked 2026-10-10)
   - [x] Order history on `/account` (`lib/accountOrders.ts`): the logged-in customer sees only orders placed with their own mobile (newest first, 30 max): code, Persian date, status, items, total, paid / unpaid, link to tracking; never the address or note. Tested with a real Postgres (other mobile never leaks, injection-like input, limit) and a phone-size browser run (2026-10-10); phone-checked (confirmed 2026-10-10)
   - [x] Saved addresses on `/account` (migration 007 `customer_addresses`, `lib/addresses.ts`, `/api/account/addresses` + `/[id]`, `components/AddressBook.tsx`): add, edit, delete (second tap confirms), choose the default; first address is the default automatically, deleting the default hands the mark to the oldest one, max 10, optional 10-digit postal code; one transaction + per-customer lock so quick taps never give two defaults or go over the limit; every call is limited to the logged-in customer's own rows (another customer gets 404). Tested with a real Postgres (37 checks incl. parallel taps, injection-like text) and a phone-size browser run (2026-10-10). Phone-checked (confirmed 2026-10-10)
-  - [x] Checkout prefill from the account (`components/CartView.tsx`, `AccountProvider` now also holds the name): a logged-in customer sees name, mobile and the default saved address already filled in; each field is filled only if it is still empty and untouched, so anything typed (or cleared) by the customer is never overwritten; with 2+ saved addresses a picker switches city, postal code and address; logged-out visitors and customers with no saved address see the same form as before. 19 mobile-browser checks on a real Postgres incl. delayed address answer while typing, an order placed from the prefilled form (saved with the account mobile), zero addresses, and a fresh visitor (2026-10-10). Phone check pending: log in, add 2 addresses on `/account`, add something to the cart, open the cart
+  - [x] Checkout prefill from the account (`components/CartView.tsx`, `AccountProvider` now also holds the name): a logged-in customer sees name, mobile and the default saved address already filled in; each field is filled only if it is still empty and untouched, so anything typed (or cleared) by the customer is never overwritten; with 2+ saved addresses a picker switches city, postal code and address; logged-out visitors and customers with no saved address see the same form as before. 19 mobile-browser checks on a real Postgres incl. delayed address answer while typing, an order placed from the prefilled form (saved with the account mobile), zero addresses, and a fresh visitor (2026-10-10). Phone check passed 2026-10-11 (owner): log in, add 2 addresses on `/account`, add something to the cart, open the cart
 
 ## Phase 6 — Admin panel
 - [x] Admin login (protected): single password in the `ADMIN_PASSWORD` server setting, signed 7-day cookie, middleware locks `/admin` and `/api/admin`, 5-wrong-tries limit, locked when the password is not set (2026-10-10). Set `ADMIN_PASSWORD` on Railway / in the VPS `.env`, then phone check at `/admin`
@@ -130,7 +130,7 @@ Last updated: 2026-10-11 (cart undo bar, product photo in the add-to-cart animat
 - [ ] Real info pages: About, Contact, FAQ, Return policy, Terms
   - [x] First-draft Persian texts written 2026-10-11 (`app/pages/[slug]/page.tsx`; builds and all 5 pages answer 200 in CI; unknown slugs give 404). Contact page shows phone, address and social links automatically once `lib/site.ts` is filled
   - [ ] Owner review: return window (draft says 7 days), who pays return shipping, shipping fee text (taken from `lib/checkout.ts`), privacy wording
-  - [ ] Build check and phone check of all 5 pages next session
+  - [x] Build check and phone check of all 5 pages (passed 2026-10-11, owner)
 - [x] Useful-links list in the mobile menu (`components/MobileMenu.tsx`): the tab already existed with 8 links; wishlist added 2026-10-11 (untested)
 - [x] Error pages in brand style (2026-10-11): `app/not-found.tsx` (404 for unknown addresses, hidden products, wrong order codes), `app/error.tsx` (page crash: retry button + home link, never shows the technical message), `app/global-error.tsx` (last resort when the layout itself crashes). 20 phone-size browser checks (light + dark, 404 status codes, retry, no leaked error text)
 - [x] Empty states check (2026-10-11): empty cart, empty wishlist, cart/wishlist holding a product that no longer exists, shop with no results (the clear-filters button keeps the chosen category), new customer with no addresses and no orders; all already had a friendly message, none crashed, so no code change. 14 odd shop addresses (SQL-like text, 5000 characters, bad numbers, unknown category or size, repeated parameters, broken encoding) all answer normally. 32 phone-size browser checks, light and dark
