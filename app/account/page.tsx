@@ -28,7 +28,10 @@ export default async function AccountPage() {
   if (!customer) {
     return (
       <section className='mx-auto mt-8 max-w-md'>
-        <h1 className='text-xl font-bold'>ورود / ثبت‌نام</h1>
+        <h1 className='flex items-center gap-2 text-xl font-bold'>
+          <span aria-hidden='true' className='h-5 w-1.5 rounded-full bg-gold' />
+          <span>ورود / ثبت‌نام</span>
+        </h1>
         <p className='mt-2 mb-5 text-sm leading-7 text-ink/70'>با شماره موبایل وارد شوید؛ برای ورود یک کد پیامکی برایتان می‌فرستیم. نیازی به رمز عبور نیست.</p>
         <LoginForm />
       </section>
@@ -51,7 +54,10 @@ export default async function AccountPage() {
 
   return (
     <section className='mx-auto mt-8 max-w-md space-y-5'>
-      <h1 className='text-xl font-bold'>{customer.name ? 'سلام ' + customer.name : 'حساب من'}</h1>
+      <h1 className='flex items-center gap-2 text-xl font-bold'>
+        <span aria-hidden='true' className='h-5 w-1.5 rounded-full bg-gold' />
+        <span>{customer.name ? 'سلام ' + customer.name : 'حساب من'}</span>
+      </h1>
       <div className='rounded-3xl bg-surface p-6'>
         <p className='text-sm text-ink/70'>شماره موبایل</p>
         <p className='mt-1 text-lg font-bold' dir='ltr'>{customer.mobile}</p>
