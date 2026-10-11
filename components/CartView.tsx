@@ -168,11 +168,11 @@ export default function CartView() {
         <ul className='space-y-3'>
           {detailed.map(({ line, product }) => (
             <li key={line.slug + line.size + line.color} className='flex gap-3 rounded-2xl bg-surface p-3'>
-              <Link href={'/product/' + product.slug} className='relative h-28 w-24 shrink-0 overflow-hidden rounded-xl'>
+              <Link href={'/product/' + product.slug} aria-hidden='true' tabIndex={-1} className='relative h-28 w-24 shrink-0 overflow-hidden rounded-xl'>
                 <ProductImage image={product.images?.[0]} category={product.category} seed={product.slug} alt={product.title} sizes='96px' />
               </Link>
               <div className='flex min-w-0 flex-1 flex-col'>
-                <Link href={'/product/' + product.slug} className='font-bold'>{product.title}</Link>
+                <Link href={'/product/' + product.slug} className='inline-block py-2 font-bold'>{product.title}</Link>
                 <p className='mt-1 text-xs text-ink/70'>سایز {line.size} · {line.color}</p>
                 <div className='mt-auto flex items-end justify-between pt-2'>
                   <div className='flex items-center rounded-full border border-ink/15'>
@@ -182,7 +182,7 @@ export default function CartView() {
                   </div>
                   <div className='text-left'>
                     <p className='text-sm font-bold text-brand'>{formatPrice(product.price * line.qty)}</p>
-                    <button type='button' onClick={() => remove(line)} className='min-h-10 px-1 text-xs text-rose'>حذف</button>
+                    <button type='button' onClick={() => remove(line)} className='min-h-10 min-w-10 px-2 text-xs text-rose'>حذف</button>
                   </div>
                 </div>
               </div>
