@@ -1,4 +1,6 @@
 import Link from 'next/link';
+import EmptyState from '@/components/EmptyState';
+import { IconStore } from '@/components/Icons';
 import ProductImage from '@/components/ProductImage';
 import { categoryTitle } from '@/data/categories';
 import { listAdminProducts } from '@/lib/adminProducts';
@@ -36,7 +38,15 @@ export default async function AdminProductsPage() {
         {fa(products.length)} محصول{hidden > 0 ? ` (${fa(hidden)} مخفی)` : ''}
       </p>
 
-      {products.length === 0 && <p className='mt-6 rounded-2xl bg-surface p-4 text-sm text-ink/70'>هنوز محصولی ثبت نشده است.</p>}
+      {products.length === 0 && (
+        <EmptyState
+          compact
+          icon={<IconStore width={32} height={32} />}
+          title='هنوز محصولی ثبت نشده است.'
+          href='/admin/products/new'
+          action='+ محصول جدید'
+        />
+      )}
 
       <ul className='mt-4 space-y-3'>
         {products.map((p) => (
@@ -49,14 +59,14 @@ export default async function AdminProductsPage() {
                 <p className='truncate font-bold'>{p.title}</p>
                 {!p.isActive && <span className='shrink-0 rounded-full bg-ink/10 px-2 py-0.5 text-xs'>مخفی</span>}
               </div>
-              <p className='mt-0.5 text-xs text-ink/60'>{categoryTitle(p.category)}</p>
+              <p className='mt-0.5 text-xs text-ink/70'>{categoryTitle(p.category)}</p>
               <p className='mt-1 text-sm'>
                 <span className='font-bold text-brand'>{formatPrice(p.price)}</span>
-                {p.oldPrice != null && <span className='ms-2 text-xs text-ink/50 line-through'>{formatPrice(p.oldPrice)}</span>}
+                {p.oldPrice != null && <span className='ms-2 text-xs text-ink/70 line-through'>{formatPrice(p.oldPrice)}</span>}
               </p>
               <p className='mt-1 text-xs'>
                 {p.totalStock > 0 ? (
-                  <span className='text-ink/60'>
+                  <span className='text-ink/70'>
                     موجودی: {fa(p.totalStock)} عدد · {fa(p.variantCount)} سایز/رنگ
                   </span>
                 ) : (
