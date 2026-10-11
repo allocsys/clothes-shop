@@ -179,3 +179,16 @@ export function quoteShipping(s: ShippingSettings, province: string, weightG: nu
   const shipping = free || !zr ? 0 : feeFor(zr, weightG);
   return { shipping, carrier, zone, weightG, free };
 }
+
+// Prices come from OUR product data (never from the browser): subtotal, parcel weight and the shipping fee for a province.
+export async function quoteForCart(
+  items: { slug: string; qty: number }[],
+  products: { slug: string; category: string; price: number }[],
+  province: string,
+) {
+  const subtotal = items.reduce((sum, it) => sum + (products.find((p) => p.slug === it.slug)?.price ?? 0) * it.qty, 0);
+  const settings = await getShippingSettings();
+  const explicit = await getProductWeights(items.map((i) => i.slug));
+  const weightG = orderWeightG(items, products, explicit, settings.packagingG);
+  return { subtotal, ...quoteShipping(settings, province, weightG, subtotal) };
+}
