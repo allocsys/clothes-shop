@@ -20,6 +20,7 @@ export default function NewProductForm() {
   const [category, setCategory] = useState(options[0]?.slug ?? '');
   const [price, setPrice] = useState('');
   const [oldPrice, setOldPrice] = useState('');
+  const [weight, setWeight] = useState('');
   const [description, setDescription] = useState('');
   const [isActive, setIsActive] = useState(false); // starts hidden: show it after the photos are added
   const [rows, setRows] = useState<Row[]>([{ key: 0, size: '', color: '', stock: '1' }]);
@@ -30,6 +31,7 @@ export default function NewProductForm() {
 
   const priceN = parseToman(price);
   const oldN = parseToman(oldPrice);
+  const weightN = parseToman(weight);
   const percent =
     typeof priceN === 'number' && typeof oldN === 'number' && oldN > priceN && priceN >= 0 ? Math.round((1 - priceN / oldN) * 100) : null;
 
@@ -49,6 +51,7 @@ export default function NewProductForm() {
     if (!title.trim()) local.title = 'نام محصول را وارد کنید.';
     if (typeof priceN !== 'number') local.price = 'قیمت را به تومان و به صورت عدد وارد کنید.';
     if (oldN === 'bad') local.oldPrice = 'قیمت قبل از تخفیف باید عدد باشد (یا خالی بماند).';
+    if (weightN === 'bad' || (typeof weightN === 'number' && (weightN < 1 || weightN > 20000))) local.weightG = 'وزن را به گرم و بین ۱ تا ۲۰۰۰۰ بنویسید (یا خالی بگذارید).';
     setErrors(local);
     if (Object.keys(local).length) {
       setMessage('لطفاً خطاهای فرم را اصلاح کنید.');
@@ -66,7 +69,7 @@ export default function NewProductForm() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          title, description, category, price: priceN, oldPrice: oldN === 'bad' ? null : oldN, isActive,
+          title, description, category, price: priceN, oldPrice: oldN === 'bad' ? null : oldN, isActive, weightG: typeof weightN === 'number' ? weightN : null,
           variants: rows.map((r, i) => ({ size: r.size, color: r.color, stock: stocks[i], loaded: null })),
         }),
       });
@@ -122,6 +125,13 @@ export default function NewProductForm() {
         </div>
       </div>
       {percent !== null && <p className='-mt-2 text-sm text-brand'>٪{fa(percent)} تخفیف در فروشگاه نمایش داده می‌شود.</p>}
+
+      <div>
+        <label htmlFor='n-weight' className='mb-1 block text-sm font-bold'>وزن یک عدد (گرم)</label>
+        <input id='n-weight' inputMode='numeric' dir='ltr' value={weight} onChange={(e) => setWeight(e.target.value)} placeholder='خالی = وزن معمول دسته' className={FIELD + ' text-left'} />
+        <p className='mt-1 text-xs text-ink/60'>برای محاسبهٔ هزینهٔ ارسال. اگر خالی بماند، وزن معمول این دسته‌بندی حساب می‌شود.</p>
+        {err('weightG')}
+      </div>
 
       <div>
         <label htmlFor='n-desc' className='mb-1 block text-sm font-bold'>توضیحات</label>
