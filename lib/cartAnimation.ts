@@ -7,10 +7,48 @@
 // have "remove animations" / battery saver on by default.
 
 import { GARMENT_VIEW, garmentColors, garmentMarkup } from '@/lib/garments';
+import { mediaUrl } from '@/lib/media';
 
 export const CART_LANDED = 'cart:landed';
 
-export type FlyArt = { category: string; seed: string };
+// image = the product's photo key (optional). With it, the folding picture is the real photo.
+export type FlyArt = { category: string; seed: string; image?: string };
+
+// A preloaded photo: its URL, natural size, and average color (used for the cloth on the folded back)
+type Photo = { url: string; w: number; h: number; color: string | null };
+
+// Loads a small version of the photo. Resolves null if it fails or takes over 700 ms, so the
+// animation falls back to the garment drawing instead of waiting.
+function loadPhoto(key: string): Promise<Photo | null> {
+  const url = `/_next/image?url=${encodeURIComponent(mediaUrl(key))}&w=256&q=70`;
+  return new Promise((resolve) => {
+    const img = new Image();
+    const timer = window.setTimeout(() => resolve(null), 700);
+    img.onload = () => {
+      window.clearTimeout(timer);
+      if (!img.naturalWidth || !img.naturalHeight) return resolve(null);
+      let color: string | null = null;
+      try {
+        const c = document.createElement('canvas');
+        c.width = c.height = 1;
+        const ctx = c.getContext('2d');
+        if (ctx) {
+          ctx.drawImage(img, 0, 0, 1, 1);
+          const [r, g, b] = ctx.getImageData(0, 0, 1, 1).data;
+          color = `rgb(${r},${g},${b})`;
+        }
+      } catch {
+        // canvas blocked: keep the default cloth color
+      }
+      resolve({ url, w: img.naturalWidth, h: img.naturalHeight, color });
+    };
+    img.onerror = () => {
+      window.clearTimeout(timer);
+      resolve(null);
+    };
+    img.src = url;
+  });
+}
 
 // Product tile size in px (same 3:4 ratio as the garment drawing) and its halves
 const W = 84;
@@ -44,13 +82,25 @@ function box(css: string, parent: HTMLElement): HTMLElement {
   return el;
 }
 
-// One quarter of the garment drawing (qx/qy = top-left corner in drawing units)
-function quarter(art: FlyArt, qx: number, qy: number): string {
-  return (
+// Fills `el` with one quarter of the picture (qx/qy = top-left corner in drawing units):
+// the product photo (cropped to fill the tile, like object-cover) or the garment drawing.
+function fillQuarter(el: HTMLElement, art: FlyArt, photo: Photo | null, qx: number, qy: number): void {
+  if (photo) {
+    const s = Math.max(W / photo.w, H / photo.h);
+    const bw = photo.w * s;
+    const bh = photo.h * s;
+    const x = (W - bw) / 2 - (qx > 0 ? HW : 0);
+    const y = (H - bh) / 2 - (qy > 0 ? HH : 0);
+    el.style.backgroundImage = `url("${photo.url}")`;
+    el.style.backgroundRepeat = 'no-repeat';
+    el.style.backgroundSize = `${bw}px ${bh}px`;
+    el.style.backgroundPosition = `${x}px ${y}px`;
+    return;
+  }
+  el.innerHTML =
     `<svg width="${HW}" height="${HH}" viewBox="${qx} ${qy} ${GARMENT_VIEW.w / 2} ${GARMENT_VIEW.h / 2}" style="display:block" aria-hidden="true">` +
     garmentMarkup(art.category, art.seed) +
-    '</svg>'
-  );
+    '</svg>';
 }
 
 function run(el: Element, keyframes: Keyframe[], ms: number, easing: string = EASE_FOLD): Promise<unknown> {
@@ -58,6 +108,11 @@ function run(el: Element, keyframes: Keyframe[], ms: number, easing: string = EA
 }
 
 export function flyToCart(from: HTMLElement, art: FlyArt = { category: '', seed: 'cart' }): void {
+  if (!art.image) return start(from, art, null);
+  loadPhoto(art.image).then((photo) => start(from, art, photo));
+}
+
+function start(from: HTMLElement, art: FlyArt, photo: Photo | null): void {
   const land = () => window.dispatchEvent(new Event(CART_LANDED));
   const target = visibleCartTarget();
   if (!target || typeof Element.prototype.animate !== 'function') {
@@ -74,7 +129,7 @@ export function flyToCart(from: HTMLElement, art: FlyArt = { category: '', seed:
   const dx = b.left + b.width / 2 - cx;
   const dy = b.top + b.height / 2 - cy;
 
-  const fg = garmentColors(art.seed).fg;
+  const fg = photo?.color ?? garmentColors(art.seed).fg;
   const cloth = `background:linear-gradient(135deg,rgba(255,255,255,.3),rgba(255,255,255,0) 60%),${fg}`;
   const clothDark = `background:linear-gradient(135deg,rgba(0,0,0,0),rgba(0,0,0,.22)),${fg}`;
 
@@ -87,14 +142,14 @@ export function flyToCart(from: HTMLElement, art: FlyArt = { category: '', seed:
   // Stage 1: the picture, in four quarters. The right quarters swing over the left ones.
   const half = `width:${HW}px;height:${HH}px`;
   const tl = box(`left:0;top:0;${half}`, scene);
-  tl.innerHTML = quarter(art, 0, 0);
+  fillQuarter(tl, art, photo, 0, 0);
   const bl = box(`left:0;top:${HH}px;${half}`, scene);
-  bl.innerHTML = quarter(art, 0, GARMENT_VIEW.h / 2);
+  fillQuarter(bl, art, photo, 0, GARMENT_VIEW.h / 2);
   const flips: HTMLElement[] = [];
   [0, 1].forEach((row) => {
     const flip = box(`left:${HW}px;top:${row * HH}px;${half};transform-origin:left center;${KEEP_3D}`, scene);
     const front = box(`left:0;top:0;width:100%;height:100%;${NO_BACK}`, flip);
-    front.innerHTML = quarter(art, GARMENT_VIEW.w / 2, row * (GARMENT_VIEW.h / 2));
+    fillQuarter(front, art, photo, GARMENT_VIEW.w / 2, row * (GARMENT_VIEW.h / 2));
     box(`left:0;top:0;width:100%;height:100%;transform:rotateY(180deg);${NO_BACK};${cloth}`, flip);
     flips.push(flip);
   });
