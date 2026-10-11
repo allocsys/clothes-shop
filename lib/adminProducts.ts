@@ -67,9 +67,10 @@ export type AdminProduct = {
   price: number;
   oldPrice: number | null;
   isActive: boolean;
+  weightG: number | null; // grams of one piece; null = the category's usual weight is used
 };
 
-type OneRow = Omit<Row, 'image' | 'variant_count' | 'total_stock'> & { description: string };
+type OneRow = Omit<Row, 'image' | 'variant_count' | 'total_stock'> & { description: string; weight_g: number | null };
 
 function toAdminProduct(r: OneRow): AdminProduct {
   return {
@@ -81,12 +82,13 @@ function toAdminProduct(r: OneRow): AdminProduct {
     price: r.price,
     oldPrice: r.old_price,
     isActive: r.is_active,
+    weightG: r.weight_g,
   };
 }
 
 export async function getAdminProduct(id: number): Promise<AdminProduct | null> {
   const { rows } = await db().query<OneRow>(
-    'SELECT id, slug, title, description, category, price, old_price, is_active FROM products WHERE id = $1',
+    'SELECT id, slug, title, description, category, price, old_price, is_active, weight_g FROM products WHERE id = $1',
     [id],
   );
   return rows[0] ? toAdminProduct(rows[0]) : null;
@@ -101,6 +103,7 @@ export type BasicsInput = {
   price: number;
   oldPrice: number | null;
   isActive: boolean;
+  weightG: number | null;
 };
 
 export type BasicsErrors = Partial<Record<keyof BasicsInput, string>>;
@@ -132,20 +135,26 @@ export function validateBasics(raw: unknown): { ok: true; value: BasicsInput } |
     else oldPrice = r.oldPrice;
   }
 
+  let weightG: number | null = null;
+  if (r.weightG !== null && r.weightG !== undefined) {
+    if (!isInt(r.weightG) || r.weightG < 1 || r.weightG > 20000) errors.weightG = 'وزن را به گرم و بین ۱ تا ۲۰۰۰۰ وارد کنید (یا خالی بگذارید).';
+    else weightG = r.weightG;
+  }
+
   const isActive = r.isActive;
   if (typeof isActive !== 'boolean') errors.isActive = 'وضعیت نمایش معتبر نیست.';
 
   if (Object.keys(errors).length) return { ok: false, errors };
-  return { ok: true, value: { title, description, category, price: price as number, oldPrice, isActive: isActive as boolean } };
+  return { ok: true, value: { title, description, category, price: price as number, oldPrice, isActive: isActive as boolean, weightG } };
 }
 
 export async function updateProductBasics(id: number, v: BasicsInput): Promise<AdminProduct | null> {
   const { rows } = await db().query<OneRow>(
     `UPDATE products
-        SET title = $2, description = $3, category = $4, price = $5, old_price = $6, is_active = $7, updated_at = now()
+        SET title = $2, description = $3, category = $4, price = $5, old_price = $6, is_active = $7, weight_g = $8, updated_at = now()
       WHERE id = $1
-  RETURNING id, slug, title, description, category, price, old_price, is_active`,
-    [id, v.title, v.description, v.category, v.price, v.oldPrice, v.isActive],
+  RETURNING id, slug, title, description, category, price, old_price, is_active, weight_g`,
+    [id, v.title, v.description, v.category, v.price, v.oldPrice, v.isActive, v.weightG],
   );
   return rows[0] ? toAdminProduct(rows[0]) : null;
 }
@@ -186,9 +195,9 @@ export async function createProduct(v: BasicsInput, variants: NewVariant[]): Pro
       await client.query('SAVEPOINT s');
       try {
         const res = await client.query<{ id: number; slug: string }>(
-          `INSERT INTO products (slug, title, description, category, price, old_price, is_active)
-           VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id, slug`,
-          [slug, v.title, v.description, v.category, v.price, v.oldPrice, v.isActive],
+          `INSERT INTO products (slug, title, description, category, price, old_price, is_active, weight_g)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id, slug`,
+          [slug, v.title, v.description, v.category, v.price, v.oldPrice, v.isActive, v.weightG],
         );
         created = res.rows[0];
       } catch (e) {
