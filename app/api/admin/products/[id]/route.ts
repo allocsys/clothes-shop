@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/adminGuard';
-import { updateProductBasics, validateBasics } from '@/lib/adminProducts';
+import { deleteProduct, updateProductBasics, validateBasics } from '@/lib/adminProducts';
 import { hasDb } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
@@ -27,4 +27,18 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   const product = await updateProductBasics(id, checked.value);
   if (!product) return NextResponse.json({ error: 'not_found' }, { status: 404 });
   return NextResponse.json({ ok: true, product });
+}
+
+// DELETE /api/admin/products/:id  -> removes the product, its sizes/colors and its photo files
+export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
+  const denied = await requireAdmin();
+  if (denied) return denied;
+  if (!hasDb()) return NextResponse.json({ error: 'no_database' }, { status: 503 });
+
+  const id = Number((await params).id);
+  if (!Number.isInteger(id) || id <= 0) return NextResponse.json({ error: 'not_found' }, { status: 404 });
+
+  const removed = await deleteProduct(id);
+  if (!removed) return NextResponse.json({ error: 'not_found' }, { status: 404 });
+  return NextResponse.json({ ok: true });
 }
