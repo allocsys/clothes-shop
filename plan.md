@@ -121,7 +121,7 @@ Last updated: 2026-10-11 (light mode gradient and polish; analytics built and CI
   - [x] Phone check (confirmed 2026-10-10): open `/admin/sales` from the dashboard and see that the numbers match your orders
 
 ## Phase 7 — Content and polish
-- [x] Light mode made richer (2026-10-11, owner: "seems better"): page gradient (lavender to rose to peach, `app/globals.css`), soft ring + shadow on cards, tighter home spacing with the category row on a tinted band, placeholder garment art with gradient, glow and floor shadow (`components/GarmentArt.tsx`), fading gold line under section titles. Dark mode untouched. Phone-check the shop, product and cart pages too
+- [x] Light mode made richer (2026-10-11, owner: "seems better"): page gradient (lavender to rose to peach, `app/globals.css`), soft ring + shadow on cards, tighter home spacing with the category row on a tinted band, placeholder garment art with gradient, glow and floor shadow (`components/GarmentArt.tsx`), fading gold line under section titles. Dark mode untouched. Steps 4-6 (2026-10-11, not yet seen by the owner, not all CI-checked): product page info column on a soft card panel, cart heading with a gold accent bar plus a gold free-shipping progress bar in the order summary, shop heading with the gold accent bar. Phone-check the shop, product and cart pages
 - [ ] Real promo text, footer contacts and social links (TODOs in `lib/site.ts`, `components/Footer.tsx`)
 - [ ] Real info pages: About, Contact, FAQ, Return policy, Terms
   - [x] First-draft Persian texts written 2026-10-11 (`app/pages/[slug]/page.tsx`; builds and all 5 pages answer 200 in CI; unknown slugs give 404). Contact page shows phone, address and social links automatically once `lib/site.ts` is filled
