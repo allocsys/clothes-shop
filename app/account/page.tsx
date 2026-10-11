@@ -5,6 +5,8 @@ import { hasDb } from '@/lib/db';
 import { getCurrentCustomer, type Customer } from '@/lib/auth/session';
 import Link from 'next/link';
 import AddressBook from '@/components/AddressBook';
+import EmptyState from '@/components/EmptyState';
+import { IconBag } from '@/components/Icons';
 import { listAddresses, type SavedAddress } from '@/lib/addresses';
 import { listCustomerOrders, type HistoryOrder } from '@/lib/accountOrders';
 import { STATUS_LABEL, isStatus } from '@/lib/orderStatus';
@@ -76,7 +78,14 @@ export default async function AccountPage() {
         {orders === null ? (
           <p className='mt-3 text-sm text-ink/70'>فعلاً نمی‌توانیم سفارش‌ها را نشان دهیم. کمی بعد دوباره امتحان کنید.</p>
         ) : orders.length === 0 ? (
-          <p className='mt-3 text-sm leading-7 text-ink/70'>هنوز سفارشی با این شماره ثبت نشده است.</p>
+          <EmptyState
+            compact
+            icon={<IconBag width={32} height={32} />}
+            title='هنوز سفارشی با این شماره ثبت نشده است.'
+            hint='بعد از اولین خرید، سفارش‌هایتان اینجا نمایش داده می‌شود.'
+            href='/shop'
+            action='مشاهده محصولات'
+          />
         ) : (
           <ul className='mt-3 space-y-3'>
             {orders.map((o) => (
