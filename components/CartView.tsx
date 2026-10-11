@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, type FormEvent } from 'react';
 import Link from 'next/link';
 import ProductImage from '@/components/ProductImage';
 import { useAccount } from '@/components/AccountProvider';
+import { trackEvent } from '@/components/Analytics';
 import { MAX_QTY, useCart } from '@/components/CartProvider';
 import { useProducts } from '@/components/useProducts';
 import type { SavedAddress } from '@/lib/addressTypes';
@@ -134,6 +135,7 @@ export default function CartView() {
       setError('شماره موبایل معتبر نیست (مثال: ۰۹۱۲۳۴۵۶۷۸۹).');
       return;
     }
+    trackEvent({ e: 'checkout_start', path: '/cart' });
     setBusy(true);
     try {
       const res = await fetch('/api/orders', {
