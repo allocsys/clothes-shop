@@ -51,6 +51,28 @@ expect_body '/shop?category=bottoms&sort=price-asc' 'noindex' 'noindex on a sort
 expect_body '/shop?q=test' 'noindex' 'noindex on a search view'
 expect_body /wishlist 'noindex' 'noindex'
 
+# Analytics collection: a phone browser event is stored (with its source and device), a bot, a bad event name and an admin path are not
+UA='Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148 Safari/604.1'
+post_event() { curl -s -o /dev/null -w '%{http_code}' --max-time 30 -X POST -H 'Content-Type: application/json' -A "$1" -d "$2" "$BASE/api/a"; }
+for body in \
+  '{"e":"pageview","path":"/smoke-human?x=1","ref":"https://www.instagram.com/"}' \
+  '{"e":"hack","path":"/smoke-bad"}' \
+  '{"e":"pageview","path":"/admin/smoke-admin"}'; do
+  got="$(post_event "$UA" "$body")"
+  if [ "$got" = "204" ]; then ok "POST /api/a -> 204"; else bad "POST /api/a -> $got (wanted 204)"; fi
+done
+got="$(post_event 'Googlebot/2.1' '{"e":"pageview","path":"/smoke-bot"}')"
+if [ "$got" = "204" ]; then ok "POST /api/a (bot) -> 204"; else bad "POST /api/a (bot) -> $got (wanted 204)"; fi
+expect_status /api/a 405
+if command -v psql >/dev/null 2>&1 && [ -n "$DATABASE_URL" ]; then
+  count() { psql "$DATABASE_URL" -tAc "SELECT count(*) FROM analytics_events WHERE $1" 2>/dev/null | tr -d ' '; }
+  [ "$(count "path = '/smoke-human' AND source = 'instagram' AND device = 'mobile' AND event = 'pageview'")" = "1" ] && ok "analytics stored the phone pageview with source and device" || bad "analytics did not store the phone pageview correctly"
+  [ "$(count "path = '/smoke-bot'")" = "0" ] && ok "analytics ignored the bot" || bad "analytics stored a bot event"
+  [ "$(count "path IN ('/smoke-bad', '/admin/smoke-admin')")" = "0" ] && ok "analytics ignored a bad event name and an admin path" || bad "analytics stored a bad event or an admin path"
+else
+  echo "skip  analytics row checks (psql or DATABASE_URL not available)"
+fi
+
 # Server must not leak the admin area without login
 got="$(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "$BASE/admin")"
 case "$got" in
