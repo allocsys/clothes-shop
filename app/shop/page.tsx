@@ -1,5 +1,7 @@
 import Link from 'next/link';
 import ProductCard from '@/components/ProductCard';
+import EmptyState from '@/components/EmptyState';
+import { IconSearch } from '@/components/Icons';
 import SearchTrack from '@/components/SearchTrack';
 import { categories, categorySlugs } from '@/data/categories';
 import { toEnglishDigits } from '@/lib/checkout';
@@ -228,12 +230,13 @@ export default async function ShopPage({ searchParams }: Props) {
       )}
 
       {list.length === 0 ? (
-        <div className='py-20 text-center'>
-          <p className='text-ink/70'>محصولی پیدا نشد. فیلتر یا عبارت جستجو را تغییر دهید.</p>
-          <Link href={s.category ? '/shop?category=' + s.category : '/shop'} className='mt-4 inline-block rounded-full bg-brand px-6 py-2.5 text-sm font-bold text-white'>
-            حذف همه فیلترها
-          </Link>
-        </div>
+        <EmptyState
+          icon={<IconSearch width={36} height={36} />}
+          title='محصولی پیدا نشد.'
+          hint='فیلتر یا عبارت جستجو را تغییر دهید.'
+          href={s.category ? '/shop?category=' + s.category : '/shop'}
+          action='حذف همه فیلترها'
+        />
       ) : (
         <div className='grid grid-cols-2 gap-4 md:grid-cols-4'>
           {list.map((p, i) => (
