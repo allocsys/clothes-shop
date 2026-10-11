@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import ProductCard from '@/components/ProductCard';
+import SearchTrack from '@/components/SearchTrack';
 import { categories, categorySlugs } from '@/data/categories';
 import { toEnglishDigits } from '@/lib/checkout';
 import { formatPrice } from '@/lib/format';
@@ -124,7 +125,7 @@ export default async function ShopPage({ searchParams }: Props) {
 
   return (
     <section className='mt-6'>
-      <div className='no-scrollbar mb-5 flex gap-2 overflow-x-auto pb-1'>
+      {s.q && <SearchTrack q={s.q} results={list.length} />}
         {chips.map((c) => {
           const active = s.category === c.slug;
           return (
