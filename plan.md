@@ -56,7 +56,8 @@ Last updated: 2026-10-11 (cart undo bar, product photo in the add-to-cart animat
   - [x] Storage layer `lib/storage.ts` (disk driver, safe keys) + `/media/<key>` route; tested incl. bad paths and the image optimizer in the standalone build
   - [x] Docker: `uploads` volume, writable `/uploads`, photo backup in `scripts/backup.sh`, notes in `docs/DEPLOY_VPS.md`
   - [x] Upload from the admin panel (Phase 6, 2026-10-10)
-  - [ ] Phone check with a real photo; check the Docker image on the VPS (Alpine `sharp`)
+  - [x] Phone check with a real photo on Railway (confirmed 2026-10-11, owner: passed): upload works and the photo survives a redeploy (volume `clothes-shop-uploads` at `/data`, `UPLOAD_DIR=/data/uploads`, `RAILWAY_RUN_UID=0`)
+  - [ ] Check the Docker image on the VPS (Alpine `sharp`)
   - [ ] Later, when moving: S3 driver for ArvanCloud in `lib/storage.ts` + `NEXT_PUBLIC_MEDIA_BASE_URL`
 - [x] Stock tracking per size/color: orders check and decrement stock safely; product page greys out sold-out sizes/colors, shows "only N left" (3 or fewer) and a disabled "ناموجود" button; cards show a "ناموجود" strip (confirmed on phone, 2026-10-10)
 
@@ -80,7 +81,7 @@ Last updated: 2026-10-11 (cart undo bar, product photo in the add-to-cart animat
 - [ ] Confirmation SMS (provider-agnostic, same shape as payments; owner has not picked an SMS provider yet)
   - [x] SMS layer (2026-10-10): `lib/sms/` (interface, registry by `SMS_PROVIDER`, fake `mock` provider, `sendSms` that never throws, 8 s timeout, one message of a kind per order), table `sms_log` (migration 005). Mock is refused in production unless `ALLOW_MOCK_SMS=1`. 12 checks passed on real Postgres
   - [x] Order confirmation text sent when an order is placed (2026-10-10): `lib/sms/templates.ts` (Persian: shop name, order code, total, tracking link with the code only), hooked into `POST /api/orders` fire-and-forget; rejected orders send nothing; works with online payment on and with SMS off. Checked on real Postgres: sms_log row, server log line, 1 message per order
-  - [ ] Phone check on Railway with `SMS_PROVIDER=mock` and `ALLOW_MOCK_SMS=1` (message shows in the Railway logs and in `sms_log`)
+  - [x] Phone check on Railway with `SMS_PROVIDER=mock` and `ALLOW_MOCK_SMS=1` (confirmed 2026-10-11, owner: all passed; message shows in the Railway logs and in `sms_log`)
   - [ ] Real provider file (e.g. Kavenegar) once the owner picks one
 
 ## Phase 5 — Accounts
@@ -160,7 +161,7 @@ Last updated: 2026-10-11 (cart undo bar, product photo in the add-to-cart animat
   - [x] Server-side events that cannot be faked: order placed (`/api/orders`) and order paid (`/api/pay/callback`, once per order)
   - [x] Admin page `/admin/analytics` (`lib/adminAnalytics.ts`): visits and page views for 7/30/90 days, daily bars, purchase funnel, sources (Instagram, Telegram, Google...), devices, top pages and products, searches and searches with no result
   - [x] CI proves it: smoke posts the events, checks the stored rows and that the admin page shows them; phone-check opens the page
-  - [ ] Phone check: browse the live shop for a minute, then open `/admin/analytics`
+  - [x] Phone check: browse the live shop for a minute, then open `/admin/analytics` (confirmed 2026-10-11, owner: passed)
   - [ ] Owner: mention in the privacy text (draft added to the Terms page 2026-10-11)
 - [ ] Final end-to-end test: browse → cart → order → pay → admin sees it
 
