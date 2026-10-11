@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import Link from 'next/link';
 import ProductImage from '@/components/ProductImage';
+import EmptyState from '@/components/EmptyState';
+import { IconBag } from '@/components/Icons';
 import { useAccount } from '@/components/AccountProvider';
 import { trackEvent } from '@/components/Analytics';
 import { MAX_QTY, useCart, type CartLine } from '@/components/CartProvider';
@@ -142,9 +144,15 @@ export default function CartView() {
   if (detailed.length === 0) {
     return (
       <>
-        <section className='py-20 text-center'>
-          <p className='text-ink/70'>سبد خرید شما خالی است.</p>
-          <Link href='/shop' className='mt-5 inline-block rounded-full bg-brand px-8 py-3 font-bold text-white'>مشاهده محصولات</Link>
+        <section>
+          <EmptyState
+            as='h1'
+            icon={<IconBag width={36} height={36} />}
+            title='سبد خرید شما خالی است.'
+            hint='محصول مورد علاقه‌تان را انتخاب کنید و به سبد اضافه کنید.'
+            href='/shop'
+            action='مشاهده محصولات'
+          />
         </section>
         {undoBar}
       </>
