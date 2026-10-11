@@ -5,7 +5,9 @@ import WishlistButton from '@/components/WishlistButton';
 import { formatPrice } from '@/lib/format';
 import { isSoldOut } from '@/lib/stock';
 
-export default function ProductCard({ product }: { product: Product }) {
+// headingLevel: 3 under a section heading (h2), 2 on pages whose only heading above the list is the h1.
+export default function ProductCard({ product, headingLevel = 3 }: { product: Product; headingLevel?: 2 | 3 }) {
+  const Heading = headingLevel === 2 ? 'h2' : 'h3';
   const soldOut = isSoldOut(product.stock);
   const off = product.oldPrice ? Math.round((1 - product.price / product.oldPrice) * 100) : 0;
   return (
@@ -28,7 +30,7 @@ export default function ProductCard({ product }: { product: Product }) {
             </span>
           )}
         </div>
-        <h3 className='mt-2 text-sm font-medium group-hover:text-brand'>{product.title}</h3>
+        <Heading className='mt-2 text-sm font-medium group-hover:text-brand'>{product.title}</Heading>
         <p className='mt-0.5 text-sm font-bold text-brand'>
           {formatPrice(product.price)}
           {product.oldPrice && <span className='mr-2 text-xs font-normal text-ink/70 line-through'>{formatPrice(product.oldPrice)}</span>}
