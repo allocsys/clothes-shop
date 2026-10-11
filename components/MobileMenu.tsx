@@ -82,8 +82,11 @@ export default function MobileMenu({ categories, name }: { categories: Category[
   const tabClass = (active: boolean) =>
     'rounded-xl py-3 text-sm font-bold transition-colors ' + (active ? 'border border-brand/40 bg-brand/15 text-brand' : 'border border-ink/15 bg-transparent text-ink/70');
 
+  // Closed drawer: inert keeps keyboard and screen-reader focus out of the invisible menu.
+  const inertProps: Record<string, unknown> = open ? {} : { inert: true };
+
   const drawer = (
-    <div className={'fixed inset-0 z-[80] md:hidden ' + (open ? '' : 'pointer-events-none')} aria-hidden={!open}>
+    <div className={'fixed inset-0 z-[80] md:hidden ' + (open ? '' : 'pointer-events-none')} aria-hidden={!open} {...inertProps}>
       <div
         onClick={close}
         className={'absolute inset-0 bg-black/55 backdrop-blur-sm transition-opacity duration-300 ' + (open ? 'opacity-100' : 'opacity-0')}
