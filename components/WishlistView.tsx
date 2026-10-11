@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import ProductCard from '@/components/ProductCard';
 import EmptyState from '@/components/EmptyState';
 import { IconHeart } from '@/components/Icons';
