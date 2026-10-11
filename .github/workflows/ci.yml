@@ -4,6 +4,10 @@ name: CI
 # 1) build-and-test: installs, builds, typechecks, applies migrations to a throw-away Postgres,
 #    starts the real server and runs scripts/smoke.sh against it.
 # 2) docker-image: builds the production Docker image (the VPS deploy route).
+#
+# Speed: the jobs run in parallel, so the total time is the slowest job. Each job restores caches
+# (npm downloads, Next.js build cache, Playwright browsers, Docker layers) so installs, builds and
+# downloads are mostly skipped. The first run after a cache key changes is slower while it fills the cache.
 
 on:
   push:
@@ -55,9 +59,26 @@ jobs:
         with:
           node-version: 22
 
-      # No package-lock.json is committed on purpose, so npm install (not npm ci).
+      # No package-lock.json is committed on purpose, so the npm cache is keyed on package.json.
+      - name: Cache npm downloads
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: npm-${{ runner.os }}-${{ hashFiles('package.json', 'e2e/package.json') }}
+          restore-keys: |
+            npm-${{ runner.os }}-
+
+      - name: Cache Next.js build cache
+        uses: actions/cache@v4
+        with:
+          path: .next/cache
+          key: next-${{ runner.os }}-${{ hashFiles('package.json') }}-${{ hashFiles('app/**', 'components/**', 'lib/**', 'data/**', 'next.config.*', 'tailwind.config.*') }}
+          restore-keys: |
+            next-${{ runner.os }}-${{ hashFiles('package.json') }}-
+            next-${{ runner.os }}-
+
       - name: Install dependencies
-        run: npm install --no-audit --no-fund
+        run: npm install --no-audit --no-fund --prefer-offline
 
       - name: Build
         run: npm run build
@@ -94,8 +115,18 @@ jobs:
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      # Layers (base image, npm install) are cached between runs; only changed layers rebuild.
       - name: Build the production image
-        run: docker build -t mahpari-shop:ci .
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+          tags: mahpari-shop:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
   # 3) phone-checks: opens the running shop in a real browser at phone size (390x844) and checks
   #    sideways overflow, tap-target sizes, accessible names and server errors (e2e/phone-check.mjs).
@@ -135,8 +166,31 @@ jobs:
         with:
           node-version: 22
 
+      - name: Cache npm downloads
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: npm-${{ runner.os }}-${{ hashFiles('package.json', 'e2e/package.json') }}
+          restore-keys: |
+            npm-${{ runner.os }}-
+
+      - name: Cache Next.js build cache
+        uses: actions/cache@v4
+        with:
+          path: .next/cache
+          key: next-${{ runner.os }}-${{ hashFiles('package.json') }}-${{ hashFiles('app/**', 'components/**', 'lib/**', 'data/**', 'next.config.*', 'tailwind.config.*') }}
+          restore-keys: |
+            next-${{ runner.os }}-${{ hashFiles('package.json') }}-
+            next-${{ runner.os }}-
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('e2e/package.json') }}
+
       - name: Install dependencies
-        run: npm install --no-audit --no-fund
+        run: npm install --no-audit --no-fund --prefer-offline
 
       - name: Build
         run: npm run build
@@ -160,7 +214,7 @@ jobs:
       - name: Install Playwright and Chromium
         working-directory: e2e
         run: |
-          npm install --no-audit --no-fund
+          npm install --no-audit --no-fund --prefer-offline
           npx playwright install --with-deps chromium
 
       - name: Phone-size checks
@@ -209,8 +263,31 @@ jobs:
         with:
           node-version: 22
 
+      - name: Cache npm downloads
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: npm-${{ runner.os }}-${{ hashFiles('package.json', 'e2e/package.json') }}
+          restore-keys: |
+            npm-${{ runner.os }}-
+
+      - name: Cache Next.js build cache
+        uses: actions/cache@v4
+        with:
+          path: .next/cache
+          key: next-${{ runner.os }}-${{ hashFiles('package.json') }}-${{ hashFiles('app/**', 'components/**', 'lib/**', 'data/**', 'next.config.*', 'tailwind.config.*') }}
+          restore-keys: |
+            next-${{ runner.os }}-${{ hashFiles('package.json') }}-
+            next-${{ runner.os }}-
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('e2e/package.json') }}
+
       - name: Install dependencies
-        run: npm install --no-audit --no-fund
+        run: npm install --no-audit --no-fund --prefer-offline
 
       - name: Build
         run: npm run build
@@ -234,7 +311,7 @@ jobs:
       - name: Install Playwright and Chromium
         working-directory: e2e
         run: |
-          npm install --no-audit --no-fund
+          npm install --no-audit --no-fund --prefer-offline
           npx playwright install --with-deps chromium
 
       - name: Purchase-flow checks
@@ -285,8 +362,25 @@ jobs:
         with:
           node-version: 22
 
+      - name: Cache npm downloads
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: npm-${{ runner.os }}-${{ hashFiles('package.json', 'e2e/package.json') }}
+          restore-keys: |
+            npm-${{ runner.os }}-
+
+      - name: Cache Next.js build cache
+        uses: actions/cache@v4
+        with:
+          path: .next/cache
+          key: next-${{ runner.os }}-${{ hashFiles('package.json') }}-${{ hashFiles('app/**', 'components/**', 'lib/**', 'data/**', 'next.config.*', 'tailwind.config.*') }}
+          restore-keys: |
+            next-${{ runner.os }}-${{ hashFiles('package.json') }}-
+            next-${{ runner.os }}-
+
       - name: Install dependencies
-        run: npm install --no-audit --no-fund
+        run: npm install --no-audit --no-fund --prefer-offline
 
       - name: Build
         run: npm run build
@@ -307,6 +401,7 @@ jobs:
           cat next.log
           exit 1
 
+      # The Lighthouse package is downloaded once (then served from the npm cache for the other pages).
       - name: Run Lighthouse (mobile)
         run: |
           mkdir lh && cd lh
