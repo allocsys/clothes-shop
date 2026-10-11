@@ -24,7 +24,7 @@ export default function ProductCard({ product, headingLevel = 3, priority }: { p
             priority={priority}
           />
           {soldOut && (
-            <span className='absolute inset-x-0 bottom-0 bg-ink/70 py-1.5 text-center text-xs font-bold text-white'>ناموجود</span>
+            <span className='sold-shimmer absolute inset-x-0 bottom-0 bg-ink/70 py-1.5 text-center text-xs font-bold text-white'>ناموجود</span>
           )}
           {off > 0 && !soldOut && (
             <span className='absolute right-2 top-2 rounded-full bg-rose px-2 py-0.5 text-xs font-bold text-white'>
