@@ -2,6 +2,8 @@
 
 import Link from 'next/link';
 import ProductCard from '@/components/ProductCard';
+import EmptyState from '@/components/EmptyState';
+import { IconHeart } from '@/components/Icons';
 import { useWishlist } from '@/components/WishlistProvider';
 import { useProducts } from '@/components/useProducts';
 
@@ -17,10 +19,15 @@ export default function WishlistView() {
 
   if (list.length === 0) {
     return (
-      <section className='py-20 text-center'>
-        <p className='text-ink/70'>هنوز محصولی به علاقه‌مندی‌ها اضافه نکرده‌اید.</p>
-        <p className='mt-1 text-xs text-ink/70'>روی قلب هر محصول بزنید تا اینجا ذخیره شود.</p>
-        <Link href='/shop' className='mt-5 inline-block rounded-full bg-brand px-8 py-3 font-bold text-white'>مشاهده محصولات</Link>
+      <section>
+        <EmptyState
+          as='h1'
+          icon={<IconHeart width={36} height={36} />}
+          title='هنوز محصولی به علاقه‌مندی‌ها اضافه نکرده‌اید.'
+          hint='روی قلب هر محصول بزنید تا اینجا ذخیره شود.'
+          href='/shop'
+          action='مشاهده محصولات'
+        />
       </section>
     );
   }
