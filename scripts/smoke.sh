@@ -137,6 +137,43 @@ for cust in '{"name":"x","phone":"09120000000","city":"x","address":"x"}' '{"nam
   if [ "$got" = "400" ]; then ok "order without a valid province -> 400"; else bad "order without a valid province -> $got (wanted 400)"; fi
 done
 
+# Admin shipping settings: closed without login; with login, bad input is refused and switching the carrier changes the quote
+expect_not_open() { # <label> <status>
+  case "$2" in
+    401|403|307|302) ok "$1 -> $2 (not open)" ;;
+    *) bad "$1 -> $2 (should not be open without login)" ;;
+  esac
+}
+expect_not_open '/admin/shipping' "$(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "$BASE/admin/shipping")"
+expect_not_open 'PUT /api/admin/shipping' "$(curl -s -o /dev/null -w '%{http_code}' --max-time 30 -X PUT -H 'Content-Type: application/json' -d '{}' "$BASE/api/admin/shipping")"
+if [ -n "$ADMIN_PASSWORD" ]; then
+  shdr="$(curl -s -D - -o /dev/null --max-time 30 -X POST -H 'Content-Type: application/json' -d "{\"password\":\"$ADMIN_PASSWORD\"}" "$BASE/api/admin/login")"
+  scookie="$(echo "$shdr" | grep -i '^set-cookie:' | head -1 | sed -E 's/^[Ss]et-[Cc]ookie: *([^;]*).*/\1/' | tr -d '\r')"
+  if [ -z "$scookie" ]; then
+    bad "admin login for the shipping settings gave no cookie"
+  else
+    put_status() { curl -s -o /dev/null -w '%{http_code}' --max-time 30 -X PUT -H 'Content-Type: application/json' -H "Cookie: $scookie" -d "$1" "$BASE/api/admin/shipping"; }
+    expect_put() { # <label> <body> <status>
+      got="$(put_status "$2")"
+      if [ "$got" = "$3" ]; then ok "shipping settings: $1 -> $got"; else bad "shipping settings: $1 -> $got (wanted $3)"; fi
+    }
+    Z='{"fees":[10000,20000,30000,40000],"extraPerKg":5000}'
+    expect_put 'a carrier without prices cannot be switched on' '{"carrier":"tipax","packagingG":100,"rates":{}}' 400
+    expect_put 'a half-filled zone is refused' '{"carrier":"post","packagingG":100,"rates":{"tipax":{"same":{"fees":[1,2,null,null],"extraPerKg":null}}}}' 400
+    expect_put 'fees that go down with weight are refused' '{"carrier":"post","packagingG":100,"rates":{"tipax":{"same":{"fees":[9000,8000,7000,6000],"extraPerKg":1}}}}' 400
+    expect_put 'a text instead of a number is refused' '{"carrier":"post","packagingG":"abc","rates":{}}' 400
+    expect_put 'a complete Tipax table is saved and switched on' "{\"carrier\":\"tipax\",\"packagingG\":100,\"rates\":{\"tipax\":{\"same\":$Z,\"near\":$Z,\"far\":$Z}}}" 200
+    check_quote 'quote uses the switched carrier' "{\"province\":\"تهران\",\"items\":$ITEM1}" '"carrier":"tipax"'
+    check_quote 'quote uses the Tipax price' "{\"province\":\"تهران\",\"items\":$ITEM1}" '"shipping":10000'
+    expect_put 'switching back to Post' '{"carrier":"post","packagingG":100,"rates":{}}' 200
+    check_quote 'quote is back on Post' "{\"province\":\"تهران\",\"items\":$ITEM1}" '"shipping":32000'
+    page="$(curl -s --max-time 30 -H "Cookie: $scookie" "$BASE/admin/shipping")"
+    echo "$page" | grep -qF 'ذخیره تنظیمات ارسال' && ok '/admin/shipping shows the settings form' || bad '/admin/shipping does not show the settings form'
+  fi
+else
+  echo "skip  admin shipping settings checks (ADMIN_PASSWORD not set)"
+fi
+
 # Server must not leak the admin area without login
 got="$(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "$BASE/admin")"
 case "$got" in
