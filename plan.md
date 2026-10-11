@@ -5,7 +5,7 @@ Live: https://clothes-shop-production-d9d8.up.railway.app
 
 How we work: one step at a time. Finish a step, check it on the live site, tick the box, then start the next one.
 Legend: `[x]` done, `[ ]` to do, `[?]` needs a decision from the owner first.
-Last updated: 2026-10-11 (accessibility pass in progress, see Phase 7; the 2026-10-11 edits now pass the CI build and smoke test, but are not phone-checked yet). Right now: Phase 5 accounts are done and tested (login, profile name, order history, saved addresses, checkout prefill; the prefill still needs the owner's phone check); next = Phase 7 polish: 404/500 pages and empty states are done; still to do: accessibility pass, mobile menu links. The info pages (About, Contact, FAQ, Returns, Terms) wait for the owner's real texts and currently show a placeholder sentence. Then Phase 8 SEO. Still waiting on the owner: test order for the SMS phone check, SMS provider choice. Mock payment and mock SMS stay ON in Railway staging.
+Last updated: 2026-10-11 (accessibility pass done; the purchase flow is now tested end to end in CI by a phone-size browser, see Phase 8; the 2026-10-11 edits pass CI but are not all phone-checked yet). Right now: Phase 5 accounts are done and tested (login, profile name, order history, saved addresses, checkout prefill; the prefill still needs the owner's phone check); next = Phase 7 polish: 404/500 pages and empty states are done; still to do: accessibility pass, mobile menu links. The info pages (About, Contact, FAQ, Returns, Terms) wait for the owner's real texts and currently show a placeholder sentence. Then Phase 8 SEO. Still waiting on the owner: test order for the SMS phone check, SMS provider choice. Mock payment and mock SMS stay ON in Railway staging.
 
 ---
 
@@ -138,6 +138,7 @@ Last updated: 2026-10-11 (accessibility pass in progress, see Phase 7; the 2026-
 - [x] Per-page titles and descriptions (written 2026-10-11, build + smoke tested in CI, not phone-checked: product page `generateMetadata` with canonical + social image, info pages, shop description; cart and wishlist set to noindex)
 - [x] `sitemap.xml`, `robots.txt` (written 2026-10-11, tested in CI: `app/sitemap.ts`, `app/robots.ts`; set `SITE_URL` on the server when the real domain exists, see `lib/siteUrl.ts`)
 - [x] Product structured data (JSON-LD) (written 2026-10-11 in the product page, CI checks it is present; prices sent as IRR = Toman x 10)
+- [x] Purchase-flow checks in CI (2026-10-11, `e2e/flow-check.mjs`, job `flow-checks`, 390x844 browser, mock payment + mock SMS read from the server log): guest checkout paid at the mock gateway, checkout cancelled at the gateway, order page link opens tracking, tracking with a wrong mobile is refused and with the right mobile shows the paid order, SMS login shows the order in "my orders" and logout works, admin sees the order in `/admin/orders`. All 6 steps pass
 - [ ] Image optimization and Lighthouse pass on mobile
 
 ## Phase 9 — Launch
