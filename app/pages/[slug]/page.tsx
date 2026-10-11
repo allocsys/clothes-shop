@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { site } from '@/lib/site';
 import { formatPrice } from '@/lib/format';
 import { FREE_SHIPPING_FROM } from '@/lib/checkout';
+import { getSiteSettings, socialLinks, type SiteSettings } from '@/lib/siteSettings';
 
 type Section = { h?: string; p?: string[]; list?: string[] };
 type Page = { title: string; intro?: string; sections: Section[] };
@@ -187,9 +188,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return { title: page.title, description: page.intro };
 }
 
-function ContactBlock() {
-  const { phone, address } = site.contact;
-  const socials = site.socials.filter((s) => s.href && s.href !== '#');
+function ContactBlock({ settings }: { settings: SiteSettings }) {
+  const { phone, address } = settings;
+  const socials = socialLinks(settings);
   const hasAny = !!phone || !!address || socials.length > 0;
 
   return (
@@ -232,6 +233,7 @@ export default async function InfoPage({ params }: Props) {
   const { slug } = await params;
   const page = getPage(slug);
   if (!page) notFound();
+  const settings = slug === 'contact-us' ? await getSiteSettings() : null;
 
   return (
     <article className='mt-6 max-w-3xl'>
@@ -254,7 +256,7 @@ export default async function InfoPage({ params }: Props) {
         </section>
       ))}
 
-      {slug === 'contact-us' && <ContactBlock />}
+      {settings && <ContactBlock settings={settings} />}
     </article>
   );
 }
