@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { site } from '@/lib/site';
 import { formatPrice } from '@/lib/format';
-import { FREE_SHIPPING_FROM, SHIPPING_FEE } from '@/lib/checkout';
+import { FREE_SHIPPING_FROM } from '@/lib/checkout';
 
 type Section = { h?: string; p?: string[]; list?: string[] };
 type Page = { title: string; intro?: string; sections: Section[] };
@@ -64,7 +64,7 @@ const pages: Record<string, Page> = {
       },
       {
         h: 'هزینه ارسال چقدر است؟',
-        p: ['هزینه ارسال ' + formatPrice(SHIPPING_FEE) + ' است و برای خریدهای بالای ' + formatPrice(FREE_SHIPPING_FROM) + ' ارسال رایگان است. مبلغ دقیق را پیش از ثبت سفارش در سبد خرید می‌بینید.'],
+        p: ['هزینه ارسال به استان شما و وزن بسته بستگی دارد و برای خریدهای بالای ' + formatPrice(FREE_SHIPPING_FROM) + ' ارسال رایگان است. مبلغ دقیق را پیش از ثبت سفارش در سبد خرید می‌بینید.'],
       },
       {
         h: 'سایز مناسبم را چطور انتخاب کنم؟',
@@ -138,7 +138,7 @@ const pages: Record<string, Page> = {
       },
       {
         h: 'ارسال',
-        p: ['هزینه و زمان ارسال بسته به شهر و روش ارسال متفاوت است. هزینه ارسال پیش از ثبت سفارش در سبد خرید نمایش داده می‌شود.'],
+        p: ['هزینه ارسال به استان مقصد و وزن بسته بستگی دارد و زمان رسیدن بسته هم به مقصد و شرکت حمل بستگی دارد. هزینه ارسال پیش از ثبت سفارش در سبد خرید نمایش داده می‌شود.'],
       },
       {
         h: 'رنگ و اندازه کالا',
