@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import ProductEditForm from '@/components/admin/ProductEditForm';
+import DeleteProductButton from '@/components/admin/DeleteProductButton';
 import PhotoManager from '@/components/admin/PhotoManager';
 import VariantsEditor from '@/components/admin/VariantsEditor';
 import { getPhotoKeys } from '@/lib/adminPhotos';
@@ -38,6 +39,7 @@ export default async function AdminProductEditPage({
       <ProductEditForm product={product} />
       <PhotoManager productId={product.id} category={product.category} slug={product.slug} title={product.title} initial={photos} />
       <VariantsEditor productId={product.id} initial={variants} />
+      <DeleteProductButton productId={product.id} />
     </div>
   );
 }
