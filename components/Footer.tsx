@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { site } from '@/lib/site';
+import { getSiteSettings, socialLinks } from '@/lib/siteSettings';
 import Logo from '@/components/Logo';
 import ScrollTop from '@/components/ScrollTop';
 import { IconChat, IconChevronLeft, IconPhone, IconPin, IconReturn, IconShield, IconTruck } from '@/components/Icons';
@@ -50,9 +51,10 @@ function LinkList({ title, items }: { title: string; items: string[][] }) {
   );
 }
 
-export default function Footer() {
-  const { address, phone } = site.contact;
-  const socials = site.socials.filter((s) => s.href && s.href !== '#');
+export default async function Footer() {
+  const settings = await getSiteSettings();
+  const { address, phone } = settings;
+  const socials = socialLinks(settings);
 
   return (
     <footer className='mt-10 rounded-t-[2rem] border-t border-white/15 bg-night text-white shadow-[0_-8px_30px_rgba(0,0,0,0.25)] dark:bg-[#2d2748]'>
