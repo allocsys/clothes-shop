@@ -38,7 +38,7 @@ export default async function AdminOrdersPage({ searchParams }: { searchParams: 
     return '/admin/orders' + (s ? '?' + s : '');
   };
   const chip = (active: boolean) =>
-    'shrink-0 rounded-full border px-3.5 py-2 text-sm ' + (active ? 'border-brand bg-brand font-bold text-white' : 'border-ink/20');
+    'shrink-0 rounded-full border px-3.5 py-2.5 text-sm ' + (active ? 'border-brand bg-brand font-bold text-white' : 'border-ink/20');
 
   return (
     <div>
@@ -95,8 +95,8 @@ export default async function AdminOrdersPage({ searchParams }: { searchParams: 
 
       {(page > 1 || hasMore) && (
         <div className='mt-5 flex items-center justify-between text-sm'>
-          {hasMore ? <Link href={href({ page: String(page + 1) })} className='rounded-full border border-ink/20 px-4 py-2'>صفحهٔ بعد</Link> : <span />}
-          {page > 1 && <Link href={href({ page: page > 2 ? String(page - 1) : undefined })} className='rounded-full border border-ink/20 px-4 py-2'>صفحهٔ قبل</Link>}
+          {hasMore ? <Link href={href({ page: String(page + 1) })} className='rounded-full border border-ink/20 px-4 py-2.5'>صفحهٔ بعد</Link> : <span />}
+          {page > 1 && <Link href={href({ page: page > 2 ? String(page - 1) : undefined })} className='rounded-full border border-ink/20 px-4 py-2.5'>صفحهٔ قبل</Link>}
         </div>
       )}
     </div>
