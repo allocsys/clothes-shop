@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { completePayment } from '@/lib/payments/service';
 import { siteOrigin } from '@/lib/payments/origin';
+import { trackServer } from '@/lib/analytics';
 
 export const dynamic = 'force-dynamic';
 
@@ -20,7 +21,10 @@ async function handle(req: Request, ctx: { params: Promise<{ provider: string }>
   let to = '/';
   try {
     const r = await completePayment(provider, data);
-    if (r.kind === 'paid') to = `/order/${r.code}?pay=ok`;
+    if (r.kind === 'paid') {
+      to = `/order/${r.code}?pay=ok`;
+      await trackServer(req, 'order_paid', `/order/${r.code}`);
+    }
     else if (r.kind === 'paid_but_canceled' || r.kind === 'duplicate') to = `/order/${r.code}?pay=review`;
     else if (r.kind === 'failed' && r.code) to = `/order/${r.code}?pay=${r.cancelled ? 'cancelled' : 'failed'}`;
   } catch (e) {
