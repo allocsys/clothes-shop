@@ -37,10 +37,16 @@ for (const f of files) {
       if (!au || au.score == null || au.score >= 0.9) continue;
       if (ref.weight === 0 && cat.id === 'performance') continue; // opportunities/diagnostics without weight: skip
       bad.push(cat.id + ': ' + au.title + (au.displayValue ? ' (' + au.displayValue + ')' : ''));
+      if (cat.id !== 'performance') {
+        for (const it of ((au.details && au.details.items) || []).slice(0, 2)) {
+          const sn = (it.node && (it.node.snippet || it.node.selector)) || it.description || (it.source && it.source.url) || '';
+          if (sn) bad.push('      at ' + String(sn).replace(/\s+/g, ' ').slice(0, 140));
+        }
+      }
     }
   }
-  for (const b of bad.slice(0, 12)) out('    low ' + b);
-  if (bad.length > 12) out('    ... and ' + (bad.length - 12) + ' more');
+  for (const b of bad.slice(0, 24)) out('    low ' + b);
+  if (bad.length > 24) out('    ... and ' + (bad.length - 24) + ' more');
 }
 out('');
 out('TOTAL: ' + files.length + ' pages measured (report only)');
