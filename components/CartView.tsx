@@ -166,7 +166,7 @@ export default function CartView() {
   return (
     <div className='mt-6 grid gap-6 md:grid-cols-[1fr_380px]'>
       <section>
-        <h1 className='mb-4 text-xl font-bold'>سبد خرید</h1>
+        <h1 className='mb-4 flex items-center gap-2 text-xl font-bold'><span aria-hidden='true' className='h-5 w-1.5 rounded-full bg-gold' />سبد خرید</h1>
         <ul className='space-y-3'>
           {detailed.map(({ line, product }) => (
             <li key={line.slug + line.size + line.color} className='flex gap-3 rounded-2xl bg-surface p-3'>
@@ -201,7 +201,12 @@ export default function CartView() {
           <div className='flex justify-between border-t border-ink/10 pt-2 font-bold'><dt>مبلغ قابل پرداخت</dt><dd className='text-brand'>{formatPrice(total)}</dd></div>
         </dl>
         {missing > 0 && (
-          <p className='mt-2 text-xs text-ink/70'>با {formatPrice(missing)} خرید بیشتر، ارسال رایگان می‌شود.</p>
+          <div className='mt-3'>
+            <div aria-hidden='true' className='h-1.5 overflow-hidden rounded-full bg-ink/10'>
+              <div className='h-full rounded-full bg-gold' style={{ width: Math.max(4, Math.min(100, Math.round((subtotal / FREE_SHIPPING_FROM) * 100))) + '%' }} />
+            </div>
+            <p className='mt-2 text-xs text-ink/70'>با {formatPrice(missing)} خرید بیشتر، ارسال رایگان می‌شود.</p>
+          </div>
         )}
 
         <h2 className='mb-3 mt-6 font-bold'>اطلاعات ارسال</h2>
