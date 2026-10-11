@@ -37,7 +37,7 @@ export default function SiteSettingsForm({ data }: { data: SiteFormData }) {
   function serverText(error: string, field?: string): string {
     if (error === 'bad_input' && field) {
       if (field === 'phone') return 'شماره تماس درست نیست. فقط عدد، فاصله و + یا - بنویسید (حداقل ۵ رقم).';
-      if (data.socials.some((s) => s.id === field)) return `«${labelOf(field)}» درست نیست. نام کاربری (مثل mahpari@) یا آدرس کامل با https:// بنویسید.`;
+      if (data.socials.some((s) => s.id === field)) return `«${labelOf(field)}» درست نیست. نام کاربری (مثل @mahpari) یا آدرس کامل با https:// بنویسید.`;
       return `«${labelOf(field)}» درست نیست یا بیش از حد طولانی است.`;
     }
     if (error === 'no_database') return 'دیتابیس وصل نیست؛ ذخیره نشد.';
