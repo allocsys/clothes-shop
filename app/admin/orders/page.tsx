@@ -1,4 +1,6 @@
 import Link from 'next/link';
+import EmptyState from '@/components/EmptyState';
+import { IconBag } from '@/components/Icons';
 import OrderStatusBadge from '@/components/admin/OrderStatusBadge';
 import PaymentBadge from '@/components/admin/PaymentBadge';
 import { formatDateTime } from '@/lib/adminDate';
@@ -57,7 +59,7 @@ export default async function AdminOrdersPage({ searchParams }: { searchParams: 
         <button type='submit' className='rounded-full bg-brand px-5 py-2.5 text-sm font-bold text-white'>جستجو</button>
       </form>
 
-      <div className='-mx-4 mt-4 flex gap-2 overflow-x-auto px-4 pb-1'>
+      <div className='no-scrollbar -mx-4 mt-4 flex gap-2 overflow-x-auto px-4 pb-1'>
         <Link href={href({ status: undefined })} className={chip(!status)}>همه ({fa(total)})</Link>
         {STATUSES.map((s) => (
           <Link key={s} href={href({ status: s })} className={chip(status === s)}>
@@ -67,9 +69,13 @@ export default async function AdminOrdersPage({ searchParams }: { searchParams: 
       </div>
 
       {rows.length === 0 && (
-        <p className='mt-6 rounded-2xl bg-surface p-4 text-sm text-ink/70'>
-          {q || status ? 'سفارشی با این فیلتر پیدا نشد.' : 'هنوز سفارشی ثبت نشده است.'}
-        </p>
+        <EmptyState
+          compact
+          icon={<IconBag width={32} height={32} />}
+          title={q || status ? 'سفارشی با این فیلتر پیدا نشد.' : 'هنوز سفارشی ثبت نشده است.'}
+          href={q || status ? '/admin/orders' : '/admin'}
+          action={q || status ? 'حذف فیلترها' : 'بازگشت به پنل'}
+        />
       )}
 
       <ul className='mt-4 space-y-3'>
@@ -84,7 +90,7 @@ export default async function AdminOrdersPage({ searchParams }: { searchParams: 
                 </span>
               </div>
               <p className='mt-1 truncate'>{o.customerName} · {o.city}</p>
-              <div className='mt-1 flex items-center justify-between gap-2 text-sm text-ink/60'>
+              <div className='mt-1 flex items-center justify-between gap-2 text-sm text-ink/70'>
                 <span>{formatDateTime(o.createdAt)}</span>
                 <span>{fa(o.itemCount)} عدد · {formatPrice(o.total)}</span>
               </div>
