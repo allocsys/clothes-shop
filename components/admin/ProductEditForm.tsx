@@ -20,6 +20,7 @@ export default function ProductEditForm({ product }: { product: AdminProduct }) 
   const [category, setCategory] = useState(product.category);
   const [price, setPrice] = useState(show(product.price));
   const [oldPrice, setOldPrice] = useState(show(product.oldPrice));
+  const [weight, setWeight] = useState(product.weightG == null ? '' : String(product.weightG));
   const [description, setDescription] = useState(product.description);
   const [isActive, setIsActive] = useState(product.isActive);
   const [errors, setErrors] = useState<BasicsErrors>({});
@@ -28,11 +29,13 @@ export default function ProductEditForm({ product }: { product: AdminProduct }) 
 
   const priceN = parseToman(price);
   const oldN = parseToman(oldPrice);
+  const weightN = parseToman(weight);
   const dirty =
     title !== base.title ||
     category !== base.category ||
     priceN !== base.price ||
     oldN !== base.oldPrice ||
+    weightN !== base.weightG ||
     description !== base.description ||
     isActive !== base.isActive;
   const percent =
@@ -48,6 +51,7 @@ export default function ProductEditForm({ product }: { product: AdminProduct }) 
     const local: BasicsErrors = {};
     if (typeof priceN !== 'number') local.price = 'قیمت را به تومان و به صورت عدد وارد کنید.';
     if (oldN === 'bad') local.oldPrice = 'قیمت قبل از تخفیف باید عدد باشد (یا خالی بماند).';
+    if (weightN === 'bad' || (typeof weightN === 'number' && (weightN < 1 || weightN > 20000))) local.weightG = 'وزن را به گرم و بین ۱ تا ۲۰۰۰۰ بنویسید (یا خالی بگذارید).';
     if (Object.keys(local).length) {
       setErrors(local);
       return;
@@ -58,7 +62,7 @@ export default function ProductEditForm({ product }: { product: AdminProduct }) 
       const res = await fetch('/api/admin/products/' + product.id, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, description, category, price: priceN, oldPrice: oldN, isActive }),
+        body: JSON.stringify({ title, description, category, price: priceN, oldPrice: oldN, isActive, weightG: typeof weightN === 'number' ? weightN : null }),
       });
       const data = await res.json().catch(() => ({}));
       if (res.ok) {
@@ -68,6 +72,7 @@ export default function ProductEditForm({ product }: { product: AdminProduct }) 
         setDescription(saved.description);
         setPrice(show(saved.price));
         setOldPrice(show(saved.oldPrice));
+        setWeight(saved.weightG == null ? '' : String(saved.weightG));
         setMessage({ ok: true, text: 'ذخیره شد.' });
         router.refresh();
       } else if (res.status === 400 && data.errors) {
@@ -119,6 +124,13 @@ export default function ProductEditForm({ product }: { product: AdminProduct }) 
         </div>
       </div>
       {percent !== null && <p className='-mt-2 text-sm text-brand'>٪{fa(percent)} تخفیف در فروشگاه نمایش داده می‌شود.</p>}
+
+      <div>
+        <label htmlFor='p-weight' className='mb-1 block text-sm font-bold'>وزن یک عدد (گرم)</label>
+        <input id='p-weight' inputMode='numeric' dir='ltr' value={weight} onChange={(e) => setWeight(e.target.value)} placeholder='خالی = وزن معمول دسته' className={FIELD + ' text-left'} />
+        <p className='mt-1 text-xs text-ink/60'>برای محاسبهٔ هزینهٔ ارسال. اگر خالی بماند، وزن معمول این دسته‌بندی حساب می‌شود.</p>
+        {err('weightG')}
+      </div>
 
       <div>
         <label htmlFor='p-desc' className='mb-1 block text-sm font-bold'>توضیحات</label>
