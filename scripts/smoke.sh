@@ -105,6 +105,33 @@ else
   echo "skip  admin analytics page check (ADMIN_PASSWORD not set)"
 fi
 
+# Shipping quote: the fee follows the province zone and the parcel weight (Post table; 1 manteau = 800 g + 100 g box = 900 g;
+# the seed manteau costs 1,850,000 so one piece is below the free-shipping total and two pieces are above it)
+quote() { curl -s --max-time 30 -X POST -H 'Content-Type: application/json' -d "$1" "$BASE/api/shipping/quote"; }
+check_quote() { # <label> <request body> <text that must appear in the answer>
+  if quote "$2" | grep -qF -- "$3"; then ok "quote: $1"; else bad "quote: $1 (missing $3)"; fi
+}
+ITEM1='[{"slug":"sample-manteau-1","size":"S","color":"مشکی","qty":1}]'
+ITEM2='[{"slug":"sample-manteau-1","size":"S","color":"مشکی","qty":2}]'
+check_quote 'same province fee' "{\"province\":\"خراسان رضوی\",\"items\":$ITEM1}" '"shipping":20500'
+check_quote 'neighbouring province fee' "{\"province\":\"سمنان\",\"items\":$ITEM1}" '"shipping":28500'
+check_quote 'far province fee' "{\"province\":\"تهران\",\"items\":$ITEM1}" '"shipping":32000'
+check_quote 'weight and carrier' "{\"province\":\"تهران\",\"items\":$ITEM1}" '"weightG":900'
+check_quote 'carrier is post by default' "{\"province\":\"تهران\",\"items\":$ITEM1}" '"carrier":"post"'
+check_quote 'total = subtotal + fee' "{\"province\":\"تهران\",\"items\":$ITEM1}" '"total":1882000'
+check_quote 'free shipping above the limit' "{\"province\":\"تهران\",\"items\":$ITEM2}" '"shipping":0'
+check_quote 'free flag above the limit' "{\"province\":\"تهران\",\"items\":$ITEM2}" '"free":true'
+for body in \
+  "{\"province\":\"nowhere\",\"items\":$ITEM1}" \
+  "{\"items\":$ITEM1}" \
+  "{\"province\":\"تهران\",\"items\":[]}" \
+  "{\"province\":\"تهران\",\"items\":[{\"slug\":\"nope\",\"qty\":1}]}" \
+  'not json'; do
+  got="$(curl -s -o /dev/null -w '%{http_code}' --max-time 30 -X POST -H 'Content-Type: application/json' -d "$body" "$BASE/api/shipping/quote")"
+  if [ "$got" = "400" ]; then ok "quote refuses bad input -> 400"; else bad "quote bad input -> $got (wanted 400)"; fi
+done
+expect_status /api/shipping/quote 405
+
 # Server must not leak the admin area without login
 got="$(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "$BASE/admin")"
 case "$got" in
