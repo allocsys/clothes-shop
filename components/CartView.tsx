@@ -5,7 +5,7 @@ import Link from 'next/link';
 import ProductImage from '@/components/ProductImage';
 import { useAccount } from '@/components/AccountProvider';
 import { trackEvent } from '@/components/Analytics';
-import { MAX_QTY, useCart } from '@/components/CartProvider';
+import { MAX_QTY, useCart, type CartLine } from '@/components/CartProvider';
 import { useProducts } from '@/components/useProducts';
 import type { SavedAddress } from '@/lib/addressTypes';
 import { FREE_SHIPPING_FROM, isValidIranMobile, priceOrder } from '@/lib/checkout';
@@ -20,12 +20,32 @@ const field =
 type Done = { code: string; total: number; payError?: boolean };
 
 export default function CartView() {
-  const { lines, ready, setQty, remove, clear } = useCart();
+  const { lines, ready, setQty, remove, restore, clear } = useCart();
   const { products, loading } = useProducts(lines.map((l) => l.slug));
   const [form, setForm] = useState({ name: '', phone: '', city: '', address: '', postalCode: '', notes: '' });
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState<Done | null>(null);
+
+  // Undo bar: shown for 5 seconds after an item is removed
+  const [undo, setUndo] = useState<{ line: CartLine; index: number; title: string } | null>(null);
+  const undoTimer = useRef<number | undefined>(undefined);
+  useEffect(() => () => window.clearTimeout(undoTimer.current), []);
+
+  function onRemove(line: CartLine, title: string) {
+    const index = lines.findIndex((l) => l.slug === line.slug && l.size === line.size && l.color === line.color);
+    remove(line);
+    setUndo({ line, index: Math.max(index, 0), title });
+    window.clearTimeout(undoTimer.current);
+    undoTimer.current = window.setTimeout(() => setUndo(null), 5000);
+  }
+
+  function onUndo() {
+    if (!undo) return;
+    restore(undo.line, undo.index);
+    window.clearTimeout(undoTimer.current);
+    setUndo(null);
+  }
 
   const account = useAccount();
   const [saved, setSaved] = useState<SavedAddress[]>([]);
@@ -112,12 +132,22 @@ export default function CartView() {
     return p ? [{ line: l, product: p }] : [];
   });
 
+  const undoBar = undo ? (
+    <div role='status' className='fixed inset-x-4 bottom-24 z-50 mx-auto flex max-w-md items-center justify-between gap-3 rounded-2xl bg-ink px-4 py-3 text-sm text-surface shadow-lg md:bottom-6'>
+      <span className='min-w-0 truncate'>{undo.title} حذف شد</span>
+      <button type='button' onClick={onUndo} className='min-h-10 shrink-0 px-2 font-bold text-gold'>بازگردانی</button>
+    </div>
+  ) : null;
+
   if (detailed.length === 0) {
     return (
-      <section className='py-20 text-center'>
-        <p className='text-ink/70'>سبد خرید شما خالی است.</p>
-        <Link href='/shop' className='mt-5 inline-block rounded-full bg-brand px-8 py-3 font-bold text-white'>مشاهده محصولات</Link>
-      </section>
+      <>
+        <section className='py-20 text-center'>
+          <p className='text-ink/70'>سبد خرید شما خالی است.</p>
+          <Link href='/shop' className='mt-5 inline-block rounded-full bg-brand px-8 py-3 font-bold text-white'>مشاهده محصولات</Link>
+        </section>
+        {undoBar}
+      </>
     );
   }
 
@@ -184,7 +214,7 @@ export default function CartView() {
                   </div>
                   <div className='text-left'>
                     <p className='text-sm font-bold text-brand'>{formatPrice(product.price * line.qty)}</p>
-                    <button type='button' onClick={() => remove(line)} className='min-h-10 min-w-10 px-2 text-xs text-rose'>حذف</button>
+                    <button type='button' onClick={() => onRemove(line, product.title)} className='min-h-10 min-w-10 px-2 text-xs text-rose'>حذف</button>
                   </div>
                 </div>
               </div>
@@ -235,6 +265,7 @@ export default function CartView() {
         </button>
         <p className='mt-2 text-center text-xs text-ink/70'>پرداخت آنلاین به‌زودی فعال می‌شود.</p>
       </form>
+      {undoBar}
     </div>
   );
 }
