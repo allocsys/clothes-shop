@@ -1,7 +1,9 @@
 import { NextResponse } from 'next/server';
 import { isValidIranMobile, normalizePhone, priceOrder, type OrderItem } from '@/lib/checkout';
 import { hasDb } from '@/lib/db';
-import { createOrder } from '@/lib/orders';
+import { createOrder, type OrderTotals } from '@/lib/orders';
+import { isProvince } from '@/data/provinces';
+import { quoteForCart } from '@/lib/shipping';
 import { getProductsBySlugs } from '@/lib/products';
 import { getActiveProvider, providerMisconfigured } from '@/lib/payments';
 import { startPayment } from '@/lib/payments/service';
@@ -25,6 +27,7 @@ export async function POST(req: Request) {
   const customer = {
     name: text(body?.customer?.name, 80),
     phone: normalizePhone(text(body?.customer?.phone, 20)),
+    province: isProvince(body?.customer?.province) ? (body.customer.province as string) : '',
     city: text(body?.customer?.city, 60),
     address: text(body?.customer?.address, 400),
     postalCode: text(body?.customer?.postalCode, 12),
@@ -53,7 +56,13 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, error: 'سبد خرید خالی یا نامعتبر است.' }, { status: 400 });
   }
 
-  const totals = priceOrder(items, products);
+  // Shipping depends on the province and the parcel weight, always worked out here from our own data.
+  // Without a (valid) province the old flat fee still applies for now.
+  let totals: OrderTotals = priceOrder(items, products);
+  if (customer.province) {
+    const q = await quoteForCart(items, products, customer.province);
+    totals = { subtotal: q.subtotal, shipping: q.shipping, total: q.subtotal + q.shipping, carrier: q.carrier, weightG: q.weightG };
+  }
   // With a database: save the order and reduce stock in one transaction.
   if (hasDb()) {
     let result;
