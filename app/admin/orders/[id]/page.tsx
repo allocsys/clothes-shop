@@ -8,6 +8,7 @@ import { formatDateTime } from '@/lib/adminDate';
 import { getOrder } from '@/lib/adminOrders';
 import { hasDb } from '@/lib/db';
 import { formatPrice } from '@/lib/format';
+import { CARRIER_LABELS, type CarrierId } from '@/lib/shipping';
 
 export const dynamic = 'force-dynamic';
 
@@ -39,6 +40,7 @@ export default async function AdminOrderPage({ params }: { params: Promise<{ id:
           <a href={'tel:' + o.mobile} dir='ltr' className='text-brand'>{o.mobile}</a>
         </p>
         <p className='mt-2 text-sm'>{o.city}{o.postalCode ? ' · کدپستی ' : ''}{o.postalCode && <span dir='ltr'>{o.postalCode}</span>}</p>
+        {o.province && <p className='mt-1 text-sm'>استان {o.province}</p>}
         <p className='mt-1 whitespace-pre-line text-sm'>{o.address}</p>
         {o.note && <p className='mt-3 rounded-xl bg-ink/5 p-3 text-sm'><span className='font-bold'>توضیح مشتری: </span>{o.note}</p>}
       </section>
@@ -62,6 +64,16 @@ export default async function AdminOrderPage({ params }: { params: Promise<{ id:
         <dl className='mt-2 space-y-1 border-t border-ink/10 pt-3 text-sm'>
           <div className='flex justify-between'><dt>جمع کالاها</dt><dd>{formatPrice(o.subtotal)}</dd></div>
           <div className='flex justify-between'><dt>هزینهٔ ارسال</dt><dd>{o.shipping === 0 ? 'رایگان' : formatPrice(o.shipping)}</dd></div>
+          {(o.shippingCarrier || o.weightG) && (
+            <div className='flex justify-between text-xs text-ink/60'>
+              <dt>نحوهٔ ارسال</dt>
+              <dd>
+                {o.shippingCarrier ? CARRIER_LABELS[o.shippingCarrier as CarrierId] ?? o.shippingCarrier : ''}
+                {o.shippingCarrier && o.weightG ? ' · ' : ''}
+                {o.weightG ? fa(o.weightG) + ' گرم' : ''}
+              </dd>
+            </div>
+          )}
           <div className='flex justify-between text-base font-bold'><dt>مبلغ نهایی</dt><dd>{formatPrice(o.total)}</dd></div>
         </dl>
       </section>
