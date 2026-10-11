@@ -163,6 +163,11 @@ const pages: Record<string, Page> = {
   },
 };
 
+// Own keys only: a plain lookup would also find inherited names such as "constructor".
+function getPage(slug: string): Page | undefined {
+  return Object.prototype.hasOwnProperty.call(pages, slug) ? pages[slug] : undefined;
+}
+
 export function generateStaticParams() {
   return Object.keys(pages).map((slug) => ({ slug }));
 }
@@ -171,7 +176,7 @@ type Props = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const page = pages[slug];
+  const page = getPage(slug);
   if (!page) return {};
   return { title: page.title, description: page.intro };
 }
@@ -219,7 +224,7 @@ function ContactBlock() {
 
 export default async function InfoPage({ params }: Props) {
   const { slug } = await params;
-  const page = pages[slug];
+  const page = getPage(slug);
   if (!page) notFound();
 
   return (
