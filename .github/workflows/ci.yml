@@ -246,3 +246,83 @@ jobs:
       - name: Server log (on failure)
         if: failure()
         run: tail -n 100 next.log || true
+
+  # 5) lighthouse: mobile performance, accessibility, best-practices and SEO scores of the main pages
+  #    (report only for now, it never fails the build; summary in the job log and the run summary).
+  lighthouse:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: shop
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      DATABASE_URL: postgres://postgres:postgres@localhost:5432/shop
+      ADMIN_PASSWORD: ci-test-password-123
+      UPLOAD_DIR: /tmp/uploads
+      SITE_URL: http://localhost:3100
+      SMS_PROVIDER: mock
+      ALLOW_MOCK_SMS: '1'
+      PAYMENT_PROVIDER: mock
+      ALLOW_MOCK_PAYMENT: '1'
+      NEXT_TELEMETRY_DISABLED: '1'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Build
+        run: npm run build
+
+      - name: Migrate and seed the test database
+        run: |
+          npm run db:migrate
+          npm run db:seed
+
+      - name: Start the server
+        run: |
+          nohup npx next start -p 3100 > next.log 2>&1 &
+          for i in $(seq 1 40); do
+            if curl -s -o /dev/null http://localhost:3100/; then echo "server is up"; exit 0; fi
+            sleep 2
+          done
+          echo "server did not start"
+          cat next.log
+          exit 1
+
+      - name: Run Lighthouse (mobile)
+        run: |
+          mkdir lh && cd lh
+          i=0
+          for p in / /shop /product/sample-manteau-1 /cart; do
+            i=$((i+1))
+            npx --yes lighthouse@12.6.1 "http://localhost:3100$p" --quiet \
+              --only-categories=performance,accessibility,best-practices,seo \
+              --chrome-flags="--headless=new --no-sandbox" \
+              --output=json --output-path="./lh-$i.json" || echo "lighthouse failed for $p"
+          done
+
+      - name: Lighthouse summary
+        working-directory: lh
+        run: node ../scripts/lh-report.mjs
+
+      - name: Server log (on failure)
+        if: failure()
+        run: tail -n 100 next.log || true
