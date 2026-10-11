@@ -1,0 +1,9 @@
+{
+  "name": "clothes-shop-e2e",
+  "private": true,
+  "type": "module",
+  "description": "Browser checks run by CI only. Kept apart from the shop so the app and its Docker image do not carry Playwright.",
+  "dependencies": {
+    "playwright": "^1.49.0"
+  }
+}
