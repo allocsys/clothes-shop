@@ -75,7 +75,7 @@ export default async function ProductPage({ params }: Props) {
       </nav>
       <div className='grid gap-8 md:grid-cols-2'>
         <ProductGallery title={product.title} category={product.category} slug={product.slug} images={product.images} />
-        <div>
+        <div className='self-start rounded-2xl bg-surface p-5 md:p-6'>
           <h1 className='text-2xl font-bold'>{product.title}</h1>
           <p className='mt-3 text-xl font-bold text-brand'>
             {formatPrice(product.price)}
