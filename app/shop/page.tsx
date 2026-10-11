@@ -236,8 +236,8 @@ export default async function ShopPage({ searchParams }: Props) {
         </div>
       ) : (
         <div className='grid grid-cols-2 gap-4 md:grid-cols-4'>
-          {list.map((p) => (
-            <ProductCard key={p.slug} product={p} headingLevel={2} />
+          {list.map((p, i) => (
+            <ProductCard key={p.slug} product={p} headingLevel={2} priority={i < 4} />
           ))}
         </div>
       )}
