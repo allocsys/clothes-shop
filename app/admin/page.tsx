@@ -48,6 +48,11 @@ export default async function AdminHome() {
         <p className='text-sm text-ink/70'>نمای کلی فروش ←</p>
         <p className='mt-1 text-xs text-ink/70'>امروز، ۷ و ۳۰ روز اخیر، نمودار روزانه، پرفروش‌ها</p>
       </Link>
+
+      <Link href='/admin/analytics' className='mt-3 block rounded-2xl bg-surface p-4'>
+        <p className='text-sm text-ink/70'>آمار بازدید ←</p>
+        <p className='mt-1 text-xs text-ink/70'>بازدیدکننده‌ها، منبع ورود، مسیر خرید، جستجوها</p>
+      </Link>
     </div>
   );
 }
