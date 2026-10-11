@@ -53,6 +53,11 @@ export default async function AdminHome() {
         <p className='text-sm text-ink/70'>آمار بازدید ←</p>
         <p className='mt-1 text-xs text-ink/70'>بازدیدکننده‌ها، منبع ورود، مسیر خرید، جستجوها</p>
       </Link>
+
+      <Link href='/admin/shipping' className='mt-3 block rounded-2xl bg-surface p-4'>
+        <p className='text-sm text-ink/70'>هزینهٔ ارسال ←</p>
+        <p className='mt-1 text-xs text-ink/70'>شرکت حمل، قیمت هر استان و وزن بسته‌بندی</p>
+      </Link>
     </div>
   );
 }
