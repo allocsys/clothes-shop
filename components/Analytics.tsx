@@ -33,7 +33,15 @@ export default function Analytics() {
     }
     trackEvent({ e: 'pageview', path: pathname, ...extra });
     const m = /^\/product\/([^/]+)/.exec(pathname);
-    if (m) trackEvent({ e: 'product_view', path: pathname, slug: decodeURIComponent(m[1]) });
+    if (m) {
+      let slug = m[1];
+      try {
+        slug = decodeURIComponent(slug);
+      } catch {
+        /* keep the raw text; the server validates it anyway */
+      }
+      trackEvent({ e: 'product_view', path: pathname, slug });
+    }
   }, [pathname]);
 
   return null;
