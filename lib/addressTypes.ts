@@ -4,6 +4,7 @@ export const ADDRESS_LIMIT = 10;
 export type SavedAddress = {
   id: number;
   title: string;
+  province: string; // empty on addresses saved before provinces were added
   city: string;
   postalCode: string;
   address: string;
