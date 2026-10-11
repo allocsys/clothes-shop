@@ -5,7 +5,7 @@ Live: https://clothes-shop-production-d9d8.up.railway.app
 
 How we work: one step at a time. Finish a step, check it on the live site, tick the box, then start the next one.
 Legend: `[x]` done, `[ ]` to do, `[?]` needs a decision from the owner first.
-Last updated: 2026-10-11 (accessibility pass in progress, see Phase 7; last edits were made without a browser test). Right now: Phase 5 accounts are done and tested (login, profile name, order history, saved addresses, checkout prefill; the prefill still needs the owner's phone check); next = Phase 7 polish: 404/500 pages and empty states are done; still to do: accessibility pass, mobile menu links. The info pages (About, Contact, FAQ, Returns, Terms) wait for the owner's real texts and currently show a placeholder sentence. Then Phase 8 SEO. Still waiting on the owner: test order for the SMS phone check, SMS provider choice. Mock payment and mock SMS stay ON in Railway staging.
+Last updated: 2026-10-11 (accessibility pass in progress, see Phase 7; the 2026-10-11 edits now pass the CI build and smoke test, but are not phone-checked yet). Right now: Phase 5 accounts are done and tested (login, profile name, order history, saved addresses, checkout prefill; the prefill still needs the owner's phone check); next = Phase 7 polish: 404/500 pages and empty states are done; still to do: accessibility pass, mobile menu links. The info pages (About, Contact, FAQ, Returns, Terms) wait for the owner's real texts and currently show a placeholder sentence. Then Phase 8 SEO. Still waiting on the owner: test order for the SMS phone check, SMS provider choice. Mock payment and mock SMS stay ON in Railway staging.
 
 ---
 
@@ -120,7 +120,7 @@ Last updated: 2026-10-11 (accessibility pass in progress, see Phase 7; last edit
 ## Phase 7 — Content and polish
 - [ ] Real promo text, footer contacts and social links (TODOs in `lib/site.ts`, `components/Footer.tsx`)
 - [ ] Real info pages: About, Contact, FAQ, Return policy, Terms
-  - [x] First-draft Persian texts written 2026-10-11 (`app/pages/[slug]/page.tsx`, untested build). Contact page shows phone, address and social links automatically once `lib/site.ts` is filled
+  - [x] First-draft Persian texts written 2026-10-11 (`app/pages/[slug]/page.tsx`; builds and all 5 pages answer 200 in CI; unknown slugs give 404). Contact page shows phone, address and social links automatically once `lib/site.ts` is filled
   - [ ] Owner review: return window (draft says 7 days), who pays return shipping, shipping fee text (taken from `lib/checkout.ts`), privacy wording
   - [ ] Build check and phone check of all 5 pages next session
 - [x] Useful-links list in the mobile menu (`components/MobileMenu.tsx`): the tab already existed with 8 links; wishlist added 2026-10-11 (untested)
@@ -134,9 +134,10 @@ Last updated: 2026-10-11 (accessibility pass in progress, see Phase 7; last edit
   - [ ] Still to review: admin forms, shop filter chips, mobile tab bar sizes, mobile menu links
 
 ## Phase 8 — SEO and performance
-- [ ] Per-page titles and descriptions (written 2026-10-11, untested: product page `generateMetadata` with canonical + social image, info pages, shop description; cart and wishlist set to noindex)
-- [ ] `sitemap.xml`, `robots.txt` (written 2026-10-11, untested: `app/sitemap.ts`, `app/robots.ts`; set `SITE_URL` on the server when the real domain exists, see `lib/siteUrl.ts`)
-- [ ] Product structured data (JSON-LD) (written 2026-10-11 in the product page, untested; prices sent as IRR = Toman x 10)
+- [x] CI on GitHub (2026-10-11, `.github/workflows/ci.yml` + `scripts/smoke.sh`): every push to main and every pull request builds, typechecks, migrates a throw-away Postgres, starts the server and runs 36 smoke checks (pages, 404s, robots, sitemap, JSON-LD, noindex); a second job builds the Docker image. Railway still deploys on every push whether CI passes or not (optional: turn on its wait-for-CI setting in the Railway dashboard)
+- [x] Per-page titles and descriptions (written 2026-10-11, build + smoke tested in CI, not phone-checked: product page `generateMetadata` with canonical + social image, info pages, shop description; cart and wishlist set to noindex)
+- [x] `sitemap.xml`, `robots.txt` (written 2026-10-11, tested in CI: `app/sitemap.ts`, `app/robots.ts`; set `SITE_URL` on the server when the real domain exists, see `lib/siteUrl.ts`)
+- [x] Product structured data (JSON-LD) (written 2026-10-11 in the product page, CI checks it is present; prices sent as IRR = Toman x 10)
 - [ ] Image optimization and Lighthouse pass on mobile
 
 ## Phase 9 — Launch
