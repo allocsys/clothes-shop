@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { categories } from '@/data/categories';
 import { site } from '@/lib/site';
+import { getSiteSettings } from '@/lib/siteSettings';
 import Logo from '@/components/Logo';
 import MobileMenu from '@/components/MobileMenu';
 import CartFeedback from '@/components/CartFeedback';
@@ -34,11 +35,12 @@ function CartLink() {
   );
 }
 
-export default function Header() {
+export default async function Header() {
+  const { promo } = await getSiteSettings();
   return (
     <>
       {/* Promo bar scrolls away; only the main header stays pinned */}
-      <div className='bg-night px-4 py-1.5 text-center text-xs text-white md:py-2 md:text-sm'>{site.promo}</div>
+      {promo && <div className='bg-night px-4 py-1.5 text-center text-xs text-white md:py-2 md:text-sm'>{promo}</div>}
 
       <header className='glass-bar sticky top-0 z-40'>
         {/* Mobile: one compact row. The menu is a slide-in drawer (see MobileMenu) */}
