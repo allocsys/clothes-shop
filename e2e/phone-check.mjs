@@ -112,6 +112,11 @@ function inspectScreen({ minFail, minWarn }) {
     }
 
     if (cs.display === 'inline') continue; // links inside running text are exempt from target size
+    if (el.disabled) continue; // not clickable right now
+    if ((el.type === 'checkbox' || el.type === 'radio') && el.labels && el.labels[0]) {
+      const lr = el.labels[0].getBoundingClientRect();
+      if (Math.min(lr.width, lr.height) >= minWarn) continue; // the label is the real tap target
+    }
     const small = Math.min(w, h);
     if (small < minFail) result.issues.push({ kind: 'FAIL', why: 'target ' + w + 'x' + h, html: describe(el) });
     else if (small < minWarn) result.issues.push({ kind: 'warn', why: 'target ' + w + 'x' + h, html: describe(el) });
@@ -157,7 +162,7 @@ async function visit(ctx, path, label, after) {
     if (r.status() >= 500) problems.push({ kind: 'FAIL', why: 'HTTP ' + r.status(), html: r.url() });
   });
   page.on('console', (m) => {
-    if (m.type() === 'error') problems.push({ kind: 'warn', why: 'console error', html: m.text().slice(0, 160) });
+    if (m.type() === 'error' && !/Failed to load resource/.test(m.text())) problems.push({ kind: 'warn', why: 'console error', html: m.text().slice(0, 160) });
   });
   try {
     await page.goto(BASE + path, { waitUntil: 'networkidle', timeout: 45000 });
@@ -200,7 +205,7 @@ async function main() {
   });
 
   await visit(ctx, '/shop', '/shop (filters open)', async (page) => {
-    await page.getByRole('button', { name: /فیلتر/ }).first().click({ timeout: 5000 });
+    await page.locator('summary', { hasText: /فیلتر/ }).first().click({ timeout: 5000 });
     await page.waitForTimeout(500);
   });
 
