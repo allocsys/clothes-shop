@@ -86,7 +86,9 @@ Last updated: 2026-10-11 (Zarinpal adapter written, add-to-cart stock-limit fix,
   - [x] SMS layer (2026-10-10): `lib/sms/` (interface, registry by `SMS_PROVIDER`, fake `mock` provider, `sendSms` that never throws, 8 s timeout, one message of a kind per order), table `sms_log` (migration 005). Mock is refused in production unless `ALLOW_MOCK_SMS=1`. 12 checks passed on real Postgres
   - [x] Order confirmation text sent when an order is placed (2026-10-10): `lib/sms/templates.ts` (Persian: shop name, order code, total, tracking link with the code only), hooked into `POST /api/orders` fire-and-forget; rejected orders send nothing; works with online payment on and with SMS off. Checked on real Postgres: sms_log row, server log line, 1 message per order
   - [x] Phone check on Railway with `SMS_PROVIDER=mock` and `ALLOW_MOCK_SMS=1` (confirmed 2026-10-11, owner: all passed; message shows in the Railway logs and in `sms_log`)
-  - [ ] Real provider file (e.g. Kavenegar) once the owner picks one
+  - [x] Kavenegar adapter written (2026-10-11, CI #115 green, NOT tested against the live service: no network in the sandbox): `lib/sms/kavenegar.ts` (POST `api.kavenegar.com/v1/<key>/sms/send.json`, form fields receptor + message + optional sender; `return.status` 200 = sent, anything else = failed with the code, never the API key; 7 s timeout) and `postForm` in `lib/payments/http.ts`. A provider can now report "not configured" (`configured()` in `lib/sms/types.ts`): `SMS_PROVIDER=kavenegar` without a valid `KAVENEGAR_API_KEY` keeps SMS off. Settings `SMS_PROVIDER=kavenegar`, `KAVENEGAR_API_KEY`, optional `KAVENEGAR_SENDER` (in `.env.example`). Endpoint, fields and error codes checked against the Kavenegar docs
+  - [ ] Owner: Kavenegar account + API key (and a sender line), then one real test message; Kavenegar's template/OTP route ("Lookup") may be needed later for login codes if plain texts get filtered
+  - [ ] Other providers (Melipayamak...) the same way: one file + one line in `lib/sms/index.ts`, only if the owner picks one
 
 ## Phase 5 — Accounts
 - [?] Decide: SMS provider for OTP (e.g. Kavenegar, Melipayamak)
@@ -97,7 +99,7 @@ Last updated: 2026-10-11 (Zarinpal adapter written, add-to-cart stock-limit fix,
   - [x] API `/api/auth/request`, `/verify`, `/logout` (per-IP limits too; the answer never reveals whether a number has an account; if the SMS cannot be sent the code is dropped so the customer can retry at once)
   - [x] Login screen + logged-in view + logout on `/account` (phone-size browser test passes)
   - [x] Phone check on Railway: log in with your own number, reload, log out; menu shows "حساب من" when logged in (confirmed 2026-10-10)
-  - [ ] Real SMS provider so codes arrive by text (same open item as the confirmation SMS)
+  - [ ] Real SMS provider so codes arrive by text (same open item as the confirmation SMS; the Kavenegar adapter is ready, the owner needs an account + API key)
 - [x] Account page: profile, saved addresses, order history
   - [x] Profile name: edit and save on `/account` (`PATCH /api/account`, `lib/account.ts`, `components/ProfileNameForm.tsx`), greeting "سلام <name>" (phone-checked 2026-10-10)
   - [x] Order history on `/account` (`lib/accountOrders.ts`): the logged-in customer sees only orders placed with their own mobile (newest first, 30 max): code, Persian date, status, items, total, paid / unpaid, link to tracking; never the address or note. Tested with a real Postgres (other mobile never leaks, injection-like input, limit) and a phone-size browser run (2026-10-10); phone-checked (confirmed 2026-10-10)
