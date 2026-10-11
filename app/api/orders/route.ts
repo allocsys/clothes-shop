@@ -8,6 +8,7 @@ import { startPayment } from '@/lib/payments/service';
 import { siteOrigin } from '@/lib/payments/origin';
 import { sendSms } from '@/lib/sms/service';
 import { orderPlacedText } from '@/lib/sms/templates';
+import { trackServer } from '@/lib/analytics';
 
 export const dynamic = 'force-dynamic';
 
@@ -69,6 +70,8 @@ export async function POST(req: Request) {
           : `«${result.title}» (سایز ${result.size}، رنگ ${result.color}) ناموجود شد.`;
       return NextResponse.json({ ok: false, error: msg, outOfStock: true }, { status: 409 });
     }
+    // Analytics: one order_placed event (server side, so it cannot be faked). Never throws.
+    void trackServer(req, 'order_placed', '/cart');
     // Confirmation SMS. Fire and forget: it never throws, and a slow or broken SMS provider must not delay the order.
     void sendSms({
       kind: 'order_placed',
