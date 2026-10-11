@@ -71,7 +71,7 @@ export default async function ProductPage({ params }: Props) {
     <article className='mt-6'>
       <script type='application/ld+json' dangerouslySetInnerHTML={{ __html: jsonLd }} />
       <nav className='mb-4 text-xs text-ink/70'>
-        <Link href='/' className='inline-block py-2.5'>خانه</Link> / <Link href='/shop' className='inline-block py-2.5'>فروشگاه</Link> / {product.title}
+        <Link href='/' className='inline-block px-1.5 py-2.5'>خانه</Link> / <Link href='/shop' className='inline-block px-1.5 py-2.5'>فروشگاه</Link> / {product.title}
       </nav>
       <div className='grid gap-8 md:grid-cols-2'>
         <ProductGallery title={product.title} category={product.category} slug={product.slug} images={product.images} />
