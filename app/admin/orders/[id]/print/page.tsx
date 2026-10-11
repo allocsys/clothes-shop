@@ -4,6 +4,7 @@ import { formatDateTime } from '@/lib/adminDate';
 import { getOrder } from '@/lib/adminOrders';
 import { hasDb } from '@/lib/db';
 import { formatPrice } from '@/lib/format';
+import { CARRIER_LABELS, type CarrierId } from '@/lib/shipping';
 
 export const dynamic = 'force-dynamic';
 
@@ -37,6 +38,7 @@ export default async function PackingSlipPage({ params }: { params: Promise<{ id
       <div className='mt-3 text-sm'>
         <p className='font-bold'>{o.customerName} — <span dir='ltr'>{o.mobile}</span></p>
         <p className='mt-1'>{o.city}{o.postalCode ? ' — کدپستی ' : ''}{o.postalCode && <span dir='ltr'>{o.postalCode}</span>}</p>
+        {o.province && <p className='mt-1'>استان {o.province}</p>}
         <p className='mt-1 whitespace-pre-line'>{o.address}</p>
         {o.note && <p className='mt-2 border border-black/30 p-2'>توضیح مشتری: {o.note}</p>}
       </div>
@@ -65,6 +67,16 @@ export default async function PackingSlipPage({ params }: { params: Promise<{ id
       <div className='mt-3 space-y-1 text-sm'>
         <div className='flex justify-between'><span>جمع کالاها</span><span>{formatPrice(o.subtotal)}</span></div>
         <div className='flex justify-between'><span>هزینهٔ ارسال</span><span>{o.shipping === 0 ? 'رایگان' : formatPrice(o.shipping)}</span></div>
+        {(o.shippingCarrier || o.weightG) && (
+          <div className='flex justify-between'>
+            <span>نحوهٔ ارسال</span>
+            <span>
+              {o.shippingCarrier ? CARRIER_LABELS[o.shippingCarrier as CarrierId] ?? o.shippingCarrier : ''}
+              {o.shippingCarrier && o.weightG ? ' · ' : ''}
+              {o.weightG ? fa(o.weightG) + ' گرم' : ''}
+            </span>
+          </div>
+        )}
         <div className='flex justify-between border-t border-black/40 pt-1 font-bold'><span>مبلغ نهایی</span><span>{formatPrice(o.total)}</span></div>
       </div>
       <p className='mt-6 text-center text-xs'>از خرید شما سپاسگزاریم 🌙</p>
