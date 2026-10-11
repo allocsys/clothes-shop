@@ -232,7 +232,8 @@ body {
   animation: heart-pop 0.4s ease-out;
 }
 
-/* Sold-out cues: all quiet. The moon sways slowly, the card strip shimmers softly, and a tap on something unavailable gives one small shake. */
+/* Sold-out cues: all quiet. The moon sways slowly, the card strip shimmers softly, and a tap on something unavailable gives one small shake.
+   Not gated on reduced-motion, same as the add-to-cart and heart cues. */
 @keyframes moon-sway {
   0%, 100% { transform: rotate(-8deg); }
   50% { transform: rotate(8deg); }
@@ -264,10 +265,5 @@ body {
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
-  }
-  /* the looping cues stop; the one-time shake on tap stays, like the heart pop */
-  .moon-sway,
-  .sold-shimmer {
-    animation: none;
   }
 }
