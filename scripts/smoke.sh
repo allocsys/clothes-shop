@@ -73,6 +73,38 @@ else
   echo "skip  analytics row checks (psql or DATABASE_URL not available)"
 fi
 
+# Analytics funnel: product view, cart, checkout and a search with no results are stored with their details, and the admin page shows them
+for body in \
+  '{"e":"product_view","path":"/product/sample-manteau-1","slug":"sample-manteau-1"}' \
+  '{"e":"add_to_cart","path":"/product/sample-manteau-1","slug":"sample-manteau-1"}' \
+  '{"e":"checkout_start","path":"/cart"}' \
+  '{"e":"search","path":"/shop","query":"smokezeroquery","results":0}'; do
+  got="$(post_event "$UA" "$body")"
+  if [ "$got" = "204" ]; then ok "POST /api/a funnel event -> 204"; else bad "POST /api/a funnel event -> $got (wanted 204)"; fi
+done
+if command -v psql >/dev/null 2>&1 && [ -n "$DATABASE_URL" ]; then
+  count() { psql "$DATABASE_URL" -tAc "SELECT count(*) FROM analytics_events WHERE $1" 2>/dev/null | tr -d ' '; }
+  [ "$(count "event = 'product_view' AND product_slug = 'sample-manteau-1'")" -ge 1 ] 2>/dev/null && ok "analytics stored the product view with its slug" || bad "analytics did not store the product view"
+  [ "$(count "event = 'add_to_cart' AND product_slug = 'sample-manteau-1'")" -ge 1 ] 2>/dev/null && ok "analytics stored the add to cart" || bad "analytics did not store the add to cart"
+  [ "$(count "event = 'checkout_start'")" -ge 1 ] 2>/dev/null && ok "analytics stored the checkout start" || bad "analytics did not store the checkout start"
+  [ "$(count "event = 'search' AND query = 'smokezeroquery' AND results = 0")" = "1" ] && ok "analytics stored the search with its result count" || bad "analytics did not store the search correctly"
+fi
+if [ -n "$ADMIN_PASSWORD" ]; then
+  hdr="$(curl -s -D - -o /dev/null --max-time 30 -X POST -H 'Content-Type: application/json' -d "{\"password\":\"$ADMIN_PASSWORD\"}" "$BASE/api/admin/login")"
+  cookie="$(echo "$hdr" | grep -i '^set-cookie:' | head -1 | sed -E 's/^[Ss]et-[Cc]ookie: *([^;]*).*/\1/' | tr -d '\r')"
+  if [ -z "$cookie" ]; then
+    bad "admin login for the analytics page gave no cookie"
+  else
+    page="$(curl -s --max-time 30 -H "Cookie: $cookie" "$BASE/admin/analytics?days=7")"
+    echo "$page" | grep -qF 'smokezeroquery' && ok "/admin/analytics shows the zero-result search" || bad "/admin/analytics does not show the zero-result search"
+    echo "$page" | grep -qF 'instagram' || echo "$page" | grep -qF 'اینستاگرام' && ok "/admin/analytics shows the instagram source" || bad "/admin/analytics does not show the instagram source"
+    echo "$page" | grep -qF '/smoke-human' && ok "/admin/analytics lists the visited page" || bad "/admin/analytics does not list the visited page"
+    echo "$page" | grep -qF 'مسیر خرید' && ok "/admin/analytics shows the funnel" || bad "/admin/analytics does not show the funnel"
+  fi
+else
+  echo "skip  admin analytics page check (ADMIN_PASSWORD not set)"
+fi
+
 # Server must not leak the admin area without login
 got="$(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "$BASE/admin")"
 case "$got" in
