@@ -95,17 +95,21 @@ export default function TrackForm({ initialCode = '' }: { initialCode?: string }
           <p className='mt-5 rounded-2xl bg-rose/10 px-4 py-3 text-sm font-bold text-rose'>{STEP_TEXT.canceled}</p>
         ) : (
           <>
-            <ol className='mt-6 grid grid-cols-4 gap-1 text-center' aria-label='مراحل سفارش'>
+            <ol className='relative mt-6 grid grid-cols-4 gap-1 text-center' aria-label='مراحل سفارش'>
+              {/* Line behind the circles: grey track, brand-colored up to the current step */}
+              <li aria-hidden='true' className='pointer-events-none absolute start-[12.5%] top-[15px] h-0.5 w-[75%] list-none bg-ink/10'>
+                <span className='block h-full bg-brand' style={{ width: (Math.max(step, 0) / (STEPS.length - 1)) * 100 + '%' }} />
+              </li>
               {STEPS.map((s, i) => (
-                <li key={s} aria-current={i === step ? 'step' : undefined} className='flex flex-col items-center gap-2'>
-                  <span className={'grid h-8 w-8 place-items-center rounded-full text-xs font-bold ' + (i <= step ? 'bg-brand text-white' : 'bg-ink/10 text-ink/70')}>
+                <li key={s} aria-current={i === step ? 'step' : undefined} className='relative flex flex-col items-center gap-2'>
+                  <span className={'grid h-8 w-8 place-items-center rounded-full text-xs font-bold ' + (i <= step ? 'bg-brand text-white' : 'border border-ink/15 bg-surface text-ink/70') + (i === step ? ' ring-4 ring-brand/20' : '')}>
                     {i < step ? '✓' : new Intl.NumberFormat('fa-IR').format(i + 1)}
                   </span>
                   <span className={'text-[11px] leading-4 ' + (i === step ? 'font-bold text-brand' : 'text-ink/70')}>{STATUS_LABEL[s]}</span>
                 </li>
               ))}
             </ol>
-            <p className='mt-5 text-sm font-bold'>{STEP_TEXT[order.status] ?? label}</p>
+            <p className='mt-5 rounded-2xl bg-brand/10 px-4 py-3 text-sm font-bold'>{STEP_TEXT[order.status] ?? label}</p>
           </>
         )}
 
