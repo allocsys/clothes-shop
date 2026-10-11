@@ -86,6 +86,7 @@ export default function CartView() {
         ...f,
         name: fill('name', name, f.name),
         phone: fill('phone', mobile, f.phone),
+        province: fill('province', def?.province ?? '', f.province),
         city: fill('city', def?.city ?? '', f.city),
         postalCode: fill('postalCode', def?.postalCode ?? '', f.postalCode),
         address: fill('address', def?.address ?? '', f.address),
@@ -97,8 +98,8 @@ export default function CartView() {
     setPickedId(id);
     const a = saved.find((x) => String(x.id) === id);
     if (!a) return;
-    ['city', 'postalCode', 'address'].forEach((k) => touched.current.add(k));
-    setForm((f) => ({ ...f, city: a.city, postalCode: a.postalCode, address: a.address }));
+    ['province', 'city', 'postalCode', 'address'].forEach((k) => touched.current.add(k));
+    setForm((f) => ({ ...f, province: a.province || f.province, city: a.city, postalCode: a.postalCode, address: a.address }));
   }
 
   // Shipping fee: asked from the server (prices and weights live there) whenever the province or the cart changes.
