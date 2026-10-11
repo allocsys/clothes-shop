@@ -8,6 +8,9 @@ if (mediaBase) {
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Product pages build their metadata with a database lookup. By default Next streams it into <body>
+  // for normal browsers; this regex makes every visitor get it in <head> (search engines already do).
+  htmlLimitedBots: /.*/,
   // Docker builds set NEXT_OUTPUT=standalone for a small self-contained server
   // (`node server.js`). Plain `next start` hosting (Railway) is unaffected.
   output: process.env.NEXT_OUTPUT === 'standalone' ? 'standalone' : undefined,
