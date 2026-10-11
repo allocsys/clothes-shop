@@ -27,8 +27,11 @@ export default function WishlistView() {
 
   return (
     <section className='mt-6'>
-      <h1 className='mb-4 text-xl font-bold'>
-        علاقه‌مندی‌ها <span className='text-sm font-normal text-ink/70'>({new Intl.NumberFormat('fa-IR').format(list.length)} کالا)</span>
+      <h1 className='mb-4 flex items-center gap-2 text-xl font-bold'>
+        <span aria-hidden='true' className='h-5 w-1.5 rounded-full bg-gold' />
+        <span>
+          علاقه‌مندی‌ها <span className='text-sm font-normal text-ink/70'>({new Intl.NumberFormat('fa-IR').format(list.length)} کالا)</span>
+        </span>
       </h1>
       <div className='grid grid-cols-2 gap-4 md:grid-cols-4'>
         {list.map((p) => (
