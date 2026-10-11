@@ -17,8 +17,8 @@ export default async function HomePage() {
       <h1 className='sr-only'>{site.name}</h1>
       <Hero />
 
-      <section className='mt-8'>
-        <div className='no-scrollbar flex gap-4 overflow-x-auto pb-2 md:justify-between'>
+      <section className='mt-5 rounded-3xl bg-brand/[0.07] px-3 py-4'>
+        <div className='no-scrollbar flex gap-4 overflow-x-auto md:justify-between'>
           {categories.map((c) => (
             <Link key={c.slug} href={'/shop?category=' + c.slug} className='flex w-20 shrink-0 flex-col items-center gap-2'>
               <span className='h-[72px] w-[72px] overflow-hidden rounded-full ring-2 ring-brand/20'>
@@ -30,7 +30,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className='mt-10'>
+      <section className='mt-7'>
         <SectionHeading title='جدیدترین‌ها' href='/shop' />
         <div className='grid grid-cols-2 gap-4 md:grid-cols-4'>
           {products.slice(0, 4).map((p) => (
@@ -40,7 +40,7 @@ export default async function HomePage() {
       </section>
 
       {discounted.length > 0 && (
-        <section className='mt-10'>
+        <section className='mt-7'>
           <SectionHeading title='تخفیف‌های ویژه' href='/shop' />
           <div className='grid grid-cols-2 gap-4 md:grid-cols-4'>
             {discounted.map((p) => (
