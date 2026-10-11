@@ -46,6 +46,9 @@ expect_body /product/sample-manteau-1 'application/ld+json' 'JSON-LD'
 expect_body /product/sample-manteau-1 '"@type":"Product"' 'a Product type'
 expect_body /product/sample-manteau-1 'rel="canonical"' 'a canonical link'
 expect_body /cart 'noindex' 'noindex'
+expect_body '/shop?category=bottoms' 'rel="canonical" href="https://shop.example.test/shop?category=bottoms"' 'the category canonical'
+expect_body '/shop?category=bottoms&sort=price-asc' 'noindex' 'noindex on a sorted view'
+expect_body '/shop?q=test' 'noindex' 'noindex on a search view'
 expect_body /wishlist 'noindex' 'noindex'
 
 # Server must not leak the admin area without login
