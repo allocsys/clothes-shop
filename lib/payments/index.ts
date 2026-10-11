@@ -1,10 +1,11 @@
 import type { PaymentProvider } from './types';
 import { mockProvider } from './mock';
+import { zarinpalProvider, zarinpalConfigured } from './zarinpal';
 
 export type { PaymentProvider, StartInput, StartResult, VerifyInput, VerifyResult, CallbackData, ParsedCallback } from './types';
 
 // ADD A NEW GATEWAY HERE: write lib/payments/<name>.ts implementing PaymentProvider, then list it below.
-const ALL: PaymentProvider[] = [mockProvider];
+const ALL: PaymentProvider[] = [mockProvider, zarinpalProvider];
 
 // Which gateway the shop uses: PAYMENT_PROVIDER env ("mock", later "zarinpal", ...).
 // Empty/unset = online payment is OFF and orders work as before (customer pays offline).
@@ -16,6 +17,8 @@ export function activeProviderId(): string | null {
 // The fake gateway takes no money, so it may only run outside production,
 // or on staging when ALLOW_MOCK_PAYMENT=1 is set on purpose.
 function allowed(p: PaymentProvider): boolean {
+  // A real gateway without its credentials is treated as unavailable (shows up as misconfigured), not as a crash at checkout.
+  if (p.id === 'zarinpal') return zarinpalConfigured();
   if (p.id !== 'mock') return true;
   return process.env.NODE_ENV !== 'production' || process.env.ALLOW_MOCK_PAYMENT === '1';
 }
