@@ -11,5 +11,7 @@ export type SendResult = { ok: true; reference?: string } | { ok: false; error: 
 export interface SmsProvider {
   id: string; // stored in sms_log.provider
   label: string;
+  // A real provider that has no valid settings yet (missing API key...) reports false: SMS then stays OFF.
+  configured?(): boolean;
   send(input: SendInput): Promise<SendResult>;
 }
