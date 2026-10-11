@@ -140,8 +140,9 @@ export default async function ShopPage({ searchParams }: Props) {
         })}
       </div>
 
-      <h1 className='mb-3 text-xl font-bold'>
-        محصولات <span className='text-sm font-normal text-ink/70'>({fa(list.length)} کالا)</span>
+      <h1 className='mb-3 flex items-center gap-2 text-xl font-bold'>
+        <span aria-hidden='true' className='h-5 w-1.5 rounded-full bg-gold' />
+        <span>محصولات <span className='text-sm font-normal text-ink/70'>({fa(list.length)} کالا)</span></span>
       </h1>
 
       <form action='/shop' className='mb-4'>
