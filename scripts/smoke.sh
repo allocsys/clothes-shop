@@ -131,6 +131,11 @@ for body in \
   if [ "$got" = "400" ]; then ok "quote refuses bad input -> 400"; else bad "quote bad input -> $got (wanted 400)"; fi
 done
 expect_status /api/shipping/quote 405
+# An order without a valid province is refused before anything is saved
+for cust in '{"name":"x","phone":"09120000000","city":"x","address":"x"}' '{"name":"x","phone":"09120000000","province":"nowhere","city":"x","address":"x"}'; do
+  got="$(curl -s -o /dev/null -w '%{http_code}' --max-time 30 -X POST -H 'Content-Type: application/json' -d "{\"customer\":$cust,\"items\":$ITEM1}" "$BASE/api/orders")"
+  if [ "$got" = "400" ]; then ok "order without a valid province -> 400"; else bad "order without a valid province -> $got (wanted 400)"; fi
+done
 
 # Server must not leak the admin area without login
 got="$(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "$BASE/admin")"
