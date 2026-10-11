@@ -128,6 +128,15 @@ export async function trackClient(req: Request, body: any): Promise<void> {
 }
 
 // An event recorded by the server itself (orders and payments), so it cannot be faked from the browser.
+// order_paid is stored once per path (the order page), because gateways may call back more than once.
 export async function trackServer(req: Request, event: 'order_placed' | 'order_paid', path: string): Promise<void> {
+  if (event === 'order_paid' && hasDb()) {
+    try {
+      const seen = await db().query("SELECT 1 FROM analytics_events WHERE event = 'order_paid' AND path = $1 LIMIT 1", [path]);
+      if (seen.rows.length > 0) return;
+    } catch {
+      return;
+    }
+  }
   await insert(req, { event, path });
 }
