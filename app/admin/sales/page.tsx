@@ -51,7 +51,7 @@ export default async function SalesPage() {
           <h2 className='mt-8 font-bold'>وضعیت سفارش‌ها</h2>
           <div className='mt-3 flex flex-wrap gap-2'>
             {STATUSES.map((s) => (
-              <Link key={s} href={`/admin/orders?status=${s}`} className='rounded-full bg-surface px-3 py-1.5 text-sm'>
+              <Link key={s} href={`/admin/orders?status=${s}`} className='rounded-full bg-surface px-3 py-2.5 text-sm'>
                 {STATUS_LABEL[s]} <span className='font-bold'>{fa(data.byStatus[s])}</span>
               </Link>
             ))}
