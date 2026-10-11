@@ -2,12 +2,13 @@
 
 import { useState, type FormEvent } from 'react';
 import { ADDRESS_LIMIT, type SavedAddress } from '@/lib/addressTypes';
+import { PROVINCES } from '@/data/provinces';
 
 const field = 'w-full rounded-xl border border-ink/15 bg-surface px-4 py-3 text-sm text-ink outline-none focus:border-brand';
 const smallBtn = 'rounded-full border border-ink/15 px-4 py-2.5 text-xs font-bold disabled:opacity-50';
 
-type Draft = { title: string; city: string; postalCode: string; address: string; isDefault: boolean };
-const emptyDraft: Draft = { title: '', city: '', postalCode: '', address: '', isDefault: false };
+type Draft = { title: string; province: string; city: string; postalCode: string; address: string; isDefault: boolean };
+const emptyDraft: Draft = { title: '', province: '', city: '', postalCode: '', address: '', isDefault: false };
 
 // Saved delivery addresses on /account: add, edit, delete (second tap confirms), choose the default.
 export default function AddressBook({ initial }: { initial: SavedAddress[] }) {
@@ -48,7 +49,7 @@ export default function AddressBook({ initial }: { initial: SavedAddress[] }) {
   function startEdit(a: SavedAddress) {
     setError('');
     setConfirmId(null);
-    setDraft({ title: a.title, city: a.city, postalCode: a.postalCode, address: a.address, isDefault: a.isDefault });
+    setDraft({ title: a.title, province: a.province, city: a.city, postalCode: a.postalCode, address: a.address, isDefault: a.isDefault });
     setEditing(a.id);
   }
 
@@ -85,7 +86,7 @@ export default function AddressBook({ initial }: { initial: SavedAddress[] }) {
                 <span className='text-sm font-bold'>{a.title || 'آدرس'}</span>
                 {a.isDefault && <span className='rounded-full bg-brand/10 px-3 py-1 text-xs text-brand'>پیش‌فرض</span>}
               </div>
-              <p className='mt-2 text-sm leading-7'>{a.city}، {a.address}</p>
+              <p className='mt-2 text-sm leading-7'>{a.province ? a.province + '، ' : ''}{a.city}، {a.address}</p>
               {a.postalCode && <p className='text-xs text-ink/70'>کد پستی: <span dir='ltr'>{a.postalCode}</span></p>}
               <div className='mt-3 flex flex-wrap gap-2'>
                 <button type='button' disabled={busy} onClick={() => startEdit(a)} className={smallBtn}>ویرایش</button>
@@ -103,6 +104,12 @@ export default function AddressBook({ initial }: { initial: SavedAddress[] }) {
         <form onSubmit={save} className='mt-4 space-y-3 border-t border-ink/10 pt-4'>
           <p className='text-sm font-bold'>{editing === 'new' ? 'آدرس جدید' : 'ویرایش آدرس'}</p>
           <input className={field} placeholder='عنوان (اختیاری، مثلاً خانه)' aria-label='عنوان آدرس' maxLength={30} value={draft.title} onChange={set('title')} />
+          <select className={field} aria-label='استان' autoComplete='address-level1' value={draft.province} onChange={set('province')}>
+            <option value=''>انتخاب استان</option>
+            {PROVINCES.map((p) => (
+              <option key={p} value={p}>{p}</option>
+            ))}
+          </select>
           <div className='grid grid-cols-2 gap-3'>
             <input className={field} placeholder='شهر' maxLength={60} aria-label='شهر' autoComplete='address-level2' value={draft.city} onChange={set('city')} />
             <input className={field} placeholder='کد پستی (اختیاری)' inputMode='numeric' maxLength={12} aria-label='کد پستی' autoComplete='postal-code' dir='ltr' value={draft.postalCode} onChange={set('postalCode')} />
