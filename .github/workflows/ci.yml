@@ -1,0 +1,98 @@
+name: CI
+
+# Runs on every push to main, on pull requests, and by hand (Actions tab -> CI -> Run workflow).
+# 1) build-and-test: installs, builds, typechecks, applies migrations to a throw-away Postgres,
+#    starts the real server and runs scripts/smoke.sh against it.
+# 2) docker-image: builds the production Docker image (the VPS deploy route).
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: shop
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      DATABASE_URL: postgres://postgres:postgres@localhost:5432/shop
+      ADMIN_PASSWORD: ci-test-password-123
+      UPLOAD_DIR: /tmp/uploads
+      SITE_URL: https://shop.example.test
+      SMS_PROVIDER: mock
+      ALLOW_MOCK_SMS: '1'
+      PAYMENT_PROVIDER: mock
+      ALLOW_MOCK_PAYMENT: '1'
+      NEXT_TELEMETRY_DISABLED: '1'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # No package-lock.json is committed on purpose, so npm install (not npm ci).
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Build
+        run: npm run build
+
+      - name: Typecheck
+        run: npx tsc --noEmit
+
+      - name: Migrate and seed the test database
+        run: |
+          npm run db:migrate
+          npm run db:migrate   # second run must be a harmless no-op
+          npm run db:seed
+
+      - name: Start the server
+        run: |
+          nohup npx next start -p 3100 > next.log 2>&1 &
+          for i in $(seq 1 40); do
+            if curl -s -o /dev/null http://localhost:3100/; then echo "server is up"; exit 0; fi
+            sleep 2
+          done
+          echo "server did not start"
+          cat next.log
+          exit 1
+
+      - name: Smoke test
+        run: bash scripts/smoke.sh http://localhost:3100
+
+      - name: Server log (on failure)
+        if: failure()
+        run: tail -n 150 next.log || true
+
+  docker-image:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build the production image
+        run: docker build -t mahpari-shop:ci .
