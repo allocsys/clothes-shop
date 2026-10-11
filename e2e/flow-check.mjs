@@ -91,8 +91,8 @@ async function placeOrder(ctx, mobile, decision) {
   await page.getByLabel('نام و نام خانوادگی', { exact: true }).fill('تست خودکار');
   await page.getByLabel('شماره موبایل', { exact: true }).fill(mobile);
   await page.getByLabel('استان', { exact: true }).selectOption('تهران');
-  // the shipping fee is asked from the server: the placeholder text must disappear
-  await page.waitForFunction(() => !document.body.innerText.includes('پس از انتخاب استان'), null, { timeout: 15000 });
+  // the shipping fee is asked from the server: one manteau is below the free-shipping total, so "shipping with Post" appears
+  await page.getByText('ارسال با پست').first().waitFor({ timeout: 15000 });
   await page.getByLabel('شهر', { exact: true }).fill('تهران');
   await page.getByLabel('کد پستی', { exact: true }).fill('1234567890');
   await page.getByLabel('آدرس کامل', { exact: true }).fill('تهران، خیابان آزمایش، پلاک ۱');
