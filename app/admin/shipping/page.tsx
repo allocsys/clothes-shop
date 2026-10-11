@@ -1,19 +1,29 @@
 import Link from 'next/link';
 import ShippingSettingsForm, { type ShippingFormData } from '@/components/admin/ShippingSettingsForm';
 import { hasDb } from '@/lib/db';
-import { BANDS_G, CARRIER_IDS, CARRIER_LABELS, getShippingSettings } from '@/lib/shipping';
+import { BANDS_G, CARRIER_IDS, CARRIER_LABELS, ZONES, getShippingSettings } from '@/lib/shipping';
 
 export const dynamic = 'force-dynamic';
 
 export default async function AdminShippingPage() {
   const dbOk = hasDb();
   const s = await getShippingSettings();
+  // the form wants plain fee lists in the order of the bands
+  const rates: ShippingFormData['rates'] = {};
+  for (const c of CARRIER_IDS) {
+    const out: ShippingFormData['rates'][string] = {};
+    for (const z of ZONES) {
+      const zr = s.rates[c]?.[z];
+      if (zr) out[z] = { fees: BANDS_G.map((g) => zr.bands.find((b) => b.upToG === g)?.fee ?? 0), extraPerKg: zr.extraPerKg };
+    }
+    rates[c] = out;
+  }
   const data: ShippingFormData = {
     carrier: s.carrier,
     packagingG: s.packagingG,
     carriers: CARRIER_IDS.map((id) => ({ id, label: CARRIER_LABELS[id] })),
     bandsG: BANDS_G,
-    rates: s.rates,
+    rates,
   };
 
   return (
